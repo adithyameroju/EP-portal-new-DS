@@ -66,7 +66,7 @@ Popover (root — manages open state)
 
 | Prop | Type | Default | Notes |
 |------|------|---------|-------|
-| `side` | `"top" \| "right" \| "bottom" \| "left"` | `"bottom"` | Which side the panel opens on |
+| `side` | `"top" \| "right" \| "bottom" \| "left" \| "inline-start" \| "inline-end"` | `"bottom"` | Which side the panel opens on |
 | `align` | `"start" \| "center" \| "end"` | `"center"` | Alignment along the side axis |
 | `sideOffset` | `number` | `4` | Gap in px between trigger and panel |
 | `alignOffset` | `number` | `0` | Shift in px along alignment axis |
@@ -104,7 +104,7 @@ const [date, setDate] = React.useState<Date | undefined>()
     {date ? format(date, "PPP") : <span className="text-muted-foreground">Pick a date</span>}
   </PopoverTrigger>
   <PopoverContent className="w-auto p-0">
-    <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+    <Calendar mode="single" selected={date} onSelect={setDate} autoFocus />
   </PopoverContent>
 </Popover>
 ```

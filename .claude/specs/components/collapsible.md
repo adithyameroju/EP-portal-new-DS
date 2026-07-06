@@ -193,8 +193,10 @@ const [open, setOpen] = React.useState(false)
 
 4. **The chevron icon does not animate automatically.** Use controlled
    state and a `rotate-180` class conditioned on `open` to animate the
-   indicator. There is no built-in data attribute on `CollapsibleTrigger`
-   that drives CSS transitions (unlike Accordion).
+   indicator. (Base UI does expose a `data-panel-open` attribute on
+   `CollapsibleTrigger` while the panel is open, which can drive CSS
+   transitions — but the recommended pattern here remains controlled
+   state + rotate class.)
 
 5. **`CollapsibleContent` maps to Base UI `Panel`.** The export name is
    `CollapsibleContent` but it renders `CollapsiblePrimitive.Panel` under

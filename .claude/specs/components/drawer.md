@@ -34,7 +34,7 @@ File: components/ui/drawer.tsx
 |-----------|-----|
 | Mobile-first bottom panel with touch drag-to-dismiss | `Drawer` |
 | Full-height side panel on desktop | `Sheet` |
-| Action sheet with a few options (mobile) | `Drawer side="bottom"` |
+| Action sheet with a few options (mobile) | `Drawer direction="bottom"` |
 | Persistent panel alongside content | `Sheet` |
 | Desktop app with responsive mobile panel | `Drawer` for mobile, `Sheet` for desktop |
 

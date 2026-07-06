@@ -22,6 +22,7 @@ Import: import {
   ComboboxChips,
   ComboboxChip,
   ComboboxChipsInput,
+  ComboboxValue,
   useComboboxAnchor,
 } from "@/components/ui/combobox"
 
@@ -74,8 +75,9 @@ Combobox (root)
 ```
 Combobox (root)
   ├── ComboboxChips (chip container — also the anchor)
-  │     ├── ComboboxChip (one selected item tag)
-  │     └── ComboboxChipsInput (type-in search)
+  │     └── ComboboxValue (render function over selected values)
+  │           ├── ComboboxChip (one tag per selected value)
+  │           └── ComboboxChipsInput (type-in search)
   └── ComboboxContent (popup, anchored to ComboboxChips)
         └── ComboboxList
               └── ComboboxItem
@@ -159,27 +161,39 @@ const [value, setValue] = React.useState("")
 
 ### Multi-select with chips
 
-Use the chips mode when users should select multiple values:
+Use the chips mode when users should select multiple values. Chips are
+rendered from the combobox's selected values — `ComboboxChip` has no `value`
+prop. Map over the selected values with the `ComboboxValue` render function:
 
 ```tsx
 const anchor = useComboboxAnchor()
 
-<Combobox multiple>
+<Combobox multiple defaultValue={["Motor", "Health"]}>
   <ComboboxChips ref={anchor}>
-    <ComboboxChip value="motor">Motor</ComboboxChip>
-    <ComboboxChip value="health">Health</ComboboxChip>
-    <ComboboxChipsInput placeholder="Add coverage..." />
+    <ComboboxValue>
+      {(value: string[]) => (
+        <>
+          {value.map((coverage) => (
+            <ComboboxChip key={coverage}>{coverage}</ComboboxChip>
+          ))}
+          <ComboboxChipsInput placeholder="Add coverage..." />
+        </>
+      )}
+    </ComboboxValue>
   </ComboboxChips>
   <ComboboxContent anchor={anchor}>
     <ComboboxList>
-      <ComboboxItem value="motor">Motor</ComboboxItem>
-      <ComboboxItem value="health">Health</ComboboxItem>
-      <ComboboxItem value="life">Life</ComboboxItem>
-      <ComboboxItem value="travel">Travel</ComboboxItem>
+      <ComboboxItem value="Motor">Motor</ComboboxItem>
+      <ComboboxItem value="Health">Health</ComboboxItem>
+      <ComboboxItem value="Life">Life</ComboboxItem>
+      <ComboboxItem value="Travel">Travel</ComboboxItem>
     </ComboboxList>
   </ComboboxContent>
 </Combobox>
 ```
+
+Each chip includes a built-in remove button (pass `showRemove={false}` to
+hide it). Removing a chip deselects the value automatically.
 
 ### Combobox inside a Field (with label and error)
 
@@ -211,7 +225,7 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field"
 | Search input with dropdown | `Combobox` + `ComboboxInput` + `ComboboxContent` |
 | No results / empty state | `ComboboxEmpty` inside `ComboboxList` |
 | Grouped options with heading | `ComboboxGroup` + `ComboboxLabel` |
-| Multi-select chips input | `ComboboxChips` + `ComboboxChip` + `ComboboxChipsInput` |
+| Multi-select chips input | `ComboboxChips` + `ComboboxValue` + `ComboboxChip` + `ComboboxChipsInput` |
 | Checkmark on selected option | Built-in via `ComboboxItem` (no manual code) |
 | Clear × button in input | `ComboboxInput showClear` |
 

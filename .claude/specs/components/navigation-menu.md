@@ -74,8 +74,9 @@ NavigationMenu (root — contains positioner internally)
 
 ## NavigationMenuContent props
 
-The content panel inherits positioning from the root via the internal
-`NavigationMenuPositioner`. No positioning props needed on `NavigationMenuContent`.
+The content panel inherits positioning from the root via
+`NavigationMenuPositioner`, which the root renders automatically. No
+positioning props needed on `NavigationMenuContent`.
 
 ---
 
@@ -200,8 +201,10 @@ import Link from "next/link"
 3. **`NavigationMenuTrigger` has ChevronDown built in.** Do not add a
    manual chevron icon.
 
-4. **`NavigationMenuPositioner` is internal.** It is included automatically
-   inside the `NavigationMenu` root. Do not import or add it manually.
+4. **`NavigationMenuPositioner` is rendered automatically.** It is exported
+   from `components/ui/navigation-menu.tsx`, but the `NavigationMenu` root
+   already includes it, so you normally never need to import or add it
+   manually.
 
 5. **`NavigationMenu` is for website-style horizontal nav.** For app
    sidebars, use `Sidebar`. For desktop app menu bars (File/Edit/View),

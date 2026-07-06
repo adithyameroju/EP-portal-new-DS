@@ -87,7 +87,7 @@ CommandDialog (Command inside a Dialog — for ⌘K palettes)
 | Element | Styling |
 |---------|---------|
 | Container | `bg-popover text-popover-foreground` |
-| Input | Embedded in `InputGroup`, `h-8`, muted background, SearchIcon right |
+| Input | Embedded in `InputGroup`, `h-8`, muted background, SearchIcon left |
 | List | `max-h-72` scrollable, `no-scrollbar` |
 | Item | `px-2 py-1.5 text-sm`, hover/selected: `bg-muted text-foreground` |
 | Group heading | `text-xs font-medium text-muted-foreground px-2 py-1.5` |

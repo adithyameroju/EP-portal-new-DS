@@ -42,11 +42,12 @@ Progress (root — flex-wrap container, renders track automatically)
 | `Progress` | Root — renders track + indicator automatically | Always |
 | `ProgressLabel` | Text label above-left the bar | Optional |
 | `ProgressValue` | Percentage text above-right the bar | Optional |
-| `ProgressTrack` | The gray background bar | Built-in — do not import |
-| `ProgressIndicator` | The colored fill bar | Built-in — do not import |
+| `ProgressTrack` | The gray background bar | Rendered automatically — rarely imported directly |
+| `ProgressIndicator` | The colored fill bar | Rendered automatically — rarely imported directly |
 
-> **`ProgressTrack` and `ProgressIndicator` are internal.** The `Progress`
-> root renders them automatically. You only import and use `Progress`,
+> **`ProgressTrack` and `ProgressIndicator` are rendered automatically.**
+> They are exported from `components/ui/progress.tsx`, but the `Progress`
+> root renders them for you, so you normally only import and use `Progress`,
 > `ProgressLabel`, and `ProgressValue`.
 
 ---
@@ -152,14 +153,15 @@ const currentStep = 3 // 0-indexed
 
 ## Rules for LLMs
 
-1. **Do not import `ProgressTrack` or `ProgressIndicator`.** They are
-   internal to `Progress`. Only import `Progress`, `ProgressLabel`, and
-   `ProgressValue`:
+1. **You normally never need to import `ProgressTrack` or
+   `ProgressIndicator`.** They are exported, but the `Progress` root
+   renders them automatically. For typical usage, only import `Progress`,
+   `ProgressLabel`, and `ProgressValue`:
    ```tsx
-   // ✅ CORRECT
+   // ✅ CORRECT — typical usage
    import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress"
 
-   // ❌ WRONG — ProgressTrack and ProgressIndicator are internal
+   // ⚠️ UNNECESSARY — Progress already renders track + indicator for you
    import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/progress"
    ```
 
