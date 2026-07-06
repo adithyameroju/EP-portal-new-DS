@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-07-06T16:03:29.094Z",
+  "designer": "nikhil",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "S4 e2e demo: sign-in block (sample entry, marked demo)",
+  "targetFiles": [
+    "components/blocks/sign-in-test-2.tsx"
+  ],
+  "componentsUsed": [
+    "button",
+    "card",
+    "input",
+    "label"
+  ],
+  "assumptions": [
+    {
+      "text": "assumed default Card border",
+      "category": "styling"
+    },
+    {
+      "text": "assumed gap-4 between fields",
+      "category": "spacing"
+    }
+  ],
+  "gitHead": "427a7acb08e105bb50b3d44cd5691e252cb1699c",
+  "demo": true
+}

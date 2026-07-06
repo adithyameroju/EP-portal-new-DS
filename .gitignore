@@ -45,3 +45,9 @@ storybook-static
 
 .yalc
 yalc.lock
+
+# drift ledger (S4 audit loop): entries are COMMITTED evidence;
+# reports + dashboard are derived artifacts — regenerate with
+# `npm run audit:compliance` / `npm run dashboard` (owner decision 2026-07-06)
+/drift-log/reports/*.json
+/drift-log/dashboard.html

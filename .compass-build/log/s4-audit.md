@@ -52,7 +52,7 @@
 
 Each item executes one at a time, marked `[x]` here when done, after Nikhil's go.
 
-- [ ] **1. Ledger scaffolding (`drift-log/`).** Create `drift-log/` at repo root
+- [x] **1. Ledger scaffolding (`drift-log/`).** Create `drift-log/` at repo root
       with: `schema.json` (JSON Schema for the entry format from the design spec
       — timestamp, designer, tool, compassVersion, source, targetFiles,
       componentsUsed, assumptions[{text, category}]), a short `README.md`
@@ -60,7 +60,7 @@ Each item executes one at a time, marked `[x]` here when done, after Nikhil's go
       Slack is overflow"), and `entries/` + `reports/` subfolders with
       `.gitkeep`. Plain English: this is the filing cabinet the whole loop
       reads from.
-- [ ] **2. `compass log` CLI (`scripts/compass-log.js` + npm script `log`).**
+- [x] **2. `compass log` CLI (`scripts/compass-log.js` + npm script `log`).**
       One command, zero-friction: prompts for a paste of Cursor's "What I
       assumed" block (multi-line, end with blank line or EOF), auto-captures
       changed files via git since the previous ledger entry (fallbacks:
@@ -72,7 +72,7 @@ Each item executes one at a time, marked `[x]` here when done, after Nikhil's go
       it recorded. Assumption categories: free-text with a suggested vocabulary
       (styling | spacing | component-choice | content | behavior | token) —
       suggested, not enforced, so capture never blocks.
-- [ ] **3. `scripts/compliance-audit.js` — engine + C1.** New script (token-audit
+- [x] **3. `scripts/compliance-audit.js` — engine + C1.** New script (token-audit
       untouched). Ports token-audit's scanning core, restructured so every
       finding is `{ ruleId, level, file, line, message, component?, suggestion }`.
       C1 = existing hex/tailwind-color/raw-px checks plus **arbitrary-value
@@ -83,23 +83,23 @@ Each item executes one at a time, marked `[x]` here when done, after Nikhil's go
       `--entry <ledger-file>` to score exactly one build's targetFiles.
       Output: human summary to console + JSON report to
       `drift-log/reports/<timestamp>__<scope>.json`.
-- [ ] **4. C5 naming check.** All files under `app/`, `components/`, `hooks/`,
+- [x] **4. C5 naming check.** All files under `app/`, `components/`, `hooks/`,
       `lib/` must be kebab-case (allowing Next.js reserved names like
       `page.tsx`, `layout.tsx`, route groups `(group)`, dynamic `[param]`);
       directories too. Error level. This is the check that would have caught
       the KPI feature's `settings/` PascalCase drift.
-- [ ] **5. C6 import hygiene check.** In scanned build files: any import that
+- [x] **5. C6 import hygiene check.** In scanned build files: any import that
       resolves to a ui primitive must come from `@/components/ui/...` — flag
       relative reach-ins (`../../components/ui`, `./ui/button`) and copied
       primitives (a file outside `components/ui/` whose name shadows a ui
       primitive, e.g. a local `button.tsx`). Error level.
-- [ ] **6. Scoring + `rubric.json`.** `scripts/audit-rubric.json` with
+- [x] **6. Scoring + `rubric.json`.** `scripts/audit-rubric.json` with
       owner-tunable weights; proposed defaults: score = 100 − (5 × errors) −
       (1 × warnings), floored at 0, computed per build (per ledger entry) and
       per file; per-component drift = error count attributed via
       componentsUsed + per-finding `component` field. Weights are MY PROPOSED
       DEFAULTS — Nikhil can retune the numbers in one file, no code change.
-- [ ] **7. Dashboard shell (`scripts/generate-dashboard.js` + npm script
+- [x] **7. Dashboard shell (`scripts/generate-dashboard.js` + npm script
       `dashboard`).** Reads every JSON report in `drift-log/reports/`, emits
       static self-contained `drift-log/dashboard.html` (inline CSS + SVG, zero
       dependencies, opens by double-click). Sections per design spec Part 5:
@@ -108,7 +108,7 @@ Each item executes one at a time, marked `[x]` here when done, after Nikhil's go
       component score cards with trend arrows, and the overall trend line.
       Ships with a friendly empty state ("no builds logged yet — run
       `npm run log`") so it's demo-able on day one.
-- [ ] **8. Wire npm scripts + parity verification.** Add `log`,
+- [x] **8. Wire npm scripts + parity verification.** Add `log`,
       `audit:compliance`, `dashboard` to package.json (3-line diff, shown
       before applying since package.json is shared with S0). Then verify:
       (a) compliance audit in C1-legacy mode reproduces token-audit's
@@ -116,7 +116,7 @@ Each item executes one at a time, marked `[x]` here when done, after Nikhil's go
       one sample ledger entry against an existing `components/blocks/` file,
       score it, generate the dashboard, eyeball it; (c) `npm run audit` still
       green and untouched. Sample/demo entries clearly marked and removable.
-- [ ] **9. Design doc for the meta-gated parts (design-only, no code).** Write
+- [x] **9. Design doc for the meta-gated parts (design-only, no code).** Write
       `.compass-build/design/s4/` PROPOSED designs for C2 (provenance), C3
       (composite completeness), C4 (spec coverage), the Detect clustering skill,
       the Prescribe step with the opinion firewall, and the
@@ -147,3 +147,87 @@ Each item executes one at a time, marked `[x]` here when done, after Nikhil's go
 
 **STATUS: STOPPED. Awaiting Nikhil's approval of the checklist + the 4 decisions
 above before executing item 1.**
+
+---
+
+## 2026-07-06 — Session 2: Approved build executed (items 1–9 DONE)
+
+Nikhil approved the full checklist + all 4 decisions (via orchestrator):
+(1) `audit:compliance` additive, token-audit stays the commit gate — and is now
+`scripts/token-audit.mjs` (ESM), so all new scripts are `.mjs`;
+(2) commit ledger entries, gitignore generated reports + dashboard;
+(3) rubric defaults 100 / −5 / −1 approved as tunable start;
+(4) `components/ui/` excluded from compliance scoring.
+Mid-session interruption: usage-limit kill after item 7 — orchestrator
+checkpoint-committed; on resume all scripts verified working on disk before
+continuing (node --check + functional re-runs).
+
+### What was built
+1. **[x] Ledger scaffolding** — `drift-log/{schema.json, README.md, entries/, reports/}`.
+   Schema adds optional `gitHead` (enables since-last-log diffing), `notes`, `demo`.
+2. **[x] `compass log` CLI** — `scripts/compass-log.mjs` (`npm run log`).
+   Interactive paste OR flags-only (`--no-input`); auto-detects changed files via
+   git (fallbacks: `git status`, `--files`), auto-infers componentsUsed from
+   `@/components/ui/*` imports, validates, writes timestamped entry.
+3. **[x] Compliance engine + C1** — `scripts/compliance-audit.mjs`
+   (`npm run audit:compliance`). Finding shape `{ruleId, level, file, line,
+   message, component?, suggestion}`. C1 ported from token-audit + tiering:
+   spacing/radius/typography arbitraries = ERROR (`C1-arbitrary-value`), layout
+   dims = WARNING (`C1-arbitrary-layout`), unknown prefixes stay warnings.
+   Modes: repo (default, ui/ excluded) | file args | `--entry <ledger>` |
+   `--parity` (token-audit replication self-test, ui/ included, legacy
+   severities, no report) | `--no-report`.
+4. **[x] C5 naming** — kebab-case files+dirs in app/, components/, hooks/, lib/,
+   stories/; allows Next conventions ((group), [param], @slot, _prefix — also
+   future `_meta-schema.ts`); code files only (README.md etc. untouched).
+5. **[x] C6 import hygiene** — `C6-import-path` (relative/non-alias ui imports)
+   + `C6-shadow-primitive` (file outside ui/ named after a primitive;
+   code-connect/ exempt).
+6. **[x] Scoring + rubric** — `scripts/audit-rubric.json` (approved defaults);
+   overall + per-file scores, per-component attribution via JSX-tag heuristic
+   (longest-Pascal-match), byRule totals; JSON report to `drift-log/reports/`.
+7. **[x] Dashboard shell** — `scripts/generate-dashboard.mjs` (`npm run dashboard`)
+   → self-contained `drift-log/dashboard.html` (inline CSS/SVG, zero deps):
+   health radar (C2/C3/C4 greyed "activate when S1 lands"), severity
+   distribution, priority matrix, per-component cards w/ trend arrows, score
+   trend line, friendly empty state.
+8. **[x] Wiring + verification** — package.json scripts (`log`,
+   `audit:compliance`, `dashboard`; 3 lines after `audit`), .gitignore
+   (`/drift-log/reports/*.json`, `/drift-log/dashboard.html`). Evidence:
+   - **Parity:** `token-audit.mjs` vs `compliance-audit.mjs --parity` on the
+     same tree: **114 files / 0 errors / 34 warnings — IDENTICAL** (earlier in
+     the session both equally reported 2 hex errors from S5's in-progress
+     `components/blocks/migrate/mock-data.ts`, since fixed upstream — the
+     ports agreed finding-for-finding throughout).
+   - **Rule self-test:** throwaway fixture (`lib/s4-selftest/`, deleted after)
+     fired all 9 rule paths with correct severities; score 63/100 = 100−7·5−2·1. ✓
+   - **E2E:** `npm run log` (demo entry, `components/blocks/sign-in-test-2.tsx`,
+     components auto-detected: button/card/input/label, 2 categorized
+     assumptions) → `npm run audit:compliance -- --entry …` → **100/100**,
+     report written → `npm run dashboard` → all sections render.
+   - **Repo green:** `npm run audit` 0 err/34 warn (baseline parity),
+     `npx tsc --noEmit` clean, `npm run lint` clean. Repo-wide compliance
+     snapshot (ui/ excluded): 27 files, 0/0, **100/100**.
+   - Sample entry `2026-07-06T16-03-29-094Z__nikhil__s4-demo.json` kept on disk,
+     marked `"demo": true` (Detect will ignore it) — serves as the format
+     example; Nikhil may delete it freely.
+9. **[x] Meta-gated designs (design-only)** — `.compass-build/design/s4/`:
+   `c2-c3-c4-checks.PROPOSED.md`, `detect-clustering.PROPOSED.md`,
+   `prescribe.PROPOSED.md` (opinion firewall spelled out),
+   `compass-audit-skill.PROPOSED.md`, **plus new backlog item**
+   `c7-font-compliance.PROPOSED.md` (paint-level font check: static
+   declaration-consistency tier C7a + Playwright rendered-DOM probe tier C7b —
+   designed only, 3 owner decisions flagged inside). Nothing meta-dependent
+   implemented; gate remains STATE.md showing S1 exit met.
+
+### Flagged for Nikhil
+- **C2 needs one meta field:** requested `primitiveElements?: string[]` in the
+  S1 ComponentMeta schema (see c2-c3-c4 design doc) — S1 owner's call.
+- **C7a could be built pre-S1** (no meta dependency) but is outside the
+  approved build-now scope — awaiting explicit go (decision list in the C7 doc).
+- **compass-audit skill folder** will live under `.claude/skills/` (currently
+  S5-locked) — needs orchestrator clearance at build time.
+- Demo ledger entry: keep as living format example, or delete — either is fine.
+
+**STATUS: Build-now scope COMPLETE and verified. Next S4 action: implement
+C2/C3/C4 + Detect + Prescribe when STATE.md shows S1 exit criteria met.**
