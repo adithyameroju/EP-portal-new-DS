@@ -6,8 +6,13 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Single-typeface system (typography spec): Euclid Circular B is loaded via
-   next/font in app/layout.tsx as --font-sans; serif and mono resolve to it. */
-:root {
-  --font-serif: var(--font-sans);
-  --font-mono: var(--font-sans);
+   next/font in app/layout.tsx as --font-euclid. The token package declares the
+   font theme with `@theme inline` (values compile into utilities at build
+   time), so a runtime variable override is never read — this @theme inline
+   block, coming after the import, is what actually overrides it. All three
+   slots resolve to the loaded Euclid family, per the typography spec. */
+@theme inline {
+  --font-sans: var(--font-euclid), "Euclid Circular B", system-ui, sans-serif;
+  --font-serif: var(--font-euclid), "Euclid Circular B", Georgia, serif;
+  --font-mono: var(--font-euclid), "Euclid Circular B", monospace;
 }

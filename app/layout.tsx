@@ -15,7 +15,7 @@ const euclid = localFont({
     { path: "./fonts/Euclid_Circular_B_Bold.woff2", weight: "700", style: "normal" },
     { path: "./fonts/Euclid_Circular_B_Bold_Italic.woff2", weight: "700", style: "italic" },
   ],
-  variable: "--font-sans",
+  variable: "--font-euclid",
   display: "swap",
 });
 
