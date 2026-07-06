@@ -127,10 +127,10 @@ Baseline fully green (tsc 0, audit 0/34, lint 0).
 |---|---|---|---|
 | S0 | **complete + APPROVED** (tag `s0-complete`) | ✅ 2026-07-06 | ✅ 2026-07-06 |
 | S1 | **COMPLETE (tag `s1-complete`)** — 55/55 meta + index; spot-check approved; 13/14 spec fixes applied (card-shadow held for owner) | ✅ 2026-07-07 | ✅ 2026-07-07 |
-| S2 | **in progress** — mechanical build (foundations from tokens, meta-driven component docs, taxonomy); SOP + authored prose = propose-first; Foundations UNVERIFIED until FE-dev token confirmation | — | — |
+| S2 | **in progress** — lane B (meta doc renderer + 10 pattern stories) ✅ DONE+committed; lane A (foundations) wrapping up w/ drift fixes (kebab filenames, raw buttons→Compass Button). Remaining: 45 component pages (pattern proven), Introduction/GettingStarted PROPOSED drafts, SOP (propose-first), deploy | — | — |
 | S3 | not started | — | — |
-| S4 | **gated half building** — C2/C3/C4, Detect, Prescribe (run-freely grant); C7 stays design-only; primitiveElements schema addition still an owner ruling | build-now ✅ | checklist ✅ |
-| S5 | **Part B building** — resolution engine vs meta index (rubric = tunable proposed defaults; log every snap; NO repointing/deletion without owner) | build-now ✅ | checklist ✅ |
+| S4 | **COMPLETE except owner-gated items** — C1–C6 + Detect + Prescribe + compass-audit skill all built & pipeline-verified; C7 design-only; open: primitiveElements, C3 severity, stories-naming policy, C7 build go | ✅ machinery | checklist ✅ |
+| S5 | **COMPLETE except validation** — Part B engine live (dry-run verified); blocked on owner sample repos (Lovable first); S2/S3 integration gated | ✅ engine | checklist ✅ |
 | S6 design | not started | — | — |
 
 ## S1 facts for downstream agents (usable once Nikhil approves S1)

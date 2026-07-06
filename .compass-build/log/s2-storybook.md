@@ -43,7 +43,51 @@ Lane owner: this agent owns **foundations + infra** for S2 — `.storybook/`
     cover 300–700 (+italics). Page states this factually; weights outside
     300–700 render browser-synthesized.
 
----
+- **2026-07-07 — foundations+infra lane BUILT.** Files:
+  - `.storybook/preview.ts` — storySort extended: Introduction (Welcome,
+    Design Principles) → Foundations (Color, Typography, Spacing, Radius,
+    Elevation, Motion) → Atoms → Molecules → Organisms → **Templates** →
+    Patterns → Components (Templates added beyond the literal task list
+    because the component-docs lane sorts by `meta.category` plurals incl.
+    `template`; all pre-existing entries kept).
+  - `stories/foundations/` — Color/Typography/Spacing/Radius/Elevation/Motion
+    `.mdx` + per-page `*Blocks.tsx` renderers (tsx so tsc+audit cover the
+    rendering code) + `TokenSourceBanner.tsx` (UNVERIFIED banner on all six).
+  - `stories/Principles.mdx` — "Introduction/Design Principles", live
+    transclusion of `.claude/principles.md` via Vite `?raw` import +
+    addon-docs `<Markdown>` block (zero authored/copied prose).
+
+- **2026-07-07 — issues hit & resolved (infra lane, mechanical):**
+  1. `build-storybook` failed: `.storybook/main.ts` has `staticDirs:
+     ["../public"]` but `public/` was absent from the snapshot. Fix: recreated
+     empty `public/` + `.gitkeep` (did NOT edit main.ts). Build then green.
+  2. Audit false-positive: raw-pixel regex matched "desk**top: '60px**" inside
+     heading-preset data strings → reformatted the strings. Baseline restored.
+  3. Storybook docs typography leaked into custom blocks (`font-sans` rendered
+     Nunito Sans, `text-9xl` computed 14px) → added `sb-unstyled` + explicit
+     `font-sans` to every block root (official opt-out).
+  4. `scripts/token-audit.mjs` doesn't exclude generated `storybook-static/`
+     (~484 false errors when build output exists; folder IS gitignored).
+     Component-docs lane hit the same and spawned the fix chip for the S4/
+     scripts owner — not duplicating. Convention until fixed: delete
+     `storybook-static/` before running the audit gate.
+
+- **2026-07-07 — foundations+infra lane VERIFIED.** Evidence:
+  - `npm run build-storybook` ✅ (index contains all 6 Foundations docs pages
+    + Introduction/Design Principles, alongside the component lane's pages).
+  - Playwright against the static build, all 7 pages: UNVERIFIED banner
+    visible; Color swatches compute to the live package vars (light
+    `--primary` → oklch(0.5242 0.2326 286.073), dark → oklch(0.5953 0.2045
+    286.158) inside the `.dark` panel — the package's #6841E6/#7A62F0
+    aliases); Typography computes `"Euclid Circular B", system-ui` with the
+    face actually loaded (document.fonts.check ✅) and `text-9xl` at a real
+    128px; `w-96` bar = 384px; `rounded-4xl` = 24px; `duration-150` = 0.15s;
+    Principles page renders `.claude/principles.md` content. 0 console errors.
+  - `npm run audit` ✅ 0 errors / 34 warnings = exact pre-existing baseline
+    (after removing generated storybook-static/, per flag above).
+  - `npx tsc --noEmit` ✅ 0 errors. `npm run lint` ✅ 0 problems.
+  - Lane scope respected: no changes to `stories/components/`, `components/`,
+    `scripts/`, `app/`, `package.json`. No git operations.
 
 # S2 — COMPONENT DOCS lane (separate agent)
 
