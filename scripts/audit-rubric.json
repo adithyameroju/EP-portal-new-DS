@@ -1,0 +1,7 @@
+{
+  "$comment": "Compass compliance-audit scoring rubric — OWNER-TUNABLE, no code change needed. Approved starting defaults (Nikhil, 2026-07-06): score = startScore - errorWeight*errors - warningWeight*warnings, floored at floor. Retune from real drift data later.",
+  "startScore": 100,
+  "errorWeight": 5,
+  "warningWeight": 1,
+  "floor": 0
+}

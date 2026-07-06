@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "compass-drift-ledger-entry",
+  "title": "Compass Drift Ledger Entry",
+  "description": "One build session's capture record. Written by `npm run log` (scripts/compass-log.mjs) into drift-log/entries/<ISO-timestamp>__<designer>__<slug>.json. This ledger is the machine-readable truth the audit loop reads; Slack is informal overflow only.",
+  "type": "object",
+  "required": ["timestamp", "designer", "tool", "compassVersion", "source", "targetFiles", "componentsUsed", "assumptions"],
+  "additionalProperties": false,
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC time the entry was logged."
+    },
+    "designer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Who ran the build. Defaults to `git config user.name`, overridable with --designer."
+    },
+    "tool": {
+      "type": "string",
+      "description": "Generation tool used for the build.",
+      "examples": ["cursor", "claude-code", "lovable", "replit", "other"]
+    },
+    "compassVersion": {
+      "type": "string",
+      "description": "Compass package version at build time (read from package.json)."
+    },
+    "source": {
+      "type": "string",
+      "description": "What drove the build: Figma frame URL or a one-line prompt summary."
+    },
+    "targetFiles": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Repo-relative paths of files created/changed by this build. Auto-captured from git, overridable with --files."
+    },
+    "componentsUsed": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+      "description": "Kebab-case names of Compass ui/ components imported by the target files (e.g. \"card\", \"toggle-group\"). Auto-inferred from `@/components/ui/<name>` imports."
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "The pasted \"What I assumed\" block, one item per assumption. Empty array is valid (a clean build with no assumptions is still worth logging).",
+      "items": {
+        "type": "object",
+        "required": ["text"],
+        "additionalProperties": false,
+        "properties": {
+          "text": { "type": "string", "minLength": 1 },
+          "category": {
+            "type": "string",
+            "description": "Suggested vocabulary (not enforced, so capture never blocks): styling | spacing | component-choice | content | behavior | token | uncategorized."
+          }
+        }
+      }
+    },
+    "gitHead": {
+      "type": "string",
+      "description": "Optional: git HEAD commit hash at log time. Used by the next `compass log` run to auto-diff changed files since this entry."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional free-text context."
+    },
+    "demo": {
+      "type": "boolean",
+      "description": "Optional: true marks a sample/demo entry that tooling and Detect runs must ignore."
+    }
+  }
+}
