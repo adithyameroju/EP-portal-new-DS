@@ -2,15 +2,30 @@
 
 > Single live source of "where the build actually is." Every agent reads this
 > (plus `Compass_GA_Roadmap.md`) before acting, and the orchestrator updates it
-> after every stage transition, approval, or blocker. Last updated: **2026-07-06 (session 2)**.
+> after every stage transition, approval, or blocker. Last updated: **2026-07-07**.
+
+## DECISION LOG (append-only — never re-ask a settled decision)
+- 2026-07-06: PLAN.md approved; execute under it.
+- 2026-07-06: Canonical layout = `.claude/specs/` + top-level `stories/`.
+- 2026-07-06: git init + local commits approved; NO push without per-stage approval.
+- 2026-07-06: KPI branch NOT reconciled — this tree canonical; promotion candidates deferred to S6.
+- 2026-07-06: S0 checklist approved (fonts from owner's .woff2 zip; favicon left as-is, never invent; metadata text proposed-first; housekeeping incl. warnings).
+- 2026-07-06: Tokens repoint to Nexus 1.0.0 approved; FE-dev confirmation due before S2 (doesn't block S1).
+- 2026-07-06: S0 APPROVED with rulings: metadata text ✅; carousel targeted disable, NO refactor of stock primitives; sign-in-test stays missing-and-stated; favicon open.
+- 2026-07-06: Font fix v2 (@font-face under exact family name) APPROVED; paint-level font check added to S4 backlog (→ C7 design).
+- 2026-07-06: S1 ComponentMeta schema APPROVED incl. primitiveSource + per-entry source provenance ("uncitable = omitted").
+- 2026-07-06: S1 checklist approved — batches of 5, per-batch tsc+commit, spot-check gate on antiPatterns/confusedWith.
+- 2026-07-06: S4 checklist APPROVED + 4 decisions: audit:compliance additive (token-audit stays commit gate); commit ledger entries, gitignore generated reports/dashboards; rubric 100/−5/−1 as tunable default; components/ui/ EXCLUDED from compliance scoring.
+- 2026-07-06: S5 checklist APPROVED + 3 decisions: skill FOLDER (compass-migrate/SKILL.md; existing 3 skills stay flat); components/blocks/migrate/ approved; golden-pair set = stock shadcn, MUI, Chakra, Ant, Lovable/Replit (characterize Lovable/Replit deepest — PM handoff is headline path).
+- 2026-07-07: **S1 spot-check APPROVED** (65/65 citations verified, pack v2).
+- 2026-07-07: **EXPANDED AUTONOMY granted.** Run freely on mechanical/derivable work: S2 meta-driven doc pages, token-driven foundation pages, variant galleries, sidebar taxonomy; S4 C2/C3/C4 + Detect + Prescribe scaffolding; S5 Part B build (writing `-compass` variants is fine). Commit per logical group; keep baseline green; no push.
+- 2026-07-07: STANDING GATES (non-negotiable): authored prose (SOP, do/don't wording not quoted from spec) → propose-first; new design opinions → "needs owner decision"; each STAGE EXIT (S2/S3/S4/S5) → summarize+evidence+wait; any git PUSH; S5 consumer repointing or deletion of originals; S2 Foundations page flagged UNVERIFIED until FE-dev token confirmation arrives.
+- 2026-07-07: Work order: finish S1 (14 spec fixes per mechanical/semantic split), then S2. STATE.md updated at every stage and gate.
 
 ## Current stage
-**S0 APPROVED by Nikhil (2026-07-06) with all four rulings. S1 starting: schema
-PROPOSED, generation awaits schema approval.** Post-approval font fix applied
-(see below); `s0-complete` tag moved to the fix commit. Baseline fully green:
-audit 0 errors / 34 warnings (parity), tsc 0 errors, lint 0 problems,
-`next build` succeeds, **Euclid verified at paint level** (10 faces registered,
-3 weights actually loaded in browser; screenshot taken).
+**S1 APPROVED (2026-07-07). Closing items: the 14 spec-drift fixes (mechanical
+subset runs freely; semantic ones → owner). Then S2 under expanded autonomy.**
+S4/S5 meta-gated halves UNBLOCK on S1 exit flip below. Baseline fully green.
 
 ### S0 rulings (Nikhil, 2026-07-06)
 1. Metadata text approved as proposed.
@@ -70,11 +85,13 @@ audit 0 errors / 34 warnings (parity), tsc 0 errors, lint 0 problems,
 - **No `.git`** — git init required before any commit (approval pending).
 
 ## Open approval gates
-1. **Font fix v2** (@font-face instead of localFont) — flagged deviation for
-   Nikhil's visual sign-off (`PORT=3010 npm run dev`).
-2. **S1 meta schema** — PROPOSED at `.compass-build/design/s1/_meta-schema.proposed.ts`;
-   the 55-file generation does not start until Nikhil approves it.
-3. FE-dev confirmation of tokens 1.0.0 (due before S2).
+1. FE-dev confirmation of tokens 1.0.0 (due before S2 Foundations is called done;
+   page may be BUILT but stays flagged UNVERIFIED).
+2. Owner rulings pending: card.md shadow contradiction; "internal vs exported"
+   policy (progress/navigation-menu); `primitiveElements` schema addition;
+   `direction` category; S5 Part B rubric thresholds (proposed defaults in use
+   as tunable, pending explicit confirmation).
+3. All standing gates from the 2026-07-07 DECISION LOG entry.
 
 ## Track approvals (Nikhil, 2026-07-06)
 - **S4 checklist APPROVED** + 4 decisions: audit:compliance additive (token-audit
