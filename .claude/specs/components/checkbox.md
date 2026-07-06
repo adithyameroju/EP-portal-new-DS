@@ -156,12 +156,17 @@ const someChecked = items.some(i => i.checked)
 <div className="flex items-center gap-2">
   <Checkbox
     id="select-all"
-    checked={allChecked ? true : someChecked ? "indeterminate" : false}
-    onCheckedChange={(checked) => selectAll(!!checked)}
+    checked={allChecked}
+    indeterminate={!allChecked && someChecked}
+    onCheckedChange={(checked) => selectAll(checked)}
   />
   <Label htmlFor="select-all">Select all</Label>
 </div>
 ```
+
+Base UI's `checked` prop is a plain `boolean`. The mixed state is a separate
+`indeterminate` boolean prop — there is no `checked="indeterminate"` value
+(that is the Radix API, which this repo does not use).
 
 ---
 
@@ -174,7 +179,7 @@ const someChecked = items.some(i => i.checked)
 | Checkbox with label to the right | `<Checkbox>` + `<Label>` in a `flex items-center gap-2` div |
 | Group of checkboxes with heading | `FieldSet` + `FieldLegend` |
 | Checkbox with title + description text | `Field orientation="horizontal"` + `FieldContent` |
-| Dash/minus indeterminate state | `checked="indeterminate"` |
+| Dash/minus indeterminate state | `indeterminate` prop, e.g. `<Checkbox indeterminate />` (separate from `checked`) |
 | Disabled/grayed out checkbox | `<Checkbox disabled>` + `Label className="opacity-50"` |
 
 ---

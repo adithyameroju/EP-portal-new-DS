@@ -221,7 +221,7 @@ import { Checkbox } from "@/components/ui/checkbox"
   <Field>
     <FieldLabel htmlFor="full-name">Full Name</FieldLabel>
     <Input id="full-name" />
-  </FieldSeparator>
+  </Field>
 </FieldGroup>
 ```
 

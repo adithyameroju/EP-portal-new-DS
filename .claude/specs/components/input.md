@@ -20,10 +20,13 @@ For complete form patterns, Input is often used with these companions:
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  Form, FormControl, FormDescription, FormField,
-  FormItem, FormLabel, FormMessage
-} from "@/components/ui/form"
+  Field, FieldLabel, FieldDescription,
+  FieldError, FieldGroup
+} from "@/components/ui/field"
 ```
+
+> This repo does not have a `form.tsx` (react-hook-form) component. Use the
+> `Field` system for all form field structure — see `specs/components/field.md`.
 
 ---
 
@@ -38,21 +41,13 @@ import {
 ```
 
 ```tsx
-// Inside a react-hook-form Form
-<FormField
-  control={form.control}
-  name="email"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Email</FormLabel>
-      <FormControl>
-        <Input placeholder="name@acko.com" {...field} />
-      </FormControl>
-      <FormDescription>Your work email address.</FormDescription>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+// Inside the Field system (forms with help text / validation)
+<Field>
+  <FieldLabel htmlFor="email">Email</FieldLabel>
+  <Input id="email" type="email" placeholder="name@acko.com" />
+  <FieldDescription>Your work email address.</FieldDescription>
+  <FieldError errors={emailErrors} />
+</Field>
 ```
 
 ---
@@ -65,14 +60,14 @@ icons, prefixes, or suffixes — those are composed by wrapping.
 | Element | Implementation | Token |
 |---------|---------------|-------|
 | Border | `border-input` | `var(--input)` |
-| Background | `bg-background` | `var(--background)` — transparent feel |
+| Background | `bg-transparent` | Transparent (`dark:bg-input/30` in dark mode) |
 | Text | `text-foreground` | `var(--foreground)` |
 | Placeholder | `text-muted-foreground` | `var(--muted-foreground)` |
-| Focus ring | `focus-visible:ring-ring` | `var(--ring)` — Acko purple |
-| Border radius | `rounded-md` | 6px |
-| Height | `h-9` | 36px |
-| Padding | `px-3 py-1` | 12px horizontal, 4px vertical |
-| Font size | `text-sm` | 14px |
+| Focus ring | `focus-visible:ring-3 focus-visible:ring-ring/50` + `focus-visible:border-ring` | `var(--ring)` at 50% opacity, 3px — Acko purple |
+| Border radius | `rounded-lg` | 8px |
+| Height | `h-8` | 32px |
+| Padding | `px-2.5 py-1` | 10px horizontal, 4px vertical |
+| Font size | `text-base md:text-sm` | 16px on mobile, 14px at `md` and up |
 
 ---
 
@@ -105,32 +100,24 @@ internally. Do not add custom file input styling.
 | **Default** | No additional props | Standard appearance |
 | **Focused** | `:focus-visible` | Auto — shows ring in Acko purple. Do not customize. |
 | **Disabled** | `disabled` prop | `<Input disabled />` — reduced opacity, no interaction |
-| **Error / Invalid** | Wrapper styling | Apply `border-destructive` via wrapper class or Form validation (see below) |
+| **Error / Invalid** | Wrapper styling | Apply `border-destructive` via wrapper class or `FieldError` in the Field system (see below) |
 | **Read-only** | `readOnly` prop | `<Input readOnly />` — selectable but not editable |
 | **With value** | Controlled via `value` prop | No visual difference from default |
 
 ### Error state pattern
 
 shadcn Input does NOT have a built-in error prop. Error styling is applied
-through the Form component's validation, or manually:
+through the Field system, or manually:
 
 ```tsx
-// With react-hook-form (preferred) — FormMessage shows error automatically
-<FormField
-  control={form.control}
-  name="email"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Email</FormLabel>
-      <FormControl>
-        <Input {...field} />
-      </FormControl>
-      <FormMessage /> {/* Shows validation error in destructive color */}
-    </FormItem>
-  )}
-/>
+// With the Field system (preferred) — FieldError shows the error message
+<Field>
+  <FieldLabel htmlFor="email">Email</FieldLabel>
+  <Input id="email" type="email" />
+  <FieldError errors={emailErrors} /> {/* Renders nothing when errors is empty */}
+</Field>
 
-// Manual error styling (when not using Form)
+// Manual error styling (when not using Field)
 <div className="grid gap-1.5">
   <Label htmlFor="email">Email</Label>
   <Input
@@ -215,12 +202,12 @@ requirement, not a style preference.
 |-----------------------|----------------------|
 | Simple text input | `<Input />` |
 | Input with label above | `<Label>` + `<Input>` in a `gap-1.5` wrapper |
-| Input with helper text below | Use `FormDescription` (with Form) or `<p className="text-sm text-muted-foreground">` |
-| Input with error message | Use `FormMessage` (with Form) or manual error pattern |
+| Input with helper text below | Use `FieldDescription` (with Field) or `<p className="text-sm text-muted-foreground">` |
+| Input with error message | Use `FieldError` (with Field) or manual error pattern |
 | Input with left icon (e.g., search) | Relative wrapper + absolute icon + padded Input |
 | Disabled/grayed input | `<Input disabled />` |
 | Multi-line text area | `<Textarea />` (not Input) |
-| Group of labeled inputs (form) | Use the Form composite components |
+| Group of labeled inputs (form) | Use `FieldGroup` wrapping multiple `Field` |
 
 ---
 
@@ -231,8 +218,9 @@ requirement, not a style preference.
 3. **Use the correct `type` attribute.** Email fields get `type="email"`, etc.
 4. **Error state = `border-destructive` + error message.** Not a red background,
    not a custom error prop.
-5. **For forms with validation, use the Form composite.** FormField, FormItem,
-   FormLabel, FormControl, FormMessage — the full set.
+5. **For forms with validation, use the Field system.** Field, FieldLabel,
+   FieldDescription, FieldError (and FieldGroup for multiple fields) — see
+   `specs/components/field.md`. This repo has no `form.tsx`.
 6. **Textarea for multi-line.** Do not set `rows` on Input or use CSS to make
    Input look multi-line.
 7. **Placeholder is not a label.** Placeholder text disappears on input. It

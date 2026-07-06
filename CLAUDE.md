@@ -74,8 +74,9 @@ If a component spec exists in `.claude/specs/components/`, follow it exactly.
   are Compass primitives owned by CODEOWNERS.
 - **Use composite sub-components correctly**: Card uses CardHeader/CardContent/
   CardFooter. Dialog uses DialogHeader/DialogTitle/DialogContent/DialogFooter.
-  Form uses FormField/FormItem/FormLabel/FormControl/FormMessage. Don't
-  reimplement their layouts with divs.
+  The Field system (Field/FieldLabel/FieldContent/FieldError/FieldDescription —
+  see `.claude/specs/components/field.md`) provides form structure; this repo
+  has no `form.tsx`. Don't reimplement their layouts with divs.
 - **Icons from `lucide-react` only** (the active icon library). No mixing.
 - **Navigation = `render={<Link href="..." />}` on Button**, not `onClick` + `router.push()`.
   Example: `<Button render={<Link href="/path" />} variant="link">Go</Button>`
