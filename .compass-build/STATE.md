@@ -5,15 +5,30 @@
 > after every stage transition, approval, or blocker. Last updated: **2026-07-06 (session 2)**.
 
 ## Current stage
-**S0 — COMPLETE, tagged `s0-complete`, AWAITING NIKHIL'S STAGE APPROVAL before S1.**
-All 11 checklist items executed 2026-07-06 (session 3). Baseline now fully green:
+**S0 APPROVED by Nikhil (2026-07-06) with all four rulings. S1 starting: schema
+PROPOSED, generation awaits schema approval.** Post-approval font fix applied
+(see below); `s0-complete` tag moved to the fix commit. Baseline fully green:
 audit 0 errors / 34 warnings (parity), tsc 0 errors, lint 0 problems,
-`next build` succeeds, Euclid Circular B verified serving at runtime.
+`next build` succeeds, **Euclid verified at paint level** (10 faces registered,
+3 weights actually loaded in browser; screenshot taken).
+
+### S0 rulings (Nikhil, 2026-07-06)
+1. Metadata text approved as proposed.
+2. Carousel: keep targeted disable; do NOT refactor stock primitives.
+3. Tokens repoint approved; FE-dev confirmation of Nexus 1.0.0 due before S2
+   (does not block S1).
+4. sign-in-test stays missing-and-stated; favicon stays open.
 
 ### S0 key facts for downstream agents
-- Fonts: 10 Euclid .woff2 in `app/fonts/`, loaded via one `next/font/local` call
-  in `app/layout.tsx` (`variable: "--font-sans"`, display swap); serif/mono alias
-  to sans in `app/globals.css`. Geist fully removed.
+- Fonts (FIX v2 — supersedes the localFont approach): 10 Euclid .woff2 in
+  `app/fonts/`, registered via classic `@font-face` in `app/fonts.css` under the
+  exact family name `"Euclid Circular B"` that the tokens package declares
+  (`@theme inline` in the package compiles font values into utilities at build
+  time, so runtime variable overrides are never read; and Storybook imports
+  globals.css without layout.tsx, so next/font could never cover S2).
+  `font-display: swap`. layout.tsx has no font code. Geist fully removed.
+  **Deviation from the original single-localFont instruction — flagged; same
+  intent, working mechanism. Paint-level verified.**
 - **Dependency change (PROPOSED, commit 19c0c3b):** `@acko/enterprise-tokens@1.0.0`
   now resolves from Acko Nexus. The snapshot's lockfile pointed at a dead local
   yalc link — the app could not build at all before this. FE dev must confirm
@@ -55,22 +70,32 @@ audit 0 errors / 34 warnings (parity), tsc 0 errors, lint 0 problems,
 - **No `.git`** — git init required before any commit (approval pending).
 
 ## Open approval gates
-1. **S0 stage approval** (exit criteria met; Nikhil reviews the 7 commits + tag).
-2. Rolling items for Nikhil inside that review: metadata title/description text
-   (PROPOSED, commit 41f6d7c); carousel targeted eslint-disable vs real refactor;
-   tokens-package repoint (FE dev to confirm Nexus 1.0.0 is current).
-3. S4 track build checklist (proposed in `.compass-build/log/s4-audit.md`).
-4. S5 track build checklist (proposed in `.compass-build/log/s5-migration.md`).
+1. **Font fix v2** (@font-face instead of localFont) — flagged deviation for
+   Nikhil's visual sign-off (`PORT=3010 npm run dev`).
+2. **S1 meta schema** — PROPOSED at `.compass-build/design/s1/_meta-schema.proposed.ts`;
+   the 55-file generation does not start until Nikhil approves it.
+3. FE-dev confirmation of tokens 1.0.0 (due before S2).
+
+## Track approvals (Nikhil, 2026-07-06)
+- **S4 checklist APPROVED** + 4 decisions: audit:compliance additive (token-audit
+  untouched as commit gate); commit ledger entries / gitignore generated
+  reports+dashboards; rubric 100 −5err −1warn as tunable default; components/ui/
+  EXCLUDED from compliance scoring. Agent resumed to build.
+- **S5 checklist APPROVED** + 3 decisions: skill FOLDER
+  (.claude/skills/compass-migrate/SKILL.md — existing 3 skills stay flat);
+  components/blocks/migrate/ approved now; golden-pair set = stock shadcn, MUI,
+  Chakra, Ant, Lovable/Replit output (characterize Lovable/Replit well — PM
+  handoff is the headline path). Agent resumed to build.
 
 ## Stage ledger
 | Stage | Status | Exit criterion met | Approved |
 |---|---|---|---|
-| S0 | **complete** (tag `s0-complete`) | ✅ 2026-07-06 | ⏳ pending |
-| S1 | not started (blocked on S0 approval) | — | — |
+| S0 | **complete + APPROVED** (tag `s0-complete`) | ✅ 2026-07-06 | ✅ 2026-07-06 |
+| S1 | **in progress** — schema PROPOSED, generation gated on its approval | — | — |
 | S2 | not started | — | — |
 | S3 | not started | — | — |
-| S4 | kickoff done; checklist PROPOSED | — | — |
-| S5 | kickoff done; checklist PROPOSED | — | — |
+| S4 | **building** (approved scope: ledger, C1/C5/C6, dashboard shell) | — | checklist ✅ |
+| S5 | **building** (approved scope: skill folder skeleton, UI shell) | — | checklist ✅ |
 | S6 design | not started | — | — |
 
 ## Known blockers / open items

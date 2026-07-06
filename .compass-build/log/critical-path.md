@@ -45,3 +45,25 @@ warnings included). All 11 items done, one commit each group:
 11. ✅ Final: audit 0 err, tsc clean, lint clean, build green. Tag s0-complete.
 Parallel: S4 + S5 track agents kicked off; both checklists PROPOSED in their
 logs. STOPPED awaiting S0 stage approval.
+
+## 2026-07-06 — Session 4 (orchestrator) — S0 APPROVED; font fix v2; S1 opened
+- Nikhil approved S0 with 4 rulings + S4 checklist (4 decisions) + S5 checklist
+  (3 decisions, folder-skill change) — recorded in STATE.md.
+- CAUGHT POST-APPROVAL: Euclid was NOT painting. Paint-level check showed the
+  tokens package declares fonts via @theme inline (build-time literals), so the
+  next/font --font-sans variable was never consumed; no @font-face named
+  "Euclid Circular B" existed → system-font fallback. Earlier wiring-level
+  verification was insufficient; claim corrected.
+- FIX v2 (deviation from single-localFont instruction; flagged): classic
+  @font-face ×10 in app/fonts.css under the exact family name the tokens
+  package declares; layout.tsx font code removed; globals.css back to pure
+  imports + fonts.css. Also fixes Storybook (imports globals.css, not layout).
+- Paint-level evidence: 10 faces registered, w400/500/600 loaded, h1 computes
+  "Euclid Circular B"; screenshot taken. audit 0 err; tsc, lint clean;
+  next build green. Tag s0-complete moved to fix commit.
+- Note for the record: preview-clone .next cache poisoned two earlier
+  verification reads (v1 may have painted; v2 kept for Storybook + package-
+  expectation reasons). Lesson: clear .next before paint-level verification.
+- S4 + S5 agents RESUMED with approvals; building in background.
+- S1 opened: ComponentMeta schema drafted → .compass-build/design/s1/
+  _meta-schema.proposed.ts [PROPOSED — gates the 55-file generation].
