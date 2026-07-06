@@ -122,7 +122,7 @@ extension, this spec will be updated.
 | Icon only | `<Button variant="outline" size="icon"><Icon className="size-4" /></Button>` | Toolbars, compact actions |
 
 **Rules:**
-- Icon size matches button size tier: `size-4` for default/small, `size-5` for large
+- Icon size matches button size tier automatically: `size-4` base (default, lg, icon sizes), `size-3.5` for sm, `size-3` for xs — unless the icon carries its own `size-*` class
 - Gap between icon and text is handled by the button's flex gap (built into shadcn) — do not add manual `mr-2` or `ml-2`
 - Icon-only buttons MUST have `size="icon"` and should include an accessible label via `aria-label`
 
