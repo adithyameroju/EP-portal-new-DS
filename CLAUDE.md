@@ -123,24 +123,30 @@ compass-design-system/
 │   ├── principles.md        ← Design principles & tiebreakers
 │   ├── contributing.md      ← Contributor workflows & PR process
 │   ├── designers.md         ← Designer guide (Figma handoff, setup)
-│   └── skills/
-│       ├── generate-code.md ← Figma frame → React component
-│       ├── import-variables.md ← Figma token export → globals.css
-│       └── write-to-figma.md   ← Code → Figma library instances
+│   ├── skills/
+│   │   ├── generate-code.md ← Figma frame → React component
+│   │   ├── import-variables.md ← Figma token export → globals.css
+│   │   └── write-to-figma.md   ← Code → Figma library instances
+│   └── specs/               ← CANONICAL spec location (decided S0.1, 2026-07-06)
+│       ├── foundations/     ← color, spacing, typography, radius, elevation, motion
+│       ├── components/      ← button, input, card (33 specs; more added on demand)
+│       ├── tokens/          ← token-reference.md (master cross-ref)
+│       └── figma/           ← component-keys.md (Figma library keys)
 ├── app/
-│   └── globals.css          ← 3-layer Acko token file — do not hand-edit
+│   └── globals.css          ← imports Tailwind, shadcn, and @acko/enterprise-tokens
+│                              (tokens live in that package) — do not hand-edit
 ├── components/
 │   ├── ui/                  ← shadcn primitives (all ~55 components)
 │   └── blocks/              ← Acko-specific compositions (Phase 3+)
-│   └── specs/
-│       ├── foundations/     ← color, spacing, typography, radius, elevation, motion
-│       ├── components/      ← button, input, card (more added on demand)
-│       ├── tokens/          ← token-reference.md (master cross-ref)
-│       └── figma/           ← component-keys.md (Figma library keys)
+├── stories/                 ← CANONICAL Storybook stories location (built in S2)
 ├── scripts/
 │   └── token-audit.js       ← Runs on commit. Zero errors required.
 └── code-connect/            ← .figma.tsx mapping files for Dev Mode
 ```
+
+**Canonical layout (owner decision, S0.1):** specs live in `.claude/specs/` —
+never in a top-level `specs/`; Storybook stories live in top-level `stories/`.
+Any tree that diverges from this conforms to this layout, not the other way round.
 
 ---
 
