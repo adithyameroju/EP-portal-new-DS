@@ -1,0 +1,31 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TokenSourceBanner } from './TokenSourceBanner';
+import { DurationScale, EasingCurves, TransitionPatternsTable, AnimationPresetsTable } from './MotionBlocks';
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+<TokenSourceBanner />
+
+From `.claude/specs/foundations/motion.md`: "The Figma token export does not include motion/animation tokens. The values below are based on **Tailwind CSS v4 defaults** and **shadcn/ui component conventions**, which Compass inherits."
+
+## Duration scale
+
+From the spec: "Default transition duration: 150ms."
+
+<DurationScale />
+
+## Easing curves
+
+From the spec: "Default easing: `ease-in-out`. … Enter = ease-out, exit = ease-in."
+
+<EasingCurves />
+
+## Common transition patterns
+
+<TransitionPatternsTable />
+
+## Animation presets (shadcn defaults)
+
+<AnimationPresetsTable />

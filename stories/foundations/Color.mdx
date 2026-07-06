@@ -1,0 +1,21 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TokenSourceBanner } from './TokenSourceBanner';
+import { AllColorGroups } from './ColorBlocks';
+
+<Meta title="Foundations/Color" />
+
+# Color
+
+<TokenSourceBanner />
+
+From `.claude/specs/foundations/color.md`: "In code: use `var(--background)`, `var(--primary)`, etc. — the Layer 3 names. Never: hardcode hex values, reference `-light` / `-dark` tokens directly, or use Tailwind color utilities like `bg-slate-500`."
+
+## Semantic tokens (Layer 3), light + dark
+
+Every swatch below is painted live with `var(--<token>)` from `@acko/enterprise-tokens@1.0.0`; the dark column wraps the same variables in the package's `.dark` scope.
+
+<AllColorGroups />
+
+## Documented in spec, not present in the published package
+
+The spec's alpha tokens (`alpha-5` … `alpha-90`) and `--ring-offset` are not defined in `@acko/enterprise-tokens@1.0.0` `globals.css`, so they are not rendered here — this gap is part of the pending FE-dev token verification.

@@ -1,0 +1,33 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TokenSourceBanner } from './TokenSourceBanner';
+import { SpacingScale, ContainerSizes, ResponsiveTokensTable, BreakpointsTable } from './SpacingBlocks';
+
+<Meta title="Foundations/Spacing" />
+
+# Spacing
+
+<TokenSourceBanner />
+
+From `.claude/specs/foundations/spacing.md`: "Compass uses the standard Tailwind spacing scale. … If a spacing value is not listed here, it does not exist in the system."
+
+## Spacing scale
+
+Each bar is sized by the live Tailwind utility itself (`w-1` … `w-96`), so the rendered length is the token value.
+
+<SpacingScale />
+
+## Container sizes
+
+Fixed-width container tokens (`container/3xs` … `container/7xl`), rendered via the live `w-3xs` … `w-7xl` utilities (bars are capped at the docs column width).
+
+<ContainerSizes />
+
+## Responsive layout tokens
+
+These tokens change between desktop and mobile breakpoints (Custom Figma collection).
+
+<ResponsiveTokensTable />
+
+## Breakpoints
+
+<BreakpointsTable />

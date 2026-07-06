@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TokenSourceBanner } from './TokenSourceBanner';
+import { FontFamilySpecimen, TextSizeScale, FontWeightScale, HeadingPresets } from './TypographyBlocks';
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+<TokenSourceBanner />
+
+From `.claude/specs/foundations/typography.md`: "Compass uses **Euclid Circular B** as its sole typeface — across sans, serif, and mono slots."
+
+## Font family
+
+The faces load via `app/globals.css` → `app/fonts.css` (`@font-face "Euclid Circular B"`), and the family tokens come from the token package's `@theme` block.
+
+<FontFamilySpecimen />
+
+## Text sizes
+
+Each size includes a paired line-height; rendered below at real size via the Tailwind token classes.
+
+<TextSizeScale />
+
+## Font weights
+
+The self-hosted faces registered in `app/fonts.css` cover weights 300–700 (plus italics); spec-listed weights outside that range are browser-synthesized.
+
+<FontWeightScale />
+
+## Heading presets
+
+From the spec: "headings step down one size level on mobile. All headings are semibold with negative letter-spacing" — rendered with the spec's responsive Tailwind equivalents (resize the viewport to see the mobile step-down).
+
+<HeadingPresets />

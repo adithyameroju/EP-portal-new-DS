@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TokenSourceBanner } from './TokenSourceBanner';
+import { DropShadowScale, InsetShadowScale, DropShadowFilterScale, FocusRings, ElevationHierarchyTable } from './ElevationBlocks';
+
+<Meta title="Foundations/Elevation" />
+
+# Elevation (Shadows)
+
+<TokenSourceBanner />
+
+From `.claude/specs/foundations/elevation.md`: "Compass defines three categories of shadows: **drop shadows** for elevated surfaces, **inset shadows** for recessed/pressed effects, and **focus rings** for keyboard navigation."
+
+## Drop shadows
+
+Rendered live with the Tailwind `shadow-*` token utilities.
+
+<DropShadowScale />
+
+## Inset shadows
+
+<InsetShadowScale />
+
+## Drop shadow filters
+
+For `filter: drop-shadow()` on images, SVGs, and non-rectangular elements.
+
+<DropShadowFilterScale />
+
+## Focus rings
+
+From the spec: "Focus rings are not decorative. They are accessibility-critical." — implemented via the spec's `focus-visible:ring-2 focus-visible:ring-ring` pattern (shown always-on here).
+
+<FocusRings />
+
+## Elevation hierarchy
+
+<ElevationHierarchyTable />

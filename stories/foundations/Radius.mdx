@@ -1,0 +1,21 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TokenSourceBanner } from './TokenSourceBanner';
+import { RadiusScale, ComponentRadiusTable } from './RadiusBlocks';
+
+<Meta title="Foundations/Radius" />
+
+# Border Radius
+
+<TokenSourceBanner />
+
+From `.claude/specs/foundations/radius.md`: "LLMs must pick from this closed set. No arbitrary radius values."
+
+## Radius scale
+
+Each tile's rounding comes live from the package's `--radius-*` variables via the `rounded-*` token classes.
+
+<RadiusScale />
+
+## Common component mappings
+
+<ComponentRadiusTable />

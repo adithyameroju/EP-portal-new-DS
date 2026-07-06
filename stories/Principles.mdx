@@ -1,0 +1,12 @@
+{/*
+  Renders the EXISTING .claude/principles.md verbatim via a live raw import —
+  no prose is authored or copied here; edits to principles.md flow through
+  automatically.
+*/}
+
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+import principles from '../.claude/principles.md?raw';
+
+<Meta title="Introduction/Design Principles" />
+
+<Markdown>{principles}</Markdown>
