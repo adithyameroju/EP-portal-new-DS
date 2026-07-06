@@ -231,3 +231,106 @@ continuing (node --check + functional re-runs).
 
 **STATUS: Build-now scope COMPLETE and verified. Next S4 action: implement
 C2/C3/C4 + Detect + Prescribe when STATE.md shows S1 exit criteria met.**
+
+---
+
+## 2026-07-07 — Session 3: Meta-gated half built (S1 exit met; run-freely grant)
+
+Gate lifted per STATE.md (S1 COMPLETE, tag `s1-complete`). Coordinator relayed
+Nikhil's run-freely autonomy for exactly: C2/C3/C4, Detect clustering,
+Prescribe scaffolding, + clearance for `.claude/skills/compass-audit/`.
+C7 stays design-only. Meta files are read-only owner artifacts — untouched.
+
+### Decisions taken (logged per instruction)
+1. **C2 element mapping — DERIVED, not invented.** `primitiveElements` is still
+   an open owner ruling, so `deriveElementMap()` builds the raw-element →
+   primitive map at audit runtime from two citable signals per primitive
+   source (renders the raw element; types as `React.ComponentProps<"el">`),
+   plus the CLAUDE.md-cited baseline for button/input ("Never write a raw
+   <button>, <input>…"). TODO in code keyed to the pending ruling. Result map:
+   button→button (claude-md), input→input (claude-md), select→native-select,
+   textarea→textarea, table→table (derived). Escape hatch:
+   `// compass-allow: raw-<el>`.
+2. **C3 severity uniform WARNING.** Meta has no "required sub-part" flag to
+   cite, so promoting specific composites (e.g. dialog without DialogTitle) to
+   error is flagged as a pending owner tuning decision — not invented.
+3. **C2 shape-match is meta-token-driven**: div/span carrying ≥2 of a
+   primitive's `meta.tokens` (≥1 distinctive to ≤2 components) without
+   importing it → warning, explicitly labeled heuristic.
+
+### What was built
+- **C2/C3/C4 live** in `scripts/compliance-audit.mjs`. Meta loaded read-only by
+  transpiling `components/ui/*.meta.ts` with the repo's own `typescript`
+  devDependency (zero new deps); graceful skip (C1/C5/C6 keep working) if meta
+  ever fails to load. `checks.implemented` in reports is now dynamic.
+- **Detect** — `scripts/detect-drift.mjs` (`npm run detect`). Window of last N
+  non-demo entries (N from `rubric.detect.windowSize`, default 10), joins
+  reports via `report.entry`, aggregates component/rule hotspots,
+  {component,rule} clusters counted in DISTINCT BUILDS (hotspot ≥
+  `rubric.detect.hotspotMinBuilds`, default 3), assumption themes (category +
+  ≥2 shared content words), unscored entries. Every hotspot carries evidence
+  entry filenames. Demo entries excluded unless `--include-demo`
+  (output then labeled DEMO). JSON + md to `drift-log/detect/` (gitignored).
+- **Prescribe scaffold** — `scripts/prescribe.mjs` (`npm run prescribe`).
+  Opinion firewall implemented exactly per design: locates governing doc
+  (meta specPath → foundations spec → CLAUDE.md), QUOTES existing rule lines
+  verbatim (never rewrites), classifies Case A (ambiguity-tightening candidate,
+  `[DRAFT REQUIRED]` placeholder — the scaffold never drafts rules) vs Case B
+  (NEEDS OWNER DECISION, options only, no recommendation-as-rule). Below
+  threshold → "Watching, not acting". No-evidence items are refused. Output:
+  `drift-log/proposals/<date>__tightening-plan.md` (committed; `.SAMPLE` +
+  banner when built from demo-mode detect). Nothing is ever applied.
+- **Third skill** — `.claude/skills/compass-audit/` (folder shape per owner's
+  S5 ruling): `SKILL.md` (hard rules first, rubric table, score/detect/
+  prescribe procedures incl. the firewall verbatim), `rubric-reference.md`
+  (every ruleId), `templates/tightening-plan.md`.
+- **Wiring**: npm scripts `detect` + `prescribe`; `.gitignore` +
+  `/drift-log/detect/` (entries + proposals stay committed); rubric gains
+  owner-tunable `detect.hotspotMinBuilds`/`windowSize`; dashboard radar axes
+  now un-grey automatically from the latest report's `checks.implemented`.
+
+### Verification (all outputs in session transcript)
+- **Fixture test**: raw <button>/<input>/<select> → 3× C2-raw-element (correct
+  mappings + provenance shown); `compass-allow: raw-textarea` suppressed;
+  Card-without-subparts → C3; spinner import → C4-unspecced; hand-rolled
+  popover-ish div → C2-shape-match. Fixture deleted.
+- **Full pipeline (synthetic, honestly labeled)**: 3 fixture builds logged as
+  `demo:true` entries → scored 99/99/94 (C3×3 builds; C1-arbitrary-value×1) →
+  `npm run detect` default: **0 in window (demo exclusion proven)** →
+  `--include-demo`: 1 hotspot cluster `card/C3-missing-subparts: 3 builds` +
+  1 assumption-theme hotspot (card border, 4 assumptions/4 builds) →
+  `npm run prescribe`: SAMPLE plan with Case A candidate quoting card.md's
+  real rule ("do not recreate their layout manually with divs", L28–29),
+  full evidence traces, DRAFT-REQUIRED placeholder, watching section.
+  Fixtures deleted; demo entries + SAMPLE plan kept (clearly bannered).
+- **Repo green**: `npm run audit` 0 err / 34 warn @159 files; parity mode
+  IDENTICAL (159/0/34); `npx tsc --noEmit` clean; `npm run lint` clean.
+  (One transient `npm run audit` run mid-session showed 485 errors from
+  another track's in-flight story files; it self-resolved and cannot be from
+  S4 — scripts/ is excluded from token-audit and drift-log emits only
+  .json/.md/.html, which token-audit never scans.)
+- **Repo-wide compliance snapshot** now surfaces REAL cross-track signal:
+  C5-naming×7 (PascalCase `stories/foundations/*.tsx`), C2-raw-element×6
+  (raw <button>s in stories), C4-unspecced×6 (migrate blocks), C3×1, score
+  22/100. Advisory only — token-audit gate unaffected.
+
+### Flagged for Nikhil (owner decisions, not resolved by the loop)
+1. **Stories naming**: `stories/foundations/*.tsx` are PascalCase; the
+   documented kebab-case rule flags them (C5). Enforce kebab in stories/, or
+   carve out a Storybook-convention exception? (Also affects future
+   `*.stories.tsx` naming.)
+2. **Raw <button> in foundations stories** (S2 work): real C2 errors by the
+   current rule — Compass Button, or `compass-allow` escapes for spec-demo
+   purposes? S2's call with your sign-off.
+3. **C3 severity promotion** (e.g. dialog missing DialogTitle → error) —
+   needs either a meta "required sub-part" flag (schema change, your call) or
+   a rubric override list.
+4. **`primitiveElements` on ComponentMeta** — still open; C2 derivation works
+   without it but the field would make the mapping explicit and reviewable.
+5. Demo entries (4) + SAMPLE tightening plan are kept as living pipeline
+   examples, all clearly marked — delete any time.
+
+**STATUS: S4 scope COMPLETE — Capture, Score C1–C6, Detect, Prescribe
+scaffold, dashboard, and the compass-audit skill are all live and verified.
+Remaining S4 items are all owner-gated: C7 build approval, the 5 flags above,
+and first real (non-demo) capture once designers start building.**

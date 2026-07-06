@@ -51,3 +51,5 @@ yalc.lock
 # `npm run audit:compliance` / `npm run dashboard` (owner decision 2026-07-06)
 /drift-log/reports/*.json
 /drift-log/dashboard.html
+/drift-log/detect/
+# note: drift-log/entries/ and drift-log/proposals/ ARE committed (evidence trail)

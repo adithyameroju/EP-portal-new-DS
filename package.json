@@ -11,6 +11,8 @@
     "audit:compliance": "node scripts/compliance-audit.mjs",
     "log": "node scripts/compass-log.mjs",
     "dashboard": "node scripts/generate-dashboard.mjs",
+    "detect": "node scripts/detect-drift.mjs",
+    "prescribe": "node scripts/prescribe.mjs",
     "figma-publish": "figma connect publish --skip-validation",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

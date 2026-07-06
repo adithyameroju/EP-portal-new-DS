@@ -3,5 +3,10 @@
   "startScore": 100,
   "errorWeight": 5,
   "warningWeight": 1,
-  "floor": 0
+  "floor": 0,
+  "detect": {
+    "$comment": "Detect-step thresholds (per the approved detect-clustering design). hotspotMinBuilds: a {component,rule} cluster or assumption theme must appear in at least this many distinct builds to rank as a hotspot; below it = 'watching, not acting'. windowSize: default number of most-recent ledger entries Detect reads.",
+    "hotspotMinBuilds": 3,
+    "windowSize": 10
+  }
 }

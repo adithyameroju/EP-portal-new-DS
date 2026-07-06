@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-07-06T21:25:18.595Z",
+  "designer": "demo-designer",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "S4 pipeline demo build C (synthetic)",
+  "targetFiles": [
+    "lib/s4-selftest/build-c.tsx"
+  ],
+  "componentsUsed": [
+    "card"
+  ],
+  "assumptions": [
+    {
+      "text": "assumed default border on Card is enough",
+      "category": "styling"
+    },
+    {
+      "text": "assumed rounded-[7px] matches Figma radius",
+      "category": "spacing"
+    }
+  ],
+  "gitHead": "a3b9dba31702df7fbeb15508049d54b9265bee1b",
+  "notes": "synthetic fixture for S4 pipeline verification",
+  "demo": true
+}

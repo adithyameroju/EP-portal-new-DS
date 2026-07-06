@@ -31,13 +31,19 @@ const REPORTS_DIR = path.join(ROOT, 'drift-log', 'reports');
 const OUT_PATH = path.join(ROOT, 'drift-log', 'dashboard.html');
 
 const DIMENSIONS = [
-  { id: 'C1', label: 'C1 Tokens', live: true },
-  { id: 'C2', label: 'C2 Provenance', live: false },
-  { id: 'C3', label: 'C3 Composites', live: false },
-  { id: 'C4', label: 'C4 Spec coverage', live: false },
-  { id: 'C5', label: 'C5 Naming', live: true },
-  { id: 'C6', label: 'C6 Imports', live: true },
+  { id: 'C1', label: 'C1 Tokens' },
+  { id: 'C2', label: 'C2 Provenance' },
+  { id: 'C3', label: 'C3 Composites' },
+  { id: 'C4', label: 'C4 Spec coverage' },
+  { id: 'C5', label: 'C5 Naming' },
+  { id: 'C6', label: 'C6 Imports' },
 ];
+
+// Axis liveness comes from what the latest report actually ran (an axis
+// un-greys automatically the moment its check ships), with a pre-meta fallback.
+function liveSetOf(latest) {
+  return new Set(latest?.checks?.implemented || ['C1', 'C5', 'C6']);
+}
 
 // ─── Data loading ────────────────────────────────────────────────────────────
 
@@ -77,6 +83,7 @@ function dimensionScore(report, dimId) {
 // ─── SVG builders ────────────────────────────────────────────────────────────
 
 function radarSvg(latest) {
+  const liveSet = liveSetOf(latest);
   const cx = 160; const cy = 150; const R = 105; const n = DIMENSIONS.length;
   const angle = (i) => (Math.PI * 2 * i) / n - Math.PI / 2;
   const pt = (i, r) => `${(cx + r * Math.cos(angle(i))).toFixed(1)},${(cy + r * Math.sin(angle(i))).toFixed(1)}`;
@@ -90,14 +97,15 @@ function radarSvg(latest) {
     spokes += `<line x1="${cx}" y1="${cy}" x2="${pt(i, R).split(',')[0]}" y2="${pt(i, R).split(',')[1]}" stroke="#2e2e33" stroke-width="1"/>`;
     const lx = cx + (R + 26) * Math.cos(angle(i));
     const ly = cy + (R + 18) * Math.sin(angle(i));
-    const cls = d.live ? 'axis-live' : 'axis-pending';
-    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" class="${cls}">${esc(d.label)}${d.live ? '' : ' *'}</text>`;
+    const live = liveSet.has(d.id);
+    const cls = live ? 'axis-live' : 'axis-pending';
+    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" class="${cls}">${esc(d.label)}${live ? '' : ' *'}</text>`;
   });
 
   let shape = '';
   if (latest) {
     const points = DIMENSIONS.map((d, i) => {
-      const v = d.live ? dimensionScore(latest, d.id) : 0;
+      const v = liveSet.has(d.id) ? dimensionScore(latest, d.id) : 0;
       return pt(i, (R * v) / 100);
     }).join(' ');
     shape = `<polygon points="${points}" fill="rgba(122,98,240,0.28)" stroke="#7a62f0" stroke-width="2"/>`;
@@ -241,7 +249,7 @@ npm run dashboard</pre>
       <div class="panel">
         <h2>Health radar</h2>
         ${radarSvg(latest)}
-        <p class="muted">* C2 provenance, C3 composites, C4 spec coverage activate when S1 (meta.ts) lands.</p>
+        <p class="muted">* greyed axes = checks not run in the latest report (C7 font compliance is design-only).</p>
       </div>
     </section>
     <section class="grid">

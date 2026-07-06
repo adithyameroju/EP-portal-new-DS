@@ -19,9 +19,21 @@
  *                            "@/components/ui/..." (relative reach-ins and
  *                            locally copied/shadowed primitives = error)
  *
- * Gated on S1 meta.ts (designed, NOT implemented — see
- * .compass-build/design/s4/): C2 provenance, C3 composite completeness,
- * C4 spec coverage.
+ * Meta-driven checks (live since S1; resolve against components/ui/*.meta.ts
+ * via the transpiling loader — meta files are never modified by this script):
+ *   C2  provenance         — raw <button>/<input>/<select>/<textarea>/<table>
+ *                            where a Compass primitive exists (error; element
+ *                            map DERIVED at runtime, see deriveElementMap);
+ *                            div/span carrying a primitive's signature tokens
+ *                            without importing it (warning)
+ *   C3  composite completeness — composite rendered with children but none of
+ *                            its meta childComponents used (warning; per-
+ *                            composite promotion to error = pending owner ruling)
+ *   C4  spec coverage      — ui component used whose meta has no spec
+ *                            (warning; the S6.3 demand-driven backfill signal)
+ *
+ * Design-only (NOT implemented): C7 font compliance —
+ * .compass-build/design/s4/c7-font-compliance.PROPOSED.md.
  *
  * Scoring: scripts/audit-rubric.json (owner-tunable weights).
  * By owner decision (2026-07-06): components/ui/ is EXCLUDED from compliance
@@ -446,6 +458,234 @@ function checkC6(rel, raw) {
   return findings;
 }
 
+// ─── Meta loading (S1 artifact; read-only) ───────────────────────────────────
+
+/**
+ * Loads components/ui/*.meta.ts by transpiling each file with the repo's own
+ * `typescript` devDependency and importing the result as a data: URL module.
+ * Zero new dependencies; meta files are declarative object literals so this is
+ * safe. Returns Map<name, ComponentMeta>, or null (with a console note) if
+ * anything fails — C2/C3/C4 then skip gracefully instead of breaking C1/C5/C6.
+ */
+async function loadMetaIndex() {
+  try {
+    const { default: ts } = await import('typescript');
+    const dir = path.join(ROOT, 'components', 'ui');
+    const metaFiles = fs.readdirSync(dir).filter((f) => f.endsWith('.meta.ts'));
+    const index = new Map();
+    for (const f of metaFiles) {
+      const src = fs.readFileSync(path.join(dir, f), 'utf8');
+      const js = ts.transpileModule(src, {
+        compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+      }).outputText;
+      const mod = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
+      const meta = Object.values(mod)[0];
+      if (meta && meta.name) index.set(meta.name, meta);
+    }
+    return index.size > 0 ? index : null;
+  } catch (err) {
+    console.log(`  (meta unavailable — C2/C3/C4 skipped: ${err.message})`);
+    return null;
+  }
+}
+
+// ─── C2: provenance (re-implemented primitives) ──────────────────────────────
+
+const RAW_ELEMENTS = ['button', 'input', 'select', 'textarea', 'table'];
+
+/**
+ * element → replacing primitive, DERIVED at audit runtime — never hand-
+ * maintained. Two citable signals per primitive source file:
+ *   1. it renders the raw element (`<table ...`),
+ *   2. it types itself as React.ComponentProps<"element">.
+ * Baseline for button/input comes from CLAUDE.md's Component rules ("Never
+ * write a raw <button>, <input>, or <div> where a Compass component exists").
+ *
+ * TODO(owner ruling pending): replace this derivation with a
+ * `primitiveElements` field on ComponentMeta if/when Nikhil approves adding it
+ * to the S1 schema (requested in .compass-build/design/s4/c2-c3-c4-checks
+ * .PROPOSED.md). Until then: derived + CLAUDE.md-cited only, nothing invented.
+ */
+function deriveElementMap() {
+  const map = new Map([
+    ['button', { primitive: 'button', source: 'claude-md' }],
+    ['input', { primitive: 'input', source: 'claude-md' }],
+  ]);
+  for (const prim of UI_PRIMITIVES) {
+    let src;
+    try { src = fs.readFileSync(path.join(ROOT, 'components', 'ui', `${prim}.tsx`), 'utf8'); }
+    catch { continue; }
+    for (const el of RAW_ELEMENTS) {
+      const existing = map.get(el);
+      if (existing && existing.primitive === el) continue; // exact-name match already won
+      const renders = new RegExp(`<${el}[\\s/>]`).test(src);
+      const propsOf = src.includes(`React.ComponentProps<"${el}">`);
+      if (renders || propsOf) {
+        if (!existing || prim === el) {
+          map.set(el, { primitive: prim, source: `derived:components/ui/${prim}.tsx` });
+        }
+      }
+    }
+  }
+  return map;
+}
+
+/** kebab ui names imported from @/components/ui/<name> in this file. */
+function uiImportsOf(raw) {
+  const used = new Set();
+  const re = /from\s+['"]@\/components\/ui\/([\w-]+)['"]/g;
+  let m;
+  while ((m = re.exec(raw)) !== null) used.add(m[1]);
+  return used;
+}
+
+/** Extract the first string chunk of a className on this line (heuristic). */
+function classNamesOnLine(line) {
+  const m = line.match(/className\s*=\s*(?:"([^"]*)"|\{\s*(?:cn\(\s*)?["'`]([^"'`]*)["'`])/);
+  return m ? (m[1] ?? m[2] ?? '') : '';
+}
+
+function checkC2(rel, raw, elementMap, metaIndex, tokenOwners) {
+  const findings = [];
+  if (!/\.(tsx|jsx)$/.test(rel)) return findings;
+  const imported = uiImportsOf(raw);
+  const content = stripImports(stripComments(raw));
+  const lines = content.split('\n');
+  const rawLines = raw.split('\n');
+
+  lines.forEach((line, i) => {
+    const lineNum = i + 1;
+    const prevRaw = rawLines[i - 1] || '';
+    const thisRaw = rawLines[i] || '';
+
+    // (a) exact-element tier: raw HTML element a Compass primitive replaces
+    for (const [el, { primitive, source }] of elementMap) {
+      if (!new RegExp(`<${el}[\\s/>]`).test(line)) continue;
+      if (thisRaw.includes(`compass-allow: raw-${el}`) || prevRaw.includes(`compass-allow: raw-${el}`)) continue;
+      findings.push({
+        ruleId: 'C2-raw-element', level: 'error', line: lineNum,
+        message: `Raw \`<${el}>\` where the Compass \`${kebabToPascal(primitive)}\` primitive exists (mapping: ${source})`,
+        suggestion: `→ import { ${kebabToPascal(primitive)} } from \`@/components/ui/${primitive}\` (escape hatch for the rare legitimate case: \`// compass-allow: raw-${el}\`)`,
+        component: primitive,
+      });
+    }
+
+    // (b) shape-match tier: div/span dressed in a primitive's signature tokens
+    if (metaIndex && /<(div|span)[\s>]/.test(line)) {
+      const classStr = classNamesOnLine(line);
+      if (classStr) {
+        let best = null;
+        for (const meta of metaIndex.values()) {
+          if (!meta.tokens || meta.tokens.length < 2) continue;
+          if (imported.has(meta.name)) continue; // they use the real one; styling overlap is fine
+          const matches = meta.tokens.filter((t) => classStr.includes(t));
+          const distinctive = matches.filter((t) => (tokenOwners.get(t) || []).length <= 2);
+          if (matches.length >= 2 && distinctive.length >= 1) {
+            if (!best || matches.length > best.matches.length) best = { meta, matches };
+          }
+        }
+        if (best) {
+          findings.push({
+            ruleId: 'C2-shape-match', level: 'warning', line: lineNum,
+            message: `div/span carries \`${best.meta.name}\` signature tokens (${best.matches.join(', ')}) without importing it — hand-rolled ${kebabToPascal(best.meta.name)}?`,
+            suggestion: `→ Use \`${kebabToPascal(best.meta.name)}\` from \`@/components/ui/${best.meta.name}\` (heuristic — verify before acting)`,
+            component: best.meta.name,
+          });
+        }
+      }
+    }
+  });
+
+  return findings;
+}
+
+// ─── C3: composite completeness ──────────────────────────────────────────────
+
+function checkC3(rel, raw, metaIndex) {
+  const findings = [];
+  if (!/\.(tsx|jsx)$/.test(rel) || !metaIndex) return findings;
+  const imported = uiImportsOf(raw);
+  const content = stripImports(stripComments(raw));
+
+  for (const name of imported) {
+    const meta = metaIndex.get(name);
+    if (!meta || !Array.isArray(meta.childComponents) || meta.childComponents.length === 0) continue;
+    const pascal = kebabToPascal(name);
+    const openRe = new RegExp(`<${pascal}[\\s>]`);
+    // only flag composites rendered WITH children (self-closing = no structure to check)
+    if (!openRe.test(content) || !content.includes(`</${pascal}>`)) continue;
+    const childrenPascal = meta.childComponents.map(kebabToPascal);
+    const anyChildUsed = childrenPascal.some((c) => content.includes(`<${c}`));
+    if (!anyChildUsed) {
+      const lineNum = content.split('\n').findIndex((l) => openRe.test(l)) + 1;
+      // Severity: uniform WARNING. Promoting specific composites (e.g. dialog
+      // without DialogTitle, an a11y failure) to error is a pending owner
+      // tuning decision — meta has no "required sub-part" flag to cite.
+      findings.push({
+        ruleId: 'C3-missing-subparts', level: 'warning', line: lineNum || 1,
+        message: `<${pascal}> rendered with children but none of its sub-parts (${childrenPascal.slice(0, 3).join(', ')}${childrenPascal.length > 3 ? ', …' : ''}) — layout re-implemented with divs?`,
+        suggestion: `→ Structure content with ${childrenPascal.slice(0, 3).join(' / ')}${meta.specPath ? ` — see ${meta.specPath}` : ''}`,
+        component: name,
+      });
+    }
+  }
+  return findings;
+}
+
+// ─── C4: spec coverage ───────────────────────────────────────────────────────
+
+function checkC4(rel, raw, metaIndex) {
+  const findings = [];
+  if (!CODE_EXTENSIONS.includes(path.extname(rel)) || !metaIndex) return findings;
+  const re = /from\s+['"]@\/components\/ui\/([\w-]+)['"]/g;
+  let m;
+  const seen = new Set();
+  while ((m = re.exec(raw)) !== null) {
+    const name = m[1];
+    if (seen.has(name)) continue;
+    seen.add(name);
+    if (name.startsWith('_') || name.endsWith('.meta')) continue;
+    const lineNum = raw.slice(0, m.index).split('\n').length;
+    const meta = metaIndex.get(name);
+    if (!meta) {
+      findings.push({
+        ruleId: 'C4-no-meta', level: 'warning', line: lineNum,
+        message: `\`${name}\` has no ComponentMeta entry (unexpected — S1 covers all 55)`,
+        suggestion: '→ Check components/ui/_meta-index.ts; flag to owner if genuinely missing',
+        component: name,
+      });
+    } else if (meta.specStatus === 'none' || !meta.specPath) {
+      findings.push({
+        ruleId: 'C4-unspecced', level: 'warning', line: lineNum,
+        message: `\`${name}\` used without a spec (specStatus: ${meta.specStatus}) — backfill candidate`,
+        suggestion: '→ No action needed in this build; Detect aggregates this signal to rank spec backfill (S6.3)',
+        component: name,
+      });
+    } else if (!fs.existsSync(path.join(ROOT, meta.specPath))) {
+      findings.push({
+        ruleId: 'C4-spec-missing', level: 'warning', line: lineNum,
+        message: `\`${name}\` meta points at \`${meta.specPath}\` but the file does not exist`,
+        suggestion: '→ Fix the specPath in meta (owner-approved artifact — flag, do not edit)',
+        component: name,
+      });
+    }
+  }
+  return findings;
+}
+
+/** token → [component names using it], for C2 shape-match distinctiveness. */
+function buildTokenOwners(metaIndex) {
+  const owners = new Map();
+  if (!metaIndex) return owners;
+  for (const meta of metaIndex.values()) {
+    for (const t of meta.tokens || []) {
+      if (!owners.has(t)) owners.set(t, []);
+      owners.get(t).push(meta.name);
+    }
+  }
+  return owners;
+}
+
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
 function loadRubric() {
@@ -475,10 +715,15 @@ function parseArgs(argv) {
   return args;
 }
 
-function run() {
+async function run() {
   const args = parseArgs(process.argv.slice(2));
   const mode = { parity: !!args.parity };
   const rubric = loadRubric();
+
+  // Meta-driven checks: load once (skipped in parity mode, which is C1-only).
+  const metaIndex = mode.parity ? null : await loadMetaIndex();
+  const elementMap = mode.parity ? null : deriveElementMap();
+  const tokenOwners = buildTokenOwners(metaIndex);
 
   let scanFiles;
   let scopeLabel;
@@ -521,6 +766,11 @@ function run() {
     for (const f of checkC1(abs, raw, mode)) findings.push({ ...f, file: rel });
     if (!mode.parity) {
       for (const f of checkC6(rel, raw)) findings.push({ ...f, file: rel });
+      if (metaIndex) {
+        for (const f of checkC2(rel, raw, elementMap, metaIndex, tokenOwners)) findings.push({ ...f, file: rel });
+        for (const f of checkC3(rel, raw, metaIndex)) findings.push({ ...f, file: rel });
+        for (const f of checkC4(rel, raw, metaIndex)) findings.push({ ...f, file: rel });
+      }
     }
   }
   if (!mode.parity) {
@@ -583,8 +833,9 @@ function run() {
       entry: entryRel,
       rubric,
       checks: {
-        implemented: ['C1', 'C5', 'C6'],
-        pending_s1: ['C2', 'C3', 'C4'],
+        implemented: metaIndex ? ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'] : ['C1', 'C5', 'C6'],
+        skipped: metaIndex ? [] : ['C2', 'C3', 'C4'],
+        designOnly: ['C7'],
       },
       filesScanned: scanFiles.length,
       totals: { errors: errors.length, warnings: warnings.length, byRule },
@@ -609,4 +860,7 @@ function run() {
   process.exit(0);
 }
 
-run();
+run().catch((err) => {
+  console.error(`\n  ✗ compliance-audit failed: ${err.message}\n`);
+  process.exit(1);
+});
