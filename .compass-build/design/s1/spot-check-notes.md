@@ -79,6 +79,15 @@ spec edit Nikhil signs off (S0.3 follow-through):
 14. popover.md props table lists 4 `side` values; Base UI's Side type also has
     inline-start/inline-end (source styles those data attributes).
 
+## Residual items awaiting owner ruling (post-fix wave)
+15. **button.md "Icons in buttons" prose drift** (found during fix wave): says
+    icon size-4 for default/small, size-5 for large — source: sm uses size-3.5,
+    lg uses size-4, size-5 appears nowhere. Mechanical fix, one sentence;
+    awaiting go since it's outside the ruled-on 14.
+16. **button.md outline Background cell**: fix agent also corrected it
+    transparent → bg-background (dark bg-input/30) per source cva — flag to
+    owner in case he wants that single cell reverted.
+
 ## From the S4 agent — flags needing decisions
 - **Schema addition request: `primitiveElements?: string[]` on ComponentMeta**
   (C2 provenance check needs each primitive's DOM shape). Additive, optional
