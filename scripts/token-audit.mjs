@@ -7,19 +7,20 @@
  *   - ERRORS: hardcoded hex colors, Tailwind color utilities (block commits)
  *   - WARNINGS: arbitrary spacing/sizing values (informational only)
  *
- * Usage: node scripts/token-audit.js
+ * Usage: node scripts/token-audit.mjs
  * Exit:  0 = clean (or warnings only), 1 = errors found
  *
  * Exclusions: node_modules/, .next/, app/globals.css, scripts/,
  *             SVG files, comments, import statements
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // ─── Configuration ─────────────────────────────────────────────────────────
 
-const ROOT = path.resolve(__dirname, '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const SCAN_EXTENSIONS = ['.tsx', '.jsx', '.css', '.ts', '.js'];
 
@@ -73,8 +74,6 @@ const colorScalePattern = TAILWIND_COLOR_SCALES
     return bare ? `${withStep}|${bare}` : withStep;
   })
   .join('|');
-
-const TAILWIND_COLOR_PATTERN = new RegExp(`\\b(?:${colorScalePattern})\\b`, 'g');
 
 // WARNING: Arbitrary values in Tailwind brackets
 // Matches: p-[13px], gap-[22px], rounded-[7px], text-[15px], w-[240px], etc.

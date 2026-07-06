@@ -5,10 +5,14 @@
  *   Left  — Test 1 (sign-in-test.tsx): first Cursor run, before spec tightening
  *   Right — Test 2 (sign-in-test-2.tsx): re-run after spec tightening, all criteria met
  *
+ * NOTE (S0 housekeeping, 2026-07-06): sign-in-test.tsx (the "before" artifact)
+ * is not present in this snapshot — only Test 2 survived. The Test 1 pane below
+ * documents that honestly instead of rendering it. Do not recreate the file:
+ * it was historical Cursor output and recreating it would falsify the record.
+ *
  * Open at: http://localhost:3000/test
  */
 
-import { SignInTest } from "@/components/blocks/sign-in-test"
 import { SignInTest2 } from "@/components/blocks/sign-in-test-2"
 
 export default function TestPage() {
@@ -45,8 +49,12 @@ export default function TestPage() {
                 <li>Ghost button overridden with className</li>
               </ul>
             </div>
-            <div className="rounded-xl overflow-hidden ring-1 ring-foreground/10">
-              <SignInTest />
+            <div className="rounded-xl overflow-hidden ring-1 ring-foreground/10 flex items-center justify-center p-8 bg-muted/40">
+              <p className="text-sm text-muted-foreground text-center">
+                Artifact missing: sign-in-test.tsx (the pre-tightening render)
+                did not survive the repo snapshot. The drift items above are
+                preserved from the original comparison record.
+              </p>
             </div>
           </div>
 

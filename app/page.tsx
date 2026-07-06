@@ -14,7 +14,7 @@ export default function Home() {
             Compass
           </h1>
           <p className="text-base text-muted-foreground">
-            Acko's enterprise design system — built on shadcn/ui and Tailwind CSS v4.
+            Acko&apos;s enterprise design system — built on shadcn/ui and Tailwind CSS v4.
           </p>
         </div>
 

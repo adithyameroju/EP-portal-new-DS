@@ -22,7 +22,6 @@
 import figma from "@figma/code-connect";
 import {
   Card,
-  CardAction,
   CardHeader,
   CardTitle,
   CardDescription,

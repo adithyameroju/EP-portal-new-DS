@@ -140,7 +140,7 @@ compass-design-system/
 │   └── blocks/              ← Acko-specific compositions (Phase 3+)
 ├── stories/                 ← CANONICAL Storybook stories location (built in S2)
 ├── scripts/
-│   └── token-audit.js       ← Runs on commit. Zero errors required.
+│   └── token-audit.mjs       ← Runs on commit. Zero errors required.
 └── code-connect/            ← .figma.tsx mapping files for Dev Mode
 ```
 
@@ -153,7 +153,7 @@ Any tree that diverges from this conforms to this layout, not the other way roun
 ## Audit command
 
 ```bash
-npm run audit      # runs scripts/token-audit.js
+npm run audit      # runs scripts/token-audit.mjs
 ```
 
 Zero errors required before committing. If audit fails, fix before proceeding.

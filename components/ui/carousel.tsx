@@ -95,6 +95,10 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
+    // Stock shadcn pattern: one initial sync of scroll state on mount. Kept
+    // byte-compatible with upstream (CLAUDE.md: no ui/ edits without spec
+    // review); targeted disable approved as S0 housekeeping.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     onSelect(api)
     api.on("reInit", onSelect)
     api.on("select", onSelect)
