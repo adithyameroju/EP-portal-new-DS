@@ -85,6 +85,14 @@ Baseline fully green (tsc 0, audit 0/34, lint 0).
 - `npx tsc --noEmit`: 1 pre-existing error — `app/test/page.tsx` imports missing `@/components/blocks/sign-in-test` (folder has `sign-in-test-2.tsx`).
 - `npm run lint`: 5 errors / 3 warnings — setState-in-effect (`carousel.tsx:98`, `use-mobile.ts:14`), `require()` in `token-audit.js`, unescaped `'` in `sign-in-test-2.tsx`, 3 unused vars.
 
+## References
+- **Figma library (ACKO Enterprise Design System v1.0.0):**
+  https://www.figma.com/design/zgzPlhKxDXc3E9OmfxmF9y/ACKO-Enterprise-Design-System-v1.0.0?node-id=580-9181
+  (file key matches .claude/specs/figma/component-keys.md). Note 2026-07-07:
+  not reachable from the local Chrome profile (account lacks access) and the
+  Figma MCP connector is unauthenticated — Figma-side checks currently go
+  through Nikhil.
+
 ## Repo facts
 - 55 components in `components/ui/`; 33 specs in `.claude/specs/components/`; 3 skills in `.claude/skills/`.
 - Layout: **late-June shape** — `.claude/specs/`, no `stories/`, no top-level `specs/`. KPI-feature branch NOT in this snapshot.
