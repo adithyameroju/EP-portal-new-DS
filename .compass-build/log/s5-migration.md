@@ -231,3 +231,46 @@ green (audit 0 err / 34 warn, tsc 0, lint 0) — hard requirement to keep it so.
 **Not done / out of scope, correctly:** no Storybook wiring (S2), no CLI (S3),
 no mapping engine (S1 gate), no git commands (orchestrator owns commits), no
 touches to scripts/, package.json, .gitignore, or components/ui/.
+
+---
+
+## 2026-07-06 — Session 3: post-crash integrity verification (usage-limit kill)
+
+Session was killed by the account usage limit; orchestrator checkpoint-committed
+and resumed. Verified everything on disk rather than trusting session memory:
+
+**Completeness check — PASS, nothing truncated or missing:**
+- `.claude/skills/compass-migrate/` — all 4 files intact with correct endings:
+  SKILL.md (150 lines, all 8 sections incl. reference-file table),
+  golden-pairs.md (157 lines; Lovable/Replit characterization present and
+  deepest of the 5 libraries), report-templates.md (126 lines, all 5
+  templates), resolution.md (36 lines, gated stub intact).
+- `components/blocks/migrate/` — all 7 files intact, every module closes with
+  its export statement (entry 126, batch-list 140, preview 106, report 195,
+  types 66, mock-data 113, index 21 lines).
+- `.compass-build/design/s5/resolution-design.PROPOSED.md` — complete (B1/B2/B3
+  + 3 open questions for Nikhil; ends cleanly).
+- Session-2 log entry — present and complete.
+- A1–A7 and C1–C7 each re-confirmed against the approved checklist: all present
+  as approved (skill FOLDER form, blocks location, 5-library golden-pair set).
+
+**Verification on the CURRENT tree** (now includes 29 in-progress
+`components/ui/*.meta.ts` from the parallel S1 run — not touched by this track):
+- `npm run audit` -> PASS, **0 errors** / 34 warnings (baseline parity).
+- `npx tsc --noEmit` -> **exit 0**.
+- `npm run lint` -> **exit 0, clean**.
+
+**No new work was needed**: the crash happened after all session-2 deliverables
+(including the Part B design doc and log entry) had already been written. No
+files re-created; no re-writes.
+
+**Flags for Nikhil — unchanged from session 2:** (1) Part B rubric + 3 open
+questions in resolution-design.PROPOSED.md need his ruling (in addition to the
+S1 gate); (2) golden-pair identification signals must be validated on one real
+sample repo per library before first production use; (3) migrate-report.tsx
+disables batch approval while needs-decision items are pending (embedded UX
+inference — removable if unwanted).
+
+**Track state:** BUILD-NOW scope complete and verified. Idle until S1 exit +
+Part B design approval; then implement resolution.md, then S2 Storybook wiring,
+then S3 CLI.
