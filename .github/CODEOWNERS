@@ -1,0 +1,9 @@
+# Compass Design System ownership
+# Changes to these paths require owner review
+
+/components/ui/    @nikhilpthakkar
+/specs/            @nikhilpthakkar
+/skills/           @nikhilpthakkar
+/app/globals.css   @nikhilpthakkar
+/CLAUDE.md         @nikhilpthakkar
+/PRINCIPLES.md     @nikhilpthakkar

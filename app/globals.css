@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@acko/enterprise-tokens/globals.css";
+
+@custom-variant dark (&:is(.dark *));
