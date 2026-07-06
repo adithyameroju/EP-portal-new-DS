@@ -2,11 +2,27 @@
 
 > Single live source of "where the build actually is." Every agent reads this
 > (plus `Compass_GA_Roadmap.md`) before acting, and the orchestrator updates it
-> after every stage transition, approval, or blocker. Last updated: **2026-07-06**.
+> after every stage transition, approval, or blocker. Last updated: **2026-07-06 (session 2)**.
 
 ## Current stage
-**Pre-S0.** Grounding + baseline complete. PLAN.md written and **awaiting
-Nikhil's approval**. No repo changes made beyond creating `.compass-build/`.
+**S0 — in progress.** PLAN.md APPROVED by Nikhil (2026-07-06). Git initialized
+locally on `main`; baseline commit `f771c27`, tag `baseline-2026-07-06`.
+S0 checklist proposed, awaiting Nikhil's go-ahead to execute item-by-item.
+
+## Approvals received (2026-07-06)
+1. **PLAN.md approved** — proceed under it.
+2. **Canonical layout decided:** `.claude/specs/` stays canonical; top-level
+   `stories/` added for Storybook. This is the layout going forward.
+3. **git init approved & done** — local only; no push until per-stage approval.
+4. **KPI branch: do NOT reconcile.** It's a feature built on Compass, not a
+   competing system version. THIS tree is canonical. Its promotion candidates
+   are pulled in deliberately at S6, per roadmap.
+5. **Housekeeping approved:** trivial pre-existing tsc/lint fixes may fold into
+   S0 to green the baseline — each fix shown to Nikhil before applying, no
+   blanket suppression.
+6. **Fonts:** licensed Euclid Circular B provided as **.ttf** (10 weights, at
+   `~/Desktop/euclid-circular-b/`); Nikhil to supply .woff2 before S0.2
+   executes. Do not block S0.1/non-font work on this.
 
 ## Baseline (2026-07-06) — pre-existing, never attribute to this build
 - `npm install`: OK (967 pkgs; `@acko/enterprise-tokens` resolved from Acko Nexus). 21 dep vulnerabilities (untouched).
@@ -23,16 +39,14 @@ Nikhil's approval**. No repo changes made beyond creating `.compass-build/`.
 - **No `.git`** — git init required before any commit (approval pending).
 
 ## Open approval gates (all blocking)
-1. PLAN.md itself.
-2. Canonical layout decision (recommend `.claude/specs/` + top-level `stories/`).
-3. `git init` + baseline commit.
-4. Euclid Circular B `.woff2` files from Nikhil.
-5. KPI-feature branch access (or explicit "proceed on this tree").
+1. S0 execution checklist (proposed session 2, awaiting go).
+2. `.woff2` versions of Euclid fonts (or Nikhil OKs using the provided .ttf / local conversion) — blocks S0.2 only.
+3. Each housekeeping fix shown before applying (rolling gate during S0).
 
 ## Stage ledger
 | Stage | Status | Exit criterion met | Approved |
 |---|---|---|---|
-| S0 | not started (blocked on gates 1–4) | — | — |
+| S0 | **in progress** (git init done; checklist awaiting go) | — | — |
 | S1 | not started | — | — |
 | S2 | not started | — | — |
 | S3 | not started | — | — |
@@ -41,7 +55,8 @@ Nikhil's approval**. No repo changes made beyond creating `.compass-build/`.
 | S6 design | not started (may begin design-only after PLAN approval) | — | — |
 
 ## Known blockers
-- No git repo (gate 3). No Euclid font files (gate 4). KPI branch absent (gate 5).
+- Fonts are .ttf not .woff2 (S0.2 only; three resolution options offered to Nikhil).
+- No Compass favicon/logo asset yet (S0.2 metadata item; asked Nikhil).
 
 ## Protocol reminder for sub-agents
 Read roadmap + this file first. Log to `.compass-build/log/<track>.md`
