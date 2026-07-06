@@ -4,3 +4,10 @@
 @import "@acko/enterprise-tokens/globals.css";
 
 @custom-variant dark (&:is(.dark *));
+
+/* Single-typeface system (typography spec): Euclid Circular B is loaded via
+   next/font in app/layout.tsx as --font-sans; serif and mono resolve to it. */
+:root {
+  --font-serif: var(--font-sans);
+  --font-mono: var(--font-sans);
+}
