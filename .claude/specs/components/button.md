@@ -23,8 +23,8 @@ Compass Button has **6 variants**, matching the Figma component set exactly.
 |---------|--------------|------------|------|--------|-------|
 | Default | `variant="default"` | `bg-primary` | `text-primary-foreground` | none | Primary actions (Submit, Save, Continue) |
 | Secondary | `variant="secondary"` | `bg-secondary` | `text-secondary-foreground` | none | Secondary actions (Cancel, Back) |
-| Destructive | `variant="destructive"` | `bg-destructive` | `text-destructive-foreground` | none | Dangerous actions (Delete, Remove) |
-| Outline | `variant="outline"` | transparent | `text-foreground` | `border-input` | Tertiary actions, form controls |
+| Destructive | `variant="destructive"` | `bg-destructive/10` (dark: `bg-destructive/20`) | `text-destructive` | none | Dangerous actions (Delete, Remove) |
+| Outline | `variant="outline"` | `bg-background` (dark: `bg-input/30`) | `text-foreground` | `border-border` (dark: `border-input`) | Tertiary actions, form controls |
 | Ghost | `variant="ghost"` | transparent | `text-foreground` | none | Toolbar actions, inline actions, minimal UI |
 | Link | `variant="link"` | transparent | `text-primary` | none | Navigational text that behaves like a link |
 
@@ -46,10 +46,14 @@ Compass Button has **6 variants**, matching the Figma component set exactly.
 
 | Size | Tailwind prop | Height | Padding | Font size | Icon size | Usage |
 |------|--------------|--------|---------|-----------|-----------|-------|
-| Default | `size="default"` | h-9 (36px) | px-4 py-2 | text-sm (14px) | size-4 (16px) | Standard buttons |
-| Small | `size="sm"` | h-8 (32px) | px-3 | text-sm (14px) | size-4 (16px) | Compact UI, tables, toolbars |
-| Large | `size="lg"` | h-10 (40px) | px-6 | text-base (16px) | size-5 (20px) | Hero CTAs, prominent actions |
-| Icon | `size="icon"` | h-9 w-9 (36px) | — | — | size-4 (16px) | Icon-only buttons (no text) |
+| Default | `size="default"` | h-8 (32px) | px-2.5 | text-sm (14px) | size-4 (16px) | Standard buttons |
+| Extra small | `size="xs"` | h-6 (24px) | px-2 | text-xs (12px) | size-3 (12px) | Densest UI — chips, tight table rows |
+| Small | `size="sm"` | h-7 (28px) | px-2.5 | text-[0.8rem] (~12.8px) | size-3.5 (14px) | Compact UI, tables, toolbars |
+| Large | `size="lg"` | h-9 (36px) | px-2.5 | text-sm (14px) | size-4 (16px) | Hero CTAs, prominent actions |
+| Icon | `size="icon"` | size-8 (32px square) | — | — | size-4 (16px) | Icon-only buttons (no text) |
+| Icon XS | `size="icon-xs"` | size-6 (24px square) | — | — | size-3 (12px) | Icon-only, densest UI |
+| Icon small | `size="icon-sm"` | size-7 (28px square) | — | — | size-4 (16px) | Icon-only, compact UI |
+| Icon large | `size="icon-lg"` | size-9 (36px square) | — | — | size-4 (16px) | Icon-only, prominent actions |
 
 **Default size when none specified: `"default"`.**
 

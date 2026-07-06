@@ -46,8 +46,8 @@ do not recreate their layout manually with divs.
 |--------------|-------------|------|-----------|
 | `Card` | `<div>` | Outer container — border, radius, shadow, background | Always |
 | `CardHeader` | `<div>` | Top section — spacing above content | When card has a title |
-| `CardTitle` | `<h3>` | Card heading text | When card has a title |
-| `CardDescription` | `<p>` | Subtitle or summary below title | Optional |
+| `CardTitle` | `<div>` | Card heading text | When card has a title |
+| `CardDescription` | `<div>` | Subtitle or summary below title | Optional |
 | `CardAction` | `<div>` | Action slot (button, link, menu) positioned top-right of header via CSS grid. Only works inside `CardHeader`. | Optional |
 | `CardContent` | `<div>` | Main body content area | Almost always |
 | `CardFooter` | `<div>` | Bottom section — actions, metadata | When card has actions |
