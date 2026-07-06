@@ -5,9 +5,25 @@
 > after every stage transition, approval, or blocker. Last updated: **2026-07-06 (session 2)**.
 
 ## Current stage
-**S0 — in progress.** PLAN.md APPROVED by Nikhil (2026-07-06). Git initialized
-locally on `main`; baseline commit `f771c27`, tag `baseline-2026-07-06`.
-S0 checklist proposed, awaiting Nikhil's go-ahead to execute item-by-item.
+**S0 — COMPLETE, tagged `s0-complete`, AWAITING NIKHIL'S STAGE APPROVAL before S1.**
+All 11 checklist items executed 2026-07-06 (session 3). Baseline now fully green:
+audit 0 errors / 34 warnings (parity), tsc 0 errors, lint 0 problems,
+`next build` succeeds, Euclid Circular B verified serving at runtime.
+
+### S0 key facts for downstream agents
+- Fonts: 10 Euclid .woff2 in `app/fonts/`, loaded via one `next/font/local` call
+  in `app/layout.tsx` (`variable: "--font-sans"`, display swap); serif/mono alias
+  to sans in `app/globals.css`. Geist fully removed.
+- **Dependency change (PROPOSED, commit 19c0c3b):** `@acko/enterprise-tokens@1.0.0`
+  now resolves from Acko Nexus. The snapshot's lockfile pointed at a dead local
+  yalc link — the app could not build at all before this. FE dev must confirm
+  published 1.0.0 matches their latest local copy.
+- token-audit script is now `scripts/token-audit.mjs` (ESM); `npm run audit`
+  unchanged in behavior (0 err / 34 warn parity verified).
+- `app/test/page.tsx`: Test 1 artifact (sign-in-test.tsx) is absent from the
+  snapshot; page documents this instead of rendering it. Do not recreate it.
+- S0.3 verified: all 33 specs Base UI-accurate (zero Radix staleness; full
+  sub-agent sweep). Spec example compile-checks fold into S1's loop.
 
 ## Approvals received (2026-07-06)
 1. **PLAN.md approved** — proceed under it.
@@ -38,25 +54,30 @@ S0 checklist proposed, awaiting Nikhil's go-ahead to execute item-by-item.
 - Storybook 10 configured for `../stories/**` but no stories exist.
 - **No `.git`** — git init required before any commit (approval pending).
 
-## Open approval gates (all blocking)
-1. S0 execution checklist (proposed session 2, awaiting go).
-2. `.woff2` versions of Euclid fonts (or Nikhil OKs using the provided .ttf / local conversion) — blocks S0.2 only.
-3. Each housekeeping fix shown before applying (rolling gate during S0).
+## Open approval gates
+1. **S0 stage approval** (exit criteria met; Nikhil reviews the 7 commits + tag).
+2. Rolling items for Nikhil inside that review: metadata title/description text
+   (PROPOSED, commit 41f6d7c); carousel targeted eslint-disable vs real refactor;
+   tokens-package repoint (FE dev to confirm Nexus 1.0.0 is current).
+3. S4 track build checklist (proposed in `.compass-build/log/s4-audit.md`).
+4. S5 track build checklist (proposed in `.compass-build/log/s5-migration.md`).
 
 ## Stage ledger
 | Stage | Status | Exit criterion met | Approved |
 |---|---|---|---|
-| S0 | **in progress** (git init done; checklist awaiting go) | — | — |
-| S1 | not started | — | — |
+| S0 | **complete** (tag `s0-complete`) | ✅ 2026-07-06 | ⏳ pending |
+| S1 | not started (blocked on S0 approval) | — | — |
 | S2 | not started | — | — |
 | S3 | not started | — | — |
-| S4 | not started | — | — |
-| S5 design | not started (may begin design-only after PLAN approval) | — | — |
-| S6 design | not started (may begin design-only after PLAN approval) | — | — |
+| S4 | kickoff done; checklist PROPOSED | — | — |
+| S5 | kickoff done; checklist PROPOSED | — | — |
+| S6 design | not started | — | — |
 
-## Known blockers
-- Fonts are .ttf not .woff2 (S0.2 only; three resolution options offered to Nikhil).
-- No Compass favicon/logo asset yet (S0.2 metadata item; asked Nikhil).
+## Known blockers / open items
+- No Compass favicon asset yet — favicon left as Next default (open item; owner
+  will supply; never invent a logo).
+- FE dev confirmation that Nexus `@acko/enterprise-tokens@1.0.0` is current.
+- Port 3000 occupied by another process on Nikhil's machine; use `PORT=3010 npm run dev`.
 
 ## Protocol reminder for sub-agents
 Read roadmap + this file first. Log to `.compass-build/log/<track>.md`
