@@ -135,3 +135,99 @@ migrate` CLI waits for S3.
 
 **Blocked on:** Nikhil's approval of this checklist (relayed by orchestrator).
 Nothing above executes until then.
+
+---
+
+## 2026-07-06 — Session 2: checklist APPROVED, Part A + Part C BUILT, Part B design PROPOSED
+
+**Approvals received (via orchestrator):** full checklist A1–A7, C1–C7, with
+Nikhil's three decisions: (1) skill FOLDER `.claude/skills/compass-migrate/SKILL.md`
+(modular reference files will accumulate, like shadcn's migrate skill; existing
+3 skills stay flat); (2) `components/blocks/migrate/` approved now; (3) golden-pair
+v1 set = stock shadcn, MUI, Chakra, Ant, Lovable/Replit output — characterize
+Lovable/Replit especially well (PM handoff = headline path).
+
+**Re-read STATE.md before building:** S0 complete + approved; baseline fully
+green (audit 0 err / 34 warn, tsc 0, lint 0) — hard requirement to keep it so.
+
+### Part A — `compass-migrate` skill folder — DONE
+
+- [x] **A1** `.claude/skills/compass-migrate/SKILL.md` created (folder form per
+      ruling). Cites shadcn's `migrate-radix-to-base` as architectural ancestor.
+- [x] **A2** Preflight: clean tree (git init for zip exports), migration branch,
+      package-manager detection from lockfile, baseline recorded FIRST to
+      `.migration/_baseline.md`, source-library identification.
+- [x] **A3** Strangler-fig: `-compass` variant coexistence, consumer-by-consumer
+      repointing with typecheck each, delete+rename only when green (ask first);
+      big-bang explicitly forbidden.
+- [x] **A4** Golden-pair diffing -> `golden-pairs.md`: procedure (pin origin,
+      diff, classify pristine/style/structure/behavior) + identification signals
+      for all 5 approved libraries. Lovable/Replit given the deepest treatment:
+      stack shape, dep telltales, HSL-var token pattern, Radix-era shadcn basis,
+      and the systemic Radix->Base behavior deltas to report per unit. Bespoke/
+      unknown -> role-based resolution fallback (gated stub).
+- [x] **A5** `report-templates.md`: `_baseline.md`, `<unit>.md` (fixed 4-section
+      structure, mandatory even when empty), `_gap-list.md`, `_needs-decision.md`,
+      `_summary.md`; status always derived from disk. `.migration/` is created
+      in the TARGET repo only.
+- [x] **A6** Hard rules embedded in SKILL.md, priority-ordered (presentation
+      only; never guess; gap != invention; flag-don't-patch; honest reporting;
+      plan-then-execute per batch).
+- [x] **A7** Scope statement: React + Tailwind v1, prove on one internal repo.
+- [x] `resolution.md` created as a GATED-ON-S1 stub — invariants fixed, zero
+      mapping content.
+
+### Part C — `components/blocks/migrate/` UI shell — DONE
+
+- [x] **C1** `components/blocks/migrate/` created; all files kebab-case.
+- [x] **C2** `migrate-entry.tsx` — Tabs (GitHub URL via InputGroup / zip via
+      Empty dropzone); callbacks only, zero network/unzip/exec logic.
+      Note: lucide-react no longer ships brand icons — used `FolderGit2`, not
+      `Github` (caught by tsc).
+- [x] **C3** `migrate-batch-list.tsx` — ItemGroup of batches with status badges
+      (approved/in-review/flagged/pending/skipped), per-batch confidence, gap +
+      needs-decision counts, overall Progress; `onSelectBatch` callback.
+- [x] **C4** `migrate-preview.tsx` — ResizablePanelGroup dual panes
+      (Original | Compass), ScrollArea content, Skeleton placeholders; panes
+      take arbitrary children — never renders foreign code itself.
+- [x] **C5** `migrate-report.tsx` — fixed 4 sections (empty renders "None"),
+      gap list, needs-decision queue (Alert per item), Approve/Flag callbacks;
+      Approve disabled while decisions are pending.
+- [x] **C6** `index.ts` barrel + `types.ts` + `mock-data.ts` (fictitious
+      Lovable-export sample, clearly marked SAMPLE; not an approved heuristic).
+- [x] **C7** Compliance verified (see below). Not imported by any route or story.
+
+### Part B design — PROPOSED (design only, per gate)
+
+- [x] `.compass-build/design/s5/resolution-design.PROPOSED.md`: signal weights
+      (import-source 0.5 / ARIA 0.2 / props 0.15 / name 0.1 / context 0.05),
+      confidence thresholds (>=0.85 map / 0.60–0.84 provisional+review / <0.60
+      flagged / <0.30 gap list), confusedWith cap at 0.6, token clustering by
+      usage-context with unclustered -> needs-decision, swap mechanics.
+      Aligned to the (itself PROPOSED) S1 meta schema. **No implementation.**
+      3 open questions for Nikhil inside the doc.
+
+### Verification (all commands run at repo root)
+
+- `npm run audit` -> **0 errors**, 34 warnings (exact baseline parity; the 34
+  are pre-existing in `components/ui/` primitives).
+  During build the audit caught 2 errors in `mock-data.ts` — sample *strings*
+  contained literal hex values; reworded to descriptions. Working as intended.
+- `npx tsc --noEmit` -> **exit 0, no errors**.
+- `npm run lint` -> **clean, no problems**.
+
+### Flags for Nikhil
+
+1. **Part B thresholds + 3 open questions** in
+   `.compass-build/design/s5/resolution-design.PROPOSED.md` need his ruling
+   before Part B can be built (in addition to the S1 gate).
+2. **golden-pairs.md honesty note:** library identification signals are from
+   public conventions; each must be validated against one real sample repo
+   before first production use — stated in the file itself.
+3. **Approve button UX opinion embedded in shell:** `migrate-report.tsx`
+   disables batch approval while needs-decision items are pending — my
+   inference from the hard rules, flag if unwanted.
+
+**Not done / out of scope, correctly:** no Storybook wiring (S2), no CLI (S3),
+no mapping engine (S1 gate), no git commands (orchestrator owns commits), no
+touches to scripts/, package.json, .gitignore, or components/ui/.
