@@ -274,3 +274,111 @@ inference — removable if unwanted).
 **Track state:** BUILD-NOW scope complete and verified. Idle until S1 exit +
 Part B design approval; then implement resolution.md, then S2 Storybook wiring,
 then S3 CLI.
+
+---
+
+## 2026-07-07 — Session 4: Part B resolution engine BUILT (S1 exit met, run-freely autonomy)
+
+**Gate verified before building:** STATE.md shows S1 COMPLETE (tag `s1-complete`,
+55/55 meta + `_meta-index.ts`, spot-check approved 2026-07-07). Owner rulings on
+my 3 open questions read from coordinator message + STATE.md decision log.
+
+### Built
+
+- [x] **`resolution-config.json`** (new, in skill folder) — owner-tunable
+      weights/caps/thresholds/snap policy, mirroring `scripts/audit-rubric.json`
+      ($comment-documented, edit-without-code-change). Contains a `guardrails`
+      block explicitly marked NOT tunable (standing rulings: log every snap,
+      provisional pre-write allowed, repointing/deletion require owner
+      confirmation, needs-decision/gap routes).
+- [x] **`resolution.md`** — gated stub REPLACED with the full ACTIVE procedure:
+      B1 role detection (5 signals, config weights) → candidate scoring against
+      the real meta fields (`purpose`/`useCases` disqualifiers,
+      `aiHints.selectionCriteria` confirm/deny, MANDATORY `confusedWith`
+      resolution with cap, `variants` surface mapping, `childComponents`
+      anatomy, `primitiveSource` for behavior deltas) → threshold routing →
+      `.migration/_inventory.json` records with evidence lists. B2 token remap
+      (usage-context clustering, meta `tokens` cross-check, same-tier snapping
+      with EVERY snap logged, unclustered → needs-decision, audit-0-errors
+      acceptance). B3 swap (tokens first, leaf-up, compositionRules verbatim,
+      re-expression ladder, STOP BOUNDARY).
+      **New rubric rule added:** lightweight-meta cap — 21 of 55 metas are
+      types-only (empty selectionCriteria); a types-only top candidate caps at
+      0.84 (provisional at best, never auto-map) because no spec-backed
+      confirmation exists.
+- [x] **`SKILL.md` updated:** Part B marked ACTIVE; Step 1.3 un-gated (scores
+      against `_meta-index.ts` + config); Step 2 restructured around the
+      owner-confirmation boundary (unattended runs stop at `-compass` variants
+      + reports; repointing/deletion only after batch confirmation); new hard
+      rule 7 (stop boundary + never-silent snaps); reference table updated
+      (+config, +validation-checklist).
+- [x] **`report-templates.md`:** added `_snap-log.md` template (every snapped
+      value, token or spacing; same-tier only; also mirrored in unit reports).
+- [x] **`validation-checklist.md`** (new) — golden-pair pre-production
+      validation procedure (6 steps: identification check, origin pinning,
+      3-component diff classification, dry inventory with one known-ambiguous
+      case, reference-file correction, recording) + per-library status table.
+      **BLOCKED on sample repos from Nikhil; Lovable sample = highest priority.**
+- [x] golden-pairs.md: unchanged (integration needed no edits; its validation
+      note now points to a concrete checklist via SKILL.md table).
+
+### Owner rulings — where each is encoded
+
+1. Tunable defaults → `resolution-config.json` (thresholds 0.85/0.60/0.30,
+   snap policy), cited at run start in `_baseline.md`.
+2. Provisional pre-write allowed → resolution.md B1 Step 3 + SKILL.md Step 2.2.
+3. Guardrails → SKILL.md hard rule 7 + Step 2.4 STOP; resolution.md B2.4/B3.5;
+   config `guardrails` block (non-tunable) so engine output can cite them.
+
+### Verified — dry-run: 5 hypothetical foreign components vs the REAL meta index
+
+Procedure executed by hand against live meta entries (dialog, radio-group,
+toggle-group, card, item, progress, tabs, alert-dialog, sheet):
+
+| # | Foreign component | Evidence highlights | Top candidate (runner-up) | Score | Route |
+|---|---|---|---|---|---|
+| 1 | MUI `<Dialog>` (edit-profile form, closes on backdrop) | import identity 0.5; role=dialog; open/onClose; confusedWith(alert-dialog) RESOLVED — backdrop-click closes; −0.1 fullScreen/maxWidth unmappable | dialog (sheet 0.35, purpose conflict) | **0.90** | **MAP** |
+| 2 | Lovable bespoke `PlanPicker.tsx` (divs+onClick, one-of-3 plans, no ARIA) | bespoke → weights renormalized; NO ARIA on interactive control = disagreeing evidence; props value/onChange agree | radio-group, specced (toggle-group 0.38 — types-only, view-control purpose) | **0.60** | **PROVISIONAL** — pre-write allowed, batch blocks until Nikhil confirms |
+| 3 | Bespoke `StatCard.tsx` (heading + KPI + delta on elevated surface, dashboard grid) | static grouped content; anatomy fits CardHeader/Title/Content; card antiPatterns consulted (bg-card not bg-background); −0.1 custom shadow (documented: card has no default shadow) → shadow to token remap/decision | card (item 0.45 — list-row primitive, grid context resolves) | **0.90** | **MAP** |
+| 4 | Bespoke `UsageMeter.tsx` (3-segment quota meter, threshold colors) | props segments[]/thresholds[] DISAGREE with progress value:number; compositionRules: single auto Track/Indicator can't express segments; 3 core capabilities missing | progress 0.20 — no candidate ≥ 0.30 | 0.20 | **GAP LIST** (S6; disposition: new molecule or compose-from-progress) |
+| 5 | Chakra `<Tabs>` (in-page switcher, role=tablist, URL unchanged) | all 5 signals agree; tabs purpose disqualifier ("never page navigation") checked and PASSED; −0.1 Chakra variant surface | tabs (navigation-menu rejected via confusedWith) | **0.90** | **MAP** + Behavior changes: Base UI activation model vs Chakra manual/auto activation |
+
+Token spot-case: `--brand-warm` in warning banners AND chart fills →
+conflicting usage buckets → unclustered → `_needs-decision.md` (config route).
+
+**Dry-run finding folded back into the engine:** with a bespoke source the
+importSource signal bears no evidence, which artificially capped every bespoke
+score at 0.50. Added weight RENORMALIZATION over evidence-bearing signals
+(absence of expected evidence, e.g. no ARIA on an interactive control, still
+counts as disagreement, not absence). Encoded in resolution.md B1 Step 2 and
+flagged for Nikhil below.
+
+### Verification (baseline green)
+
+- `resolution-config.json` parses as valid JSON.
+- `npm run audit` → **0 errors**; 37 warnings = 34 pre-existing in
+  `components/ui/` + 3 in `stories/foundations/TypographyBlocks.tsx` (parallel
+  S2 agent's in-flight file — NOT this track's; zero warnings in any S5 file).
+- `npx tsc --noEmit` → **exit 0**.
+- `npm run lint` → **clean, exit 0** (one earlier run during the session showed
+  5 transient warnings that disappeared on re-run — parallel S2 edits moving
+  under the linter; final state clean).
+- Constraint compliance: no writes to `_meta-schema.ts`, `*.meta.ts`,
+  `components/ui/`, `scripts/`, `package.json`; no git.
+
+### Flags for Nikhil
+
+1. **Renormalization rule** (dry-run-driven addition to the rubric, encoded in
+   resolution.md): without it, bespoke components could never exceed 0.50.
+   Sensible default; please confirm or tune.
+2. **Lightweight-meta cap 0.84** (`caps.lightweightMeta`): 21/55 metas are
+   types-only — any mapping onto those is provisional at best until their meta
+   is enriched (S6 demand-driven). Tunable in config.
+3. **Validation checklist is designed but BLOCKED on sample repos** — one per
+   library; the Lovable sample is highest priority (PM-handoff headline path).
+   Production migrations must not run on an unvalidated library.
+4. Case 2 (PlanPicker, 0.60) landing exactly on the provisional threshold is a
+   feature, not luck: boundary cases go to him either way.
+
+**Track state:** Part A + B + C-shell complete. Next gates: S2 (wire Migrate UI
+into Storybook — S2 is in progress now), S3 (`compass migrate` CLI).

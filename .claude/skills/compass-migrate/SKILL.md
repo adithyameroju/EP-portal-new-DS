@@ -8,8 +8,9 @@
 > Compass repo/package available as the source of truth)
 > **Output:** Compass-native presentation code in the target repo + a
 > `.migration/` report directory + a gap list
-> **Status:** Part A (skeleton) ACTIVE · Part B (resolution) GATED ON S1 —
-> see [`resolution.md`](resolution.md)
+> **Status:** Part A (skeleton) ACTIVE · Part B (resolution) ACTIVE as of S1
+> exit (2026-07-07) — see [`resolution.md`](resolution.md) +
+> [`resolution-config.json`](resolution-config.json)
 >
 > **Architectural ancestor:** shadcn's `migrate-radix-to-base` skill. We reuse
 > its *discipline* — preflight, strangler-fig, golden-pair diffing, per-unit
@@ -52,6 +53,10 @@
 6. **Plan-then-execute, per batch.** Propose the batch plan, get the owner's
    go-ahead, migrate, report, wait for batch approval before the next batch.
    Ask before anything irreversible (deletes, renames, dependency changes).
+7. **Owner-confirmation boundary (ruling 2026-07-07).** No consumer
+   repointing and no deletion/renaming of originals until the owner confirms
+   the batch. Unattended runs stop at `-compass` variants + reports. Every
+   snapped value (token or spacing) is logged, never silent.
 
 ---
 
@@ -83,9 +88,11 @@
 2. Split the migration into **batches** — one flow/feature at a time (e.g.
    "Settings flow", "Dashboard cards"). Never one monolithic pass.
 3. For each foreign component, resolve it to a Compass target using the
-   resolution procedure — **[`resolution.md`](resolution.md), GATED ON S1**.
-   Until S1's `meta.ts` lands, this skill can preflight and plan batches but
-   must not perform mappings.
+   resolution procedure ([`resolution.md`](resolution.md)), scored against
+   `components/ui/_meta-index.ts` with the owner-tunable knobs in
+   [`resolution-config.json`](resolution-config.json). Every mapping carries
+   a confidence score + evidence; routing (map / provisional / needs-decision
+   / gap) follows the config thresholds.
 4. Present the batch plan (order, contents, known risks, gap-list candidates)
    to the owner. Wait for approval.
 
@@ -102,16 +109,24 @@ Never big-bang. For each unit (component/flow) in the approved batch:
    ([`resolution.md`](resolution.md)).
 2. **Write the migrated version beside the original** as a `-compass` variant
    (`stat-card.tsx` → `stat-card-compass.tsx`). Original and variant coexist;
-   the project stays buildable at every step.
-3. **Repoint consumers one at a time.** After each repoint, run the target's
-   typecheck. Green → next consumer. Red → fix or revert that repoint before
-   moving on.
-4. **Only when all consumers are repointed and green:** delete the original and
-   rename `-compass` → the original name (ask first — deletes are irreversible).
-5. **Write the unit report** to `.migration/<unit>.md` with the fixed
+   the project stays buildable at every step. Provisional-confidence mappings
+   MAY also be pre-written this way (owner ruling 2026-07-07) — they never
+   replace the original and their batch cannot be approved until each is
+   confirmed via `_needs-decision.md`.
+3. **Write the unit report** to `.migration/<unit>.md` with the fixed
    structure: `Changed / Left alone / Behavior changes / Verify by hand`
-   (template: [`report-templates.md`](report-templates.md)).
-6. New components created in the target follow Compass conventions:
+   (template: [`report-templates.md`](report-templates.md)). Every snapped
+   value also goes to `.migration/_snap-log.md` — never snap silently.
+4. **STOP — owner-confirmation boundary (ruling 2026-07-07).** Writing
+   `-compass` variants and reports is as far as a run goes on its own.
+   **Do NOT repoint any consumer and do NOT delete or rename any original
+   until the owner has confirmed the batch.**
+5. **After the owner confirms:** repoint consumers one at a time; after each
+   repoint run the target's typecheck — green → next consumer, red → fix or
+   revert that repoint before moving on.
+6. **Only when all consumers are repointed and green:** delete the original and
+   rename `-compass` → the original name (ask first — deletes are irreversible).
+7. New components created in the target follow Compass conventions:
    **kebab-case filenames**, semantic token classes only, composite
    sub-components used correctly, `lucide-react` icons.
 
@@ -144,7 +159,9 @@ Never big-bang. For each unit (component/flow) in the approved batch:
 |------|---------|--------|
 | [`report-templates.md`](report-templates.md) | The `.migration/` directory: every report template, verbatim | ACTIVE |
 | [`golden-pairs.md`](golden-pairs.md) | v1 source-library identification + diffing notes (stock shadcn, MUI, Chakra, Ant, Lovable/Replit output) | ACTIVE |
-| [`resolution.md`](resolution.md) | Part B: role detection → meta.ts matching, confidence rubric, token remap, gap list | **GATED ON S1 — stub only** |
+| [`resolution.md`](resolution.md) | Part B: role detection → meta-index matching, confidence rubric, token remap, gap list | ACTIVE (S1 exit 2026-07-07) |
+| [`resolution-config.json`](resolution-config.json) | Owner-tunable weights/caps/thresholds/snap policy (mirrors `scripts/audit-rubric.json`); `guardrails` block is NOT tunable | ACTIVE |
+| [`validation-checklist.md`](validation-checklist.md) | Pre-production golden-pair validation procedure — one real sample repo per library, before first production run | PENDING sample repos from owner |
 
 Per-library mapping tables (e.g. `mui-mappings.md`) will be added to this folder
 as they are approved — that is why this skill is a folder, not a flat file.

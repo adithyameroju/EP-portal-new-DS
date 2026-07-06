@@ -1,0 +1,41 @@
+{
+  "$comment": "Compass migration resolution config — OWNER-TUNABLE (mirrors scripts/audit-rubric.json pattern; edit values, no code/skill change needed). Starting defaults are the PROPOSED values Nikhil accepted as tunable defaults (STATE.md decision log, 2026-07-07). The 'guardrails' block is NOT tunable — it encodes standing owner rulings; changing it requires a new owner ruling, not an edit.",
+  "version": 1,
+  "signalWeights": {
+    "$comment": "Relative trust per role-detection signal; must sum to 1.0.",
+    "importSource": 0.5,
+    "ariaSemantics": 0.2,
+    "propsSignature": 0.15,
+    "nameHeuristics": 0.1,
+    "usageContext": 0.05
+  },
+  "caps": {
+    "$comment": "Hard ceilings applied after scoring. unresolvedConfusedWith: evidence cannot resolve a documented aiHints.confusedWith ambiguity. lightweightMeta: top candidate's meta is types-only (specStatus 'none' / empty selectionCriteria) so there is no spec-backed confirmation — best case is provisional, never auto-map.",
+    "unresolvedConfusedWith": 0.6,
+    "lightweightMeta": 0.84
+  },
+  "penalties": {
+    "conflictingSignals": 0.2,
+    "perMissingVariantEquivalent": 0.1
+  },
+  "thresholds": {
+    "$comment": "map: >= this = mapped (still reported with evidence). provisional: >= this and < map = MAY be pre-written as -compass variant but batch approval blocks until owner confirms each. below provisional = FLAGGED to _needs-decision.md, unit not migrated. gapList: no candidate reaches this = _gap-list.md entry (S6 candidate).",
+    "map": 0.85,
+    "provisional": 0.6,
+    "gapList": 0.3
+  },
+  "tokenRemap": {
+    "$comment": "snapPolicy 'same-tier-only': values may snap to the nearest scale step only within the same token tier (generate-code skill precedent). Owner may tighten to 'none' (every snap becomes a needs-decision item).",
+    "snapPolicy": "same-tier-only",
+    "unclusteredRoute": "needs-decision"
+  },
+  "guardrails": {
+    "$comment": "NOT TUNABLE — standing owner rulings (STATE.md decision log 2026-07-07). Encoded here so engine output can cite them; the authoritative text lives in SKILL.md and resolution.md.",
+    "logEverySnap": true,
+    "provisionalPrewriteAllowed": true,
+    "consumerRepointingRequiresOwnerConfirmation": true,
+    "originalDeletionRequiresOwnerConfirmation": true,
+    "lowConfidenceRoute": "_needs-decision.md",
+    "noEquivalentRoute": "_gap-list.md"
+  }
+}

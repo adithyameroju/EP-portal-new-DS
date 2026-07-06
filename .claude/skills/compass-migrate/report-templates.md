@@ -112,6 +112,23 @@ overlay click", etc. Anything a typecheck cannot prove.>
 
 ---
 
+## `_snap-log.md` — every snapped value, token or spacing (owner ruling 2026-07-07: never snap silently)
+
+```markdown
+# Snap log — <target repo name>
+
+<!-- One line per snap, append-only. Same-tier snaps only (resolution-config
+     tokenRemap.snapPolicy); anything beyond same-tier is a needs-decision
+     item, not a snap. Every entry here ALSO appears in its unit report's
+     `Changed` section. -->
+
+| Unit | File | Original value | Snapped to | Tier | Why same-tier |
+|---|---|---|---|---|---|
+| settings-flow | billing-form.tsx | 15px gap | gap-4 (16px) | spacing | adjacent scale step, same tier |
+```
+
+---
+
 ## `_summary.md` — written at completion, counts derived from disk
 
 ```markdown
