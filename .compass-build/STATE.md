@@ -25,9 +25,13 @@
 - 2026-07-07: 14 fixes ruled: 11 mechanical approved run-freely; input.md Form→**check Field equivalence, then REPOINT to Field** (removal only if not equivalent), same for CLAUDE.md line; card.md shadow = owner will confirm default after orchestrator reports code+Figma reality (do NOT close without him); progress/navigation-menu = REWORD specs to match actual exports, do NOT remove exports (protected ui/, breaking change).
 
 ## Current stage
-**S1 APPROVED (2026-07-07). Closing items: the 14 spec-drift fixes (mechanical
-subset runs freely; semantic ones → owner). Then S2 under expanded autonomy.**
-S4/S5 meta-gated halves UNBLOCK on S1 exit flip below. Baseline fully green.
+**S1 EXIT: MET (2026-07-07, tag `s1-complete`). S2 mechanical build IN PROGRESS
+under expanded autonomy. S4/S5 meta-gated halves: UNBLOCKED — S1 exit criteria
+are met; gated agents may implement against components/ui/_meta-index.ts.**
+13 of 14 spec fixes applied+verified; remaining owner items: card.md shadow
+(code truth reported: NO shadow, ring-1 ring-foreground/10 is the border;
+awaiting owner's Figma check), button icon-prose #15, outline bg cell #16.
+Baseline fully green (tsc 0, audit 0/34, lint 0).
 
 ### S0 rulings (Nikhil, 2026-07-06)
 1. Metadata text approved as proposed.
@@ -110,11 +114,11 @@ S4/S5 meta-gated halves UNBLOCK on S1 exit flip below. Baseline fully green.
 | Stage | Status | Exit criterion met | Approved |
 |---|---|---|---|
 | S0 | **complete + APPROVED** (tag `s0-complete`) | ✅ 2026-07-06 | ✅ 2026-07-06 |
-| S1 | **generation COMPLETE — 55/55 meta + index compile clean. GATE: Nikhil's spot-check** (`.compass-build/design/s1/SPOT-CHECK-PACK.md`) | mechanical ✅; owner spot-check ⏳ | ⏳ |
-| S2 | not started (next after S1 approval) | — | — |
+| S1 | **COMPLETE (tag `s1-complete`)** — 55/55 meta + index; spot-check approved; 13/14 spec fixes applied (card-shadow held for owner) | ✅ 2026-07-07 | ✅ 2026-07-07 |
+| S2 | **in progress** — mechanical build (foundations from tokens, meta-driven component docs, taxonomy); SOP + authored prose = propose-first; Foundations UNVERIFIED until FE-dev token confirmation | — | — |
 | S3 | not started | — | — |
-| S4 | **build-now scope COMPLETE + verified** (compass-log, compliance-audit C1/C5/C6 parity-proven, dashboard; C2–C4/Detect/Prescribe/C7-font = PROPOSED designs, gated on S1 exit) | build-now ✅ | checklist ✅ |
-| S5 | **build-now scope COMPLETE + verified** (skill folder, UI shell; Part B = PROPOSED design, gated on S1 exit + rubric ruling) | build-now ✅ | checklist ✅ |
+| S4 | **gated half building** — C2/C3/C4, Detect, Prescribe (run-freely grant); C7 stays design-only; primitiveElements schema addition still an owner ruling | build-now ✅ | checklist ✅ |
+| S5 | **Part B building** — resolution engine vs meta index (rubric = tunable proposed defaults; log every snap; NO repointing/deletion without owner) | build-now ✅ | checklist ✅ |
 | S6 design | not started | — | — |
 
 ## S1 facts for downstream agents (usable once Nikhil approves S1)
