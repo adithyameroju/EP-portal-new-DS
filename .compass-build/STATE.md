@@ -21,6 +21,8 @@
 - 2026-07-07: **EXPANDED AUTONOMY granted.** Run freely on mechanical/derivable work: S2 meta-driven doc pages, token-driven foundation pages, variant galleries, sidebar taxonomy; S4 C2/C3/C4 + Detect + Prescribe scaffolding; S5 Part B build (writing `-compass` variants is fine). Commit per logical group; keep baseline green; no push.
 - 2026-07-07: STANDING GATES (non-negotiable): authored prose (SOP, do/don't wording not quoted from spec) → propose-first; new design opinions → "needs owner decision"; each STAGE EXIT (S2/S3/S4/S5) → summarize+evidence+wait; any git PUSH; S5 consumer repointing or deletion of originals; S2 Foundations page flagged UNVERIFIED until FE-dev token confirmation arrives.
 - 2026-07-07: Work order: finish S1 (14 spec fixes per mechanical/semantic split), then S2. STATE.md updated at every stage and gate.
+- 2026-07-07: Read-back confirmed. S5 Part B rubric: thresholds 0.85/0.60/0.30 + spacing-snap = tunable proposed defaults; provisional pre-writing granted; guardrails: log every snap, never silent, NO repointing/deletion without owner confirmation.
+- 2026-07-07: 14 fixes ruled: 11 mechanical approved run-freely; input.md Form→**check Field equivalence, then REPOINT to Field** (removal only if not equivalent), same for CLAUDE.md line; card.md shadow = owner will confirm default after orchestrator reports code+Figma reality (do NOT close without him); progress/navigation-menu = REWORD specs to match actual exports, do NOT remove exports (protected ui/, breaking change).
 
 ## Current stage
 **S1 APPROVED (2026-07-07). Closing items: the 14 spec-drift fixes (mechanical
