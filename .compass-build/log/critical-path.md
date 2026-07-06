@@ -67,3 +67,39 @@ logs. STOPPED awaiting S0 stage approval.
 - S4 + S5 agents RESUMED with approvals; building in background.
 - S1 opened: ComponentMeta schema drafted → .compass-build/design/s1/
   _meta-schema.proposed.ts [PROPOSED — gates the 55-file generation].
+
+## 2026-07-06 — Session 5 (orchestrator) — S1 generation launched
+- Nikhil approved: font fix v2; S1 schema incl. primitiveSource + per-entry
+  source provenance ("uncitable = omitted"); S1 checklist. Paint-level font
+  check relayed to S4 agent backlog per owner instruction.
+- Schema promoted to components/ui/_meta-schema.ts (tsc clean, committed).
+- Code Connect ground truth (from code-connect/): 10 mapped = button, card,
+  dialog, field, input, select, sheet, sidebar, table, tabs.
+- Launched 8 parallel generation agents: 7 rich batches (33 specced, 5-5-5-5-
+  5-5-3) + 1 lightweight (22 unspecced, types-only). Category assignments made
+  by orchestrator — PROPOSED, reviewable in spot-check. Per-batch: tsc + audit
+  verified by agent, then orchestrator commits batch-scoped.
+- Meta file convention: components/ui/<name>.meta.ts exporting <camel>Meta;
+  no violating literals in strings (audit scans .ts).
+- Pending: per-batch commits, _meta-index.ts, final tsc, spot-check pack
+  (priority per owner: antiPatterns + confusedWith vs citations, 5–10 comps).
+
+## 2026-07-06 — Session 6 (orchestrator) — session-limit crash recovery → S1 COMPLETE
+- Account session limit killed all 10 agents mid-run (~reset 9pm IST). Recovery:
+  inventoried disk, verified survivors (tsc+audit green), checkpoint-committed
+  everything, relaunched 5 gap batches (R1–R5), resumed S4+S5 via transcript.
+- Lightweight agent's work had fully survived (22/22). S5 survived fully;
+  post-crash integrity check confirmed nothing truncated. S4 resumed and
+  completed: parity-proven compliance audit (0/34 identical to token-audit),
+  e2e ledger→score→dashboard run, npm scripts + gitignore wired.
+- R1–R5 completed: 26 rich metas. ALL 55 META FILES DONE + _meta-index.ts.
+  Verified: tsc clean, audit 0 err/34 pre-existing warn, lint clean, name↔key
+  55/55, categories 18/20/17, specced=33, mapped=10.
+- Compile-checks surfaced 14 spec-drift findings (checkbox Radix-era
+  indeterminate API; input.md nonexistent Form composite — also stale in
+  CLAUDE.md; button/card/field/drawer/popover/etc.) — all PROPOSED, none applied.
+- Spot-check pack delivered → .compass-build/design/s1/SPOT-CHECK-PACK.md.
+  S1 EXIT GATE = Nikhil's spot-check of 8 components + rulings (categories,
+  spec fixes, primitiveElements schema addition, primitiveSource judgment).
+- S4/S5 build-now scopes both complete+verified; their meta-gated parts remain
+  designed-only, awaiting S1 approval flip in STATE.md.

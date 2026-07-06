@@ -91,12 +91,22 @@ audit 0 errors / 34 warnings (parity), tsc 0 errors, lint 0 problems,
 | Stage | Status | Exit criterion met | Approved |
 |---|---|---|---|
 | S0 | **complete + APPROVED** (tag `s0-complete`) | ✅ 2026-07-06 | ✅ 2026-07-06 |
-| S1 | **in progress** — schema PROPOSED, generation gated on its approval | — | — |
-| S2 | not started | — | — |
+| S1 | **generation COMPLETE — 55/55 meta + index compile clean. GATE: Nikhil's spot-check** (`.compass-build/design/s1/SPOT-CHECK-PACK.md`) | mechanical ✅; owner spot-check ⏳ | ⏳ |
+| S2 | not started (next after S1 approval) | — | — |
 | S3 | not started | — | — |
-| S4 | **building** (approved scope: ledger, C1/C5/C6, dashboard shell) | — | checklist ✅ |
-| S5 | **building** (approved scope: skill folder skeleton, UI shell) | — | checklist ✅ |
+| S4 | **build-now scope COMPLETE + verified** (compass-log, compliance-audit C1/C5/C6 parity-proven, dashboard; C2–C4/Detect/Prescribe/C7-font = PROPOSED designs, gated on S1 exit) | build-now ✅ | checklist ✅ |
+| S5 | **build-now scope COMPLETE + verified** (skill folder, UI shell; Part B = PROPOSED design, gated on S1 exit + rubric ruling) | build-now ✅ | checklist ✅ |
 | S6 design | not started | — | — |
+
+## S1 facts for downstream agents (usable once Nikhil approves S1)
+- `components/ui/_meta-schema.ts` (contract), 55 × `components/ui/<name>.meta.ts`,
+  `components/ui/_meta-index.ts` (named exports + `componentMetaIndex` record +
+  `allComponentMeta` array). 33 specced / 22 lightweight / 10 code-connect mapped.
+- Every antiPattern/aiHints entry carries `source:` provenance; uncitable = omitted.
+- 14 spec-drift findings from generation compile-checks are PROPOSED spec fixes
+  (see `.compass-build/design/s1/spot-check-notes.md`) — specs NOT edited.
+- Note: Node cannot import the index extensionless (`--experimental-strip-types`
+  quirk); bundlers (Next/Storybook/Vite) and tsc resolve it fine.
 
 ## Known blockers / open items
 - No Compass favicon asset yet — favicon left as Next default (open item; owner
