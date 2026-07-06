@@ -30,6 +30,7 @@ const EXCLUDE_DIRS = [
   '.git',
   'scripts',
   'public',
+  'storybook-static',
 ];
 
 const EXCLUDE_FILES = [
