@@ -103,3 +103,22 @@ logs. STOPPED awaiting S0 stage approval.
   spec fixes, primitiveElements schema addition, primitiveSource judgment).
 - S4/S5 build-now scopes both complete+verified; their meta-gated parts remain
   designed-only, awaiting S1 approval flip in STATE.md.
+
+## 2026-07-07 — Session 7 (orchestrator) — S1 CLOSED; S2 opened; all tracks live
+- Nikhil: read-back confirmed; S5 rubric = tunable defaults; 14 fixes ruled
+  (11 mechanical; Field repoint on confirmed equivalence; reword exports;
+  card shadow held pending his Figma check — code truth: NO default shadow).
+- Field equivalence CONFIRMED from field.md's own text + export list → repoint
+  executed (input.md, CLAUDE.md); 13/14 fixes applied via 3 verified agents;
+  all headings preserved; tsc/audit/lint green. Tag `s1-complete`.
+- New residual items for owner: #15 button icon-prose drift; #16 outline bg
+  cell correction (revert if unwanted). Card shadow still open.
+- S4 resumed: C2/C3/C4 + Detect + Prescribe build (no schema changes; C2
+  heuristic or TODO pending primitiveElements ruling; compass-audit skill
+  folder cleared; C7 design-only).
+- S5 resumed: Part B resolution engine vs live meta (tunable thresholds config;
+  snap logging mandatory; repointing/deletion hard-gated).
+- S2 opened, two lanes: S2-A foundations-from-tokens + taxonomy (+UNVERIFIED
+  banner pending FE-dev token confirmation) and S2-B meta-driven doc renderer
+  + 10 code-connected pattern-setter stories. Both must keep build-storybook,
+  audit, tsc green. SOP/authored prose NOT started — propose-first per gates.
