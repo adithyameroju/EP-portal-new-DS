@@ -37,9 +37,12 @@
 
 - 2026-07-07: Deploy = CHROMATIC (owner choice); token in .env.local (gitignored). DEPLOYED: Build 1 auto-accepted, 55 comp/171 stories, appId 6a4c6bc7a7294c9b64f0b80e.
 
+- 2026-07-07: **S2 EXIT APPROVED by owner (reviewed on Chromatic link). S3 OPENED.** Also ordered: remaining S4/S5 steps.
+- 2026-07-07 PROVISIONAL interpretation (owner may revisit): "remaining steps for S4" read as granting the C7a BUILD (static font declaration-consistency tier — the owner-originated paint-level check); C7b Playwright probe stays design-only pending its trigger-policy decision; primitiveElements/C3-severity remain open rulings.
+- 2026-07-07: S3 scope note: publish-to-registry HELD for owner credentials/go; fresh-app verification runs against a local npm-pack tarball instead. tsup devDependency install = roadmap-sanctioned (S3 names it).
+
 ## Current stage
-**S2 BUILD + DEPLOY COMPLETE (2026-07-07) — AT STAGE-EXIT GATE, awaiting owner
-approval. Then S3 (packaging) opens.**
+**S3 IN PROGRESS (opened 2026-07-07 on S2 exit approval) + S4 C7a build + S5 Storybook integration running in parallel.**
 Deployed: Chromatic Build 1, auto-accepted — 55 components / 171 stories / 171
 snapshots. App: https://www.chromatic.com/setup?appId=6a4c6bc7a7294c9b64f0b80e
 Permalink: https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com
