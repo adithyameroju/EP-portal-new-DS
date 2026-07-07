@@ -1,0 +1,25 @@
+# Publishes Storybook to Chromatic (visual regression baselines) on push.
+# Requires repo secret CHROMATIC_PROJECT_TOKEN (never committed — owner rule).
+# Same registry caveat as deploy-pages.yml: npm ci needs the @acko scope
+# registry reachable from runners.
+name: Chromatic
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Chromatic needs full history for baselines
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: build-storybook
+          exitZeroOnChanges: true

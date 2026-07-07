@@ -43,6 +43,10 @@
 
 - 2026-07-07: Font weight-gap RULED: HOST the missing weights (100/200/800/900). Execution blocked on owner-supplied .woff2 cuts (Euclid Circular B retail family = 5 weights 300-700; foundry availability of Thin/ExtraLight/ExtraBold/Black to be confirmed by owner against the Acko license). If cuts don't exist → fallback is narrowing the spec table (owner informed). C7a warning stays live until resolved — by design.
 
+- 2026-07-07 (evening): **HANDOFF DOCS APPROVED.** Portability fixes ordered: .compass-build committed-status confirmed (was ALREADY tracked, 27 files, never ignored); roadmap copied INTO repo root; README/designers refreshed mechanically.
+- 2026-07-07 (evening): **SEMVER POLICY APPROVED as proposed.** CHANGELOG = plain CHANGELOG.md (created, 0.1.0 entry). Package name = @acko/compass. react/react-dom/next → peerDependencies (kept as devDeps for local dev); "private": true DROPPED.
+- 2026-07-07 (evening): **PUSH APPROVED** to https://github.com/nikhilpthakkar/compass-in-loop.git (the standing no-push gate lifted for this remote). Storybook → GitHub Pages (/compass-in-loop/ subpath); Chromatic token via CI secret only. NO S6, NO standing-queue resolutions; stop after deploy.
+
 ## Current stage
 **S3 BUILD COMPLETE (tag s3-build-complete, 2026-07-07) — at stage-exit gate.
 S4 and S5 buildable scopes: EXHAUSTED (everything remaining is owner-gated).**

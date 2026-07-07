@@ -15,7 +15,7 @@ STATE.md.)
 
 | # | Read | What it gives you |
 |---|---|---|
-| 1 | `../Compass_GA_Roadmap.md` (parent folder of the repo) | The strategy: stages S0–S6, standing rules, tooling model, the Shareable Gate. The source of truth for WHAT and WHY. |
+| 1 | `Compass_GA_Roadmap.md` (repo root — copied into the repo 2026-07-07 so it travels with every clone) | The strategy: stages S0–S6, standing rules, tooling model, the Shareable Gate. The source of truth for WHAT and WHY. |
 | 2 | `.compass-build/STATE.md` — especially the **DECISION LOG** | Where the build actually is; every owner ruling ever made (append-only — NEVER re-ask a settled decision); open gates and the owner-decision queue. |
 | 3 | `COMPASS_SYSTEM.md` (repo root) | The architecture handbook: what's built, how it connects, how to run and maintain every surface, the honesty ledger of what is NOT built. |
 | 4 | `CLAUDE.md` (repo root, auto-loaded) | The binding working rules for any agent touching code. |

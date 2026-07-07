@@ -1,0 +1,38 @@
+# Deploys the Storybook to GitHub Pages on every push to main.
+# CAVEAT (honest): `npm ci` requires the @acko scope registry
+# (nexus-dev.acko.in, per .npmrc) to be reachable from GitHub runners. If that
+# registry is internal-only, this workflow fails at install — in that case
+# deploy from a machine with access via: npm run build-storybook && push the
+# storybook-static/ contents to the gh-pages branch (the initial deploy was
+# done exactly that way).
+name: Deploy Storybook to Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run build-storybook
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: storybook-static
+      - id: deployment
+        uses: actions/deploy-pages@v4
