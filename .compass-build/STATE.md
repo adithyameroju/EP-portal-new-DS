@@ -127,7 +127,7 @@ Baseline fully green (tsc 0, audit 0/34, lint 0).
 |---|---|---|---|
 | S0 | **complete + APPROVED** (tag `s0-complete`) | ✅ 2026-07-06 | ✅ 2026-07-06 |
 | S1 | **COMPLETE (tag `s1-complete`)** — 55/55 meta + index; spot-check approved; 13/14 spec fixes applied (card-shadow held for owner) | ✅ 2026-07-07 | ✅ 2026-07-07 |
-| S2 | **in progress** — lane B (meta doc renderer + 10 pattern stories) ✅ DONE+committed; lane A (foundations) wrapping up w/ drift fixes (kebab filenames, raw buttons→Compass Button). Remaining: 45 component pages (pattern proven), Introduction/GettingStarted PROPOSED drafts, SOP (propose-first), deploy | — | — |
+| S2 | **~85%** — ALL 55 component pages + 6 foundations + Principles DONE; full build-storybook green (233 entries: 62 docs + 171 stories); Introduction/GettingStarted drafts PROPOSED (.compass-build/design/s2/). Remaining: owner rulings on stories naming + raw buttons (lane-A files); SOP (propose-first); Introduction approval; deploy decision (Chromatic vs Vercel) | — | — |
 | S3 | not started | — | — |
 | S4 | **COMPLETE except owner-gated items** — C1–C6 + Detect + Prescribe + compass-audit skill all built & pipeline-verified; C7 design-only; open: primitiveElements, C3 severity, stories-naming policy, C7 build go | ✅ machinery | checklist ✅ |
 | S5 | **COMPLETE except validation** — Part B engine live (dry-run verified); blocked on owner sample repos (Lovable first); S2/S3 integration gated | ✅ engine | checklist ✅ |

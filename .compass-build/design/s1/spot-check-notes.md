@@ -88,6 +88,14 @@ spec edit Nikhil signs off (S0.3 follow-through):
     transparent → bg-background (dark bg-input/30) per source cva — flag to
     owner in case he wants that single cell reverted.
 
+## New spec-vs-implementation items from S2 story generation (owner nod, then mechanical)
+17. **progress.md examples omit the required `value` prop nuance** — Base UI's
+    progress root REQUIRES `value`; spec examples work but CSF typing exposed it.
+    Suggest a one-line spec note.
+18. **progress.md shows plain-string children on ProgressValue** — Base UI types
+    Value children as a render function (`{() => "4 of 10"}`); spec's plain
+    strings don't type-check. Same class as the ruled-on 14.
+
 ## From the S4 agent — flags needing decisions
 - **Schema addition request: `primitiveElements?: string[]` on ComponentMeta**
   (C2 provenance check needs each primitive's DOM shape). Additive, optional
