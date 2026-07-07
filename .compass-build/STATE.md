@@ -35,6 +35,8 @@
 - 2026-07-07: SOP content APPROVED; presentation to be rebuilt INTERACTIVE (visual decision branches, live do/don't pairs, task-oriented collapsibles, "what do you want to do?" entry). HARD RULE: interactivity adds zero content; incomplete branches = needs-owner-decision flags. Structure proposal + flagged-gaps list gated on owner approval BEFORE build.
 - 2026-07-07: Intro/Getting Started prose: propose-text-then-approve (traceable wording only).
 
+- 2026-07-07: Deploy = CHROMATIC (owner choice); project token received, stored in .env.local (gitignored — never committed). Publish runs once interactive SOP lands.
+
 ## Current stage
 **S1 EXIT: MET (2026-07-07, tag `s1-complete`). S2 mechanical build IN PROGRESS
 under expanded autonomy. S4/S5 meta-gated halves: UNBLOCKED — S1 exit criteria
