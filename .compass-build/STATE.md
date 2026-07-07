@@ -38,13 +38,17 @@
 - 2026-07-07: Deploy = CHROMATIC (owner choice); project token received, stored in .env.local (gitignored — never committed). Publish runs once interactive SOP lands.
 
 ## Current stage
-**S1 EXIT: MET (2026-07-07, tag `s1-complete`). S2 mechanical build IN PROGRESS
-under expanded autonomy. S4/S5 meta-gated halves: UNBLOCKED — S1 exit criteria
-are met; gated agents may implement against components/ui/_meta-index.ts.**
-13 of 14 spec fixes applied+verified; remaining owner items: card.md shadow
-(code truth reported: NO shadow, ring-1 ring-foreground/10 is the border;
-awaiting owner's Figma check), button icon-prose #15, outline bg cell #16.
-Baseline fully green (tsc 0, audit 0/34, lint 0).
+**S2 — FINAL STEPS (2026-07-07). Resume here if session died:**
+1. Interactive SOP build agent was in flight (structure approved; content =
+   the 5 stories/working-with-compass pages; renderers decision-flow/
+   live-do-dont/task-picker per .compass-build/design/s2/
+   sop-interactive-structure.PROPOSED.md). Check disk state; finish/relaunch;
+   verify tsc + audit 0 + build-storybook; commit.
+2. DEPLOY: run `npm run chromatic` (token in .env.local). Owner approved.
+3. Then S2 EXIT REPORT to owner (stage gate) — evidence: 233+ entries, all
+   green, Chromatic URL. Await his approval, then S3 opens.
+Everything else committed. Owner items open: card fork, primitiveElements,
+direction category, S5 sample repos, C3 severity, C7 build go.
 
 ### S0 rulings (Nikhil, 2026-07-06)
 1. Metadata text approved as proposed.
