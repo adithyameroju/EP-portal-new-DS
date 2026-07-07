@@ -32,8 +32,23 @@
  *   C4  spec coverage      — ui component used whose meta has no spec
  *                            (warning; the S6.3 demand-driven backfill signal)
  *
- * Design-only (NOT implemented): C7 font compliance —
- * .compass-build/design/s4/c7-font-compliance.PROPOSED.md.
+ * Project-level check (repo mode only; no meta.ts dependency):
+ *   C7a font declaration consistency — every non-system font family the token
+ *                            layer declares (--font-* in
+ *                            node_modules/@acko/enterprise-tokens/globals.css)
+ *                            must be registered by an @font-face under that
+ *                            EXACT name in app/*.css (error — the S0 silent-
+ *                            fallback failure); weights listed in the
+ *                            typography spec but hosted by no face = warning.
+ *                            Severities owner-tunable via audit-rubric.json
+ *                            ("c7a"). Built per owner grant (STATE.md DECISION
+ *                            LOG 2026-07-07). Runs in repo mode only: it grades
+ *                            the project's font wiring, not a designer's build,
+ *                            so entry/files scores are unaffected.
+ *
+ * Design-only (NOT implemented): C7b paint-level font probe (Playwright) —
+ * .compass-build/design/s4/c7-font-compliance.PROPOSED.md (trigger policy =
+ * pending owner decision).
  *
  * Scoring: scripts/audit-rubric.json (owner-tunable weights).
  * By owner decision (2026-07-06): components/ui/ is EXCLUDED from compliance
@@ -70,6 +85,8 @@ const CODE_EXTENSIONS = ['.tsx', '.jsx', '.ts', '.js', '.mjs'];
 // additionally skips loop-internal and tooling folders.
 const EXCLUDE_DIRS_LEGACY = [
   'node_modules', '.next', '.git', 'scripts', 'public',
+  'storybook-static', // generated Storybook build output (synced from token-audit, S5 2026-07-07)
+  'dist', // generated package bundle (synced from token-audit, S3 2026-07-07)
 ];
 const EXCLUDE_DIRS_COMPLIANCE = [
   ...EXCLUDE_DIRS_LEGACY,
@@ -458,6 +475,178 @@ function checkC6(rel, raw) {
   return findings;
 }
 
+// ─── C7a: font declaration consistency (static tier of C7) ──────────────────
+//
+// The S0 failure this catches: tokens declared `"Euclid Circular B"` while no
+// @font-face registered that exact family name — audit/tsc/lint all green,
+// every screen silently painted in the system fallback. Pure file analysis;
+// C7b (rendered-DOM probe) stays design-only pending the owner's trigger-
+// policy decision.
+
+const TOKENS_CSS_REL = 'node_modules/@acko/enterprise-tokens/globals.css';
+const TYPOGRAPHY_SPEC_REL = '.claude/specs/foundations/typography.md';
+
+// Fallbacks if rubric.c7a is absent — the rubric copy is the tunable one.
+const C7A_DEFAULTS = {
+  missingFamilySeverity: 'error',
+  weightGapSeverity: 'warning',
+  systemFamilies: [
+    'system-ui', 'ui-sans-serif', 'ui-serif', 'ui-monospace', 'ui-rounded',
+    '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto',
+    'Helvetica Neue', 'Helvetica', 'Arial', 'Georgia', 'Times New Roman',
+    'Times', 'Courier New', 'Courier',
+    'sans-serif', 'serif', 'monospace', 'cursive', 'fantasy', 'math', 'emoji',
+  ],
+};
+
+function stripCssQuotes(s) {
+  return s.trim().replace(/^["']|["']$/g, '').trim();
+}
+
+/** --font-* declarations → [{ varName, family, line }] (one per stack entry). */
+function parseTokenFontFamilies(cssText) {
+  const out = [];
+  cssText.split('\n').forEach((line, i) => {
+    const m = line.match(/(--font-[\w-]+)\s*:\s*([^;]+);/);
+    if (!m) return;
+    for (const part of m[2].split(',')) {
+      const family = stripCssQuotes(part);
+      if (family) out.push({ varName: m[1], family, line: i + 1 });
+    }
+  });
+  return out;
+}
+
+/** @font-face blocks → [{ family, weightRange: [lo, hi], file, line }]. */
+function parseFontFaces(cssText, relFile) {
+  const faces = [];
+  const re = /@font-face\s*\{([^}]*)\}/g;
+  let m;
+  while ((m = re.exec(cssText)) !== null) {
+    const body = m[1];
+    const fam = body.match(/font-family\s*:\s*([^;]+)[;\s]/);
+    if (!fam) continue;
+    let weightRange = [400, 400]; // CSS default when font-weight is absent
+    const w = body.match(/font-weight\s*:\s*([^;]+)[;\s]/);
+    if (w) {
+      const nums = w[1].trim().split(/\s+/)
+        .map((t) => (t === 'normal' ? 400 : t === 'bold' ? 700 : parseInt(t, 10)))
+        .filter((n) => !Number.isNaN(n));
+      if (nums.length === 1) weightRange = [nums[0], nums[0]];
+      else if (nums.length >= 2) weightRange = [nums[0], nums[1]]; // variable-font range
+    }
+    faces.push({
+      family: stripCssQuotes(fam[1]),
+      weightRange,
+      file: relFile,
+      line: cssText.slice(0, m.index).split('\n').length,
+    });
+  }
+  return faces;
+}
+
+/** Weight column of the typography spec's "Font weights" table, or null. */
+function parseSpecWeights() {
+  try {
+    const md = fs.readFileSync(path.join(ROOT, TYPOGRAPHY_SPEC_REL), 'utf8');
+    const weights = new Set();
+    const re = /\|\s*`font-weight\/[a-z]+`\s*\|\s*(\d{3})\s*\|/g;
+    let m;
+    while ((m = re.exec(md)) !== null) weights.add(parseInt(m[1], 10));
+    return weights.size > 0 ? [...weights].sort((a, b) => a - b) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Runs the C7a consistency check. Returns { findings, ran } — `ran: false`
+ * (with a console note) when the tokens package CSS is unavailable, so the
+ * report's checks.implemented stays honest.
+ */
+function checkC7a(rubric) {
+  const findings = [];
+  const cfg = { ...C7A_DEFAULTS, ...(rubric.c7a || {}) };
+  const sysSet = new Set((cfg.systemFamilies || []).map((f) => f.toLowerCase()));
+
+  const tokensAbs = path.join(ROOT, TOKENS_CSS_REL);
+  if (!fs.existsSync(tokensAbs)) {
+    console.log('  (C7a skipped — tokens package CSS not found; run npm install)');
+    return { findings, ran: false };
+  }
+  const tokenDecls = parseTokenFontFamilies(fs.readFileSync(tokensAbs, 'utf8'));
+
+  // Every @font-face declared anywhere under app/ (fonts.css today; future-proof).
+  const faces = [];
+  (function walk(dir) {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fp = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(fp);
+      else if (entry.name.endsWith('.css')) {
+        faces.push(...parseFontFaces(fs.readFileSync(fp, 'utf8'), relOf(fp)));
+      }
+    }
+  })(path.join(ROOT, 'app'));
+
+  // Token-declared families that need hosting (system stack entries exempt).
+  const families = new Map(); // family → { vars: [], line }
+  for (const d of tokenDecls) {
+    if (sysSet.has(d.family.toLowerCase())) continue;
+    const g = families.get(d.family) || { vars: [], line: d.line };
+    if (!g.vars.includes(d.varName)) g.vars.push(d.varName);
+    families.set(d.family, g);
+  }
+
+  const specWeights = parseSpecWeights();
+  let weightSkipNoted = false;
+
+  for (const [family, g] of families) {
+    // Exact string match on purpose — the S0 bug was precisely a name mismatch.
+    const matching = faces.filter((f) => f.family === family);
+    if (matching.length === 0) {
+      const nearMiss = faces.find((f) => f.family.toLowerCase() === family.toLowerCase());
+      findings.push({
+        ruleId: 'C7-fontface-missing', level: cfg.missingFamilySeverity,
+        file: TOKENS_CSS_REL, line: g.line,
+        message: `Token layer declares font family \`"${family}"\` (${g.vars.join(', ')}) but NO @font-face registers that exact name${nearMiss ? ` — near-miss \`"${nearMiss.family}"\` in ${nearMiss.file} (name/case mismatch)` : ''}; every screen silently renders the fallback font (the S0 failure)`,
+        suggestion: `→ Register @font-face rules with font-family: "${family}" (exact string) in app/fonts.css — see its header comment for why the name must match verbatim`,
+        component: null,
+      });
+      continue;
+    }
+    if (!specWeights) {
+      if (!weightSkipNoted) {
+        console.log('  (C7a weight-gap check skipped — could not parse the typography spec weight table)');
+        weightSkipNoted = true;
+      }
+      continue;
+    }
+    const covered = (w) => matching.some((f) => w >= f.weightRange[0] && w <= f.weightRange[1]);
+    const missing = specWeights.filter((w) => !covered(w));
+    if (missing.length > 0) {
+      const hostedKeys = new Set();
+      const hosted = [];
+      for (const f of matching) {
+        const key = f.weightRange.join('-');
+        if (hostedKeys.has(key)) continue;
+        hostedKeys.add(key);
+        hosted.push(f.weightRange);
+      }
+      hosted.sort((a, b) => a[0] - b[0]);
+      const hostedLabel = hosted.map(([lo, hi]) => (lo === hi ? `${lo}` : `${lo}–${hi}`)).join(', ');
+      findings.push({
+        ruleId: 'C7-weight-gap', level: cfg.weightGapSeverity,
+        file: matching[0].file, line: matching[0].line,
+        message: `\`"${family}"\`: typography spec lists weights ${specWeights.join('/')} but hosted @font-face covers only ${hostedLabel} — missing ${missing.join(', ')} (browser will synthesize or substitute those weights)`,
+        suggestion: '→ Owner call: host the missing weight files or narrow the spec\'s weight table — flagged, not decided here',
+        component: null,
+      });
+    }
+  }
+  return { findings, ran: true };
+}
+
 // ─── Meta loading (S1 artifact; read-only) ───────────────────────────────────
 
 /**
@@ -773,8 +962,15 @@ async function run() {
       }
     }
   }
+  let c7a = { findings: [], ran: false };
   if (!mode.parity) {
     findings.push(...checkC5Paths(scanFiles.map(relOf)));
+    if (modeName === 'repo') {
+      // C7a is project-level (font wiring), not per-build — repo mode only so
+      // entry/files scores never carry system-level font findings.
+      c7a = checkC7a(rubric);
+      findings.push(...c7a.findings);
+    }
   }
 
   // ── Aggregate
@@ -833,9 +1029,15 @@ async function run() {
       entry: entryRel,
       rubric,
       checks: {
-        implemented: metaIndex ? ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'] : ['C1', 'C5', 'C6'],
-        skipped: metaIndex ? [] : ['C2', 'C3', 'C4'],
-        designOnly: ['C7'],
+        implemented: [
+          ...(metaIndex ? ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'] : ['C1', 'C5', 'C6']),
+          ...(c7a.ran ? ['C7a'] : []),
+        ],
+        skipped: [
+          ...(metaIndex ? [] : ['C2', 'C3', 'C4']),
+          ...(c7a.ran ? [] : ['C7a']),
+        ],
+        designOnly: ['C7b'],
       },
       filesScanned: scanFiles.length,
       totals: { errors: errors.length, warnings: warnings.length, byRule },

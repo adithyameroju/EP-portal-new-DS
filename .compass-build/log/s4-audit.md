@@ -345,3 +345,87 @@ distinguish "carries these token classes" from "is actually this component" —
 candidate signals: element role/interactivity (button/anchor vs presentational
 div), structural children match vs bare styled box, and count of distinctive
 vs generic tokens. Do not tune away sensitivity without a false-negative check.
+
+---
+
+## 2026-07-07 — Session 4: C7a built (static font declaration-consistency)
+
+Build granted per STATE.md DECISION LOG 2026-07-07 PROVISIONAL entry
+("remaining steps for S4" read as the C7a go). **C7b (Playwright paint probe)
+stays unbuilt** — trigger policy is still an open owner decision.
+
+### What was built
+- **C7a in `scripts/compliance-audit.mjs`** (additive; token-audit.mjs
+  untouched). Repo mode only — it grades the project's font wiring, not a
+  designer's build, so entry/files/parity scores are unaffected.
+  - Parses `--font-*` declarations in
+    `node_modules/@acko/enterprise-tokens/globals.css` (the css the app
+    actually imports) → non-system families needing hosting (system-stack
+    allowlist exempt).
+  - Parses every `@font-face` in `app/**/*.css` (fonts.css today;
+    future-proof) → families + weights (single values, keywords, and
+    variable-font ranges).
+  - **`C7-fontface-missing` (error)**: token-declared family with zero
+    @font-face under that EXACT name — the S0 silent-fallback failure; exact
+    string match on purpose, with a near-miss note when a case/name-mismatched
+    face exists.
+  - **`C7-weight-gap` (warning)**: weights listed in the typography spec's
+    Font-weights table (parsed from the md, not hardcoded) that no hosted
+    face/range covers.
+  - Severities + system-family allowlist owner-tunable in
+    `scripts/audit-rubric.json` → new `"c7a"` block (code carries fallback
+    defaults). Graceful skip (with honest `checks.skipped`) if the tokens
+    package css is absent.
+- **Report shape**: `checks.implemented` gains `C7a` when it ran;
+  `designOnly` is now `["C7b"]`.
+- **Dashboard** (`scripts/generate-dashboard.mjs`): radar gains the `C7 Fonts`
+  axis; auto-ungrey logic now rolls tier ids up to their axis (`C7a` → `C7`),
+  so the axis went live automatically from the first post-build report.
+- **Parity mirror re-synced**: token-audit.mjs gained a `storybook-static`
+  exclusion (S5's Storybook build output) since the last parity check; added
+  the same dir to `EXCLUDE_DIRS_LEGACY` (comment cites the sync) — this also
+  keeps generated Storybook bundles out of compliance repo mode. token-audit
+  itself untouched, per standing rule.
+
+### Verification
+- **Repo mode (healthy current state)**: 101 files; C7a contributes exactly
+  `C7-weight-gap×1` on app/fonts.css — spec lists 100–900, hosted = 300–700,
+  missing 100/200/800/900 — and **zero `C7-fontface-missing`**. All other
+  rule counts unchanged by C7a.
+- **Error path (throwaway fixture, deleted after; real fonts.css never
+  touched)**: scratchpad copy of the script + minimal tree. (a) fonts.css
+  registering `"euclid circular b"` (case mismatch) → C7-fontface-missing
+  ERROR with near-miss diagnosis, exit 1, score 95/100; (b) no @font-face at
+  all (the literal S0 state) → same error, no near-miss note. Fixture deleted.
+- **Parity**: `npm run audit` vs `--parity`, same tree, same moment:
+  **214 files / 1 error / 68 warnings — IDENTICAL** (after the
+  storybook-static re-sync; before it, parity mode was scanning 207 generated
+  bundle files token-audit now skips). No C7 rules fire in parity mode.
+- **Dashboard**: regenerated; all 7 axes (C1–C7) render live from the latest
+  report's `checks.implemented`.
+- **My files green**: `node --check` both scripts, `npx eslint` on both = 0
+  problems, rubric JSON parses.
+- **Repo-level reds are cross-track, not S4's** (verified sources):
+  `npm run audit` 1 error = `bg-white` in generated `dist/index.js` (new
+  root-level build artifact token-audit doesn't exclude — flagged below);
+  `tsc` errors in `stories/patterns/migrate.stories.tsx` (S3 in-flight);
+  lint noise from minified bundles. S4 touched only scripts/*.mjs +
+  rubric json + .compass-build docs — none type-checked or scanned by those.
+
+### Flagged for Nikhil
+1. **Weight-gap ruling (new live signal)**: every repo run now carries one
+   C7-weight-gap warning (100/200/800/900 unhosted). Host the missing weights
+   or narrow the spec's weight table — owner call, both sides are owner
+   artifacts.
+2. **`dist/` build artifact breaks the commit gate**: something generated
+   `dist/index.js` at repo root; token-audit scans it (`bg-white` error,
+   line 5806) and it isn't S4's to exclude or delete. Whichever track emits it
+   should gitignore/exclude it — else `npm run audit` stays red.
+3. C7a deferred sub-checks (dead-weight declared faces; `src:` file existence)
+   were in the original design sketch but outside the granted wording — cheap
+   to add on request.
+4. C7b decisions still open: trigger policy + probe surface (design doc §NEEDS
+   OWNER DECISION, items 2–3).
+
+**STATUS: C7a live and verified. C7b design-only, awaiting trigger-policy
+decision.**

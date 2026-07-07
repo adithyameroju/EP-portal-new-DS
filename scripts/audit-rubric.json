@@ -8,5 +8,17 @@
     "$comment": "Detect-step thresholds (per the approved detect-clustering design). hotspotMinBuilds: a {component,rule} cluster or assumption theme must appear in at least this many distinct builds to rank as a hotspot; below it = 'watching, not acting'. windowSize: default number of most-recent ledger entries Detect reads.",
     "hotspotMinBuilds": 3,
     "windowSize": 10
+  },
+  "c7a": {
+    "$comment": "C7a static font declaration-consistency (built 2026-07-07 per owner grant; design: .compass-build/design/s4/c7-font-compliance.PROPOSED.md). OWNER-TUNABLE. missingFamilySeverity: a token-declared family with zero @font-face under that exact name (the S0 silent-fallback failure). weightGapSeverity: weights the typography spec lists but no hosted face covers. systemFamilies: stack entries that never need hosting (system/generic families).",
+    "missingFamilySeverity": "error",
+    "weightGapSeverity": "warning",
+    "systemFamilies": [
+      "system-ui", "ui-sans-serif", "ui-serif", "ui-monospace", "ui-rounded",
+      "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto",
+      "Helvetica Neue", "Helvetica", "Arial", "Georgia", "Times New Roman",
+      "Times", "Courier New", "Courier",
+      "sans-serif", "serif", "monospace", "cursive", "fantasy", "math", "emoji"
+    ]
   }
 }

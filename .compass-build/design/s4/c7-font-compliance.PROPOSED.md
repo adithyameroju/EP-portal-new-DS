@@ -1,7 +1,9 @@
-# PROPOSED — C7 font compliance (paint-level) — backlog addition from Nikhil
+# C7 font compliance (paint-level) — backlog addition from Nikhil
 
-*S4 track design doc. Status: PROPOSED — design only this session, per
-coordinator instruction. Not implemented.*
+*S4 track design doc. Status: **C7a BUILT 2026-07-07** (owner grant per
+STATE.md DECISION LOG 2026-07-07 PROVISIONAL entry — "remaining steps for S4"
+read as the C7a build go). **C7b remains PROPOSED / design-only** pending the
+owner's trigger-policy decision (open decision 2 below).*
 
 ## The failure this prevents (real, from S0)
 
@@ -14,9 +16,22 @@ wrong.
 
 ## Two tiers (cheap static + definitive rendered)
 
-### C7a — declaration consistency (static; could build pre-S1 with owner go)
+### C7a — declaration consistency (static) — ✅ BUILT 2026-07-07
 
-No meta.ts dependency; pure file analysis, fits `compliance-audit.mjs` today:
+Lives in `scripts/compliance-audit.mjs` (repo mode only — it grades the
+project's font wiring, not a designer's build, so entry/files scores are
+unaffected). As built: token layer = `--font-*` in
+`node_modules/@acko/enterprise-tokens/globals.css`; @font-face sources = every
+`.css` under `app/`; rules = `C7-fontface-missing` (error — token-declared
+non-system family with zero @font-face under that EXACT name, with near-miss
+diagnosis for case/name mismatches) + `C7-weight-gap` (warning — weights the
+typography spec's table lists but no hosted face/range covers). Severities +
+system-family allowlist owner-tunable in `scripts/audit-rubric.json` ("c7a").
+The reverse dead-weight check and `src:` file-existence check from the original
+sketch below were deferred (not in the granted scope). Dashboard: C7 radar
+axis added, auto-ungreys from `checks.implemented` (`C7a` → `C7`).
+
+Original design sketch (no meta.ts dependency; pure file analysis):
 
 - Collect every `font-family` **usage**: from the tokens package CSS
   (`node_modules/@acko/enterprise-tokens/**/*.css`), `app/globals.css`, and
@@ -66,11 +81,17 @@ browser probe — **Playwright is already a devDependency**, no new install:
 
 ## NEEDS OWNER DECISION (flagged, not decided here)
 
-1. Should C7a fold into the default `audit:compliance` run (recommended), and
-   may it be built **before** S1 lands since it has no meta dependency? It is
-   outside the currently approved build-now scope (C1/C5/C6), so it waits for
-   explicit approval either way.
-2. C7b trigger policy: nightly CI, pre-release only, or manual? (Trade-off:
-   earlier catch vs. build-time cost.)
-3. Probe surface for C7b once S2 exists: app routes, Storybook foundations
-   pages, or both?
+1. ~~Should C7a fold into the default `audit:compliance` run, and may it be
+   built pre-S1?~~ **RESOLVED 2026-07-07**: build granted (STATE.md DECISION
+   LOG PROVISIONAL entry); C7a now runs in every default (repo-mode)
+   `audit:compliance` run.
+2. **OPEN** — C7b trigger policy: nightly CI, pre-release only, or manual?
+   (Trade-off: earlier catch vs. build-time cost.) C7b stays unbuilt until
+   this is decided.
+3. **OPEN** — Probe surface for C7b once S2 exists: app routes, Storybook
+   foundations pages, or both?
+4. **OPEN (new, from the C7a build)** — the known weight gap is now live
+   signal: spec lists 100–900, hosted faces cover 300–700, so every repo run
+   carries one `C7-weight-gap` warning for 100/200/800/900. Host the missing
+   weight files, or narrow the spec's weight table? (Both sides are owner
+   artifacts; the check just reports.)

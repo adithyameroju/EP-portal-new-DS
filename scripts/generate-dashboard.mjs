@@ -37,12 +37,16 @@ const DIMENSIONS = [
   { id: 'C4', label: 'C4 Spec coverage' },
   { id: 'C5', label: 'C5 Naming' },
   { id: 'C6', label: 'C6 Imports' },
+  { id: 'C7', label: 'C7 Fonts' },
 ];
 
 // Axis liveness comes from what the latest report actually ran (an axis
 // un-greys automatically the moment its check ships), with a pre-meta fallback.
+// Tier ids roll up to their dimension axis (C7a → C7) — the axis is live once
+// any tier of the check runs; ruleIds (C7-*) already aggregate the same way.
 function liveSetOf(latest) {
-  return new Set(latest?.checks?.implemented || ['C1', 'C5', 'C6']);
+  const implemented = latest?.checks?.implemented || ['C1', 'C5', 'C6'];
+  return new Set(implemented.map((id) => (String(id).match(/^C\d+/) || [id])[0]));
 }
 
 // ─── Data loading ────────────────────────────────────────────────────────────
@@ -249,7 +253,7 @@ npm run dashboard</pre>
       <div class="panel">
         <h2>Health radar</h2>
         ${radarSvg(latest)}
-        <p class="muted">* greyed axes = checks not run in the latest report (C7 font compliance is design-only).</p>
+        <p class="muted">* greyed axes = checks not run in the latest report (C7a static font check runs in repo mode; the C7b paint probe is design-only).</p>
       </div>
     </section>
     <section class="grid">
