@@ -20,6 +20,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { GapCard } from "./decision-flow";
+import { SpecTable } from "./spec-table";
 import {
   DialogFooterOrderPair,
   DialogTriggerPair,
@@ -53,15 +54,18 @@ section cites its source; wording in quotes is verbatim.
 {/* source: field.md §"Rules for LLMs" 1–7; card.md §"Card as a form container";
     CLAUDE.md Component rules (Field system line). Rule 2 renders live above. */}
 
-| Do | Don't | Source |
-|----|-------|--------|
-| Use `Field` when you need errors or descriptions | Over-engineer "a 2-field login card with `Field`/`FieldGroup`" — use standalone `Label` + `Input` there | field.md rule 1 |
-| Always render `FieldError` — "it returns nothing when errors is empty" | Conditionally hide it with your own logic | field.md rule 3 |
-| Use `FieldSet` + `FieldLegend` for checkbox/radio groups | Use "a plain `div` with a heading for a group of checkboxes — an accessibility violation" | field.md rule 4 |
-| Use `FieldContent` (with `FieldTitle` + `FieldDescription`) beside a Checkbox/Radio item | Build that stack with a manual `div` | field.md rule 5 |
-| Keep one level of `FieldGroup` | Nest `FieldGroup` inside `FieldGroup` | field.md rule 6 |
-| Use `FieldLegend` only inside `FieldSet` | Use it standalone — "no semantic value" | field.md rule 7 |
-| Pick orientation deliberately: `vertical` (default), `horizontal` (settings rows), `responsive` (vertical on mobile, horizontal at `md`) | — | field.md §Field orientation |
+<SpecTable
+  head={["Do", "Don't", "Source"]}
+  rows={[
+    ["Use `Field` when you need errors or descriptions", "Over-engineer \"a 2-field login card with `Field`/`FieldGroup`\" — use standalone `Label` + `Input` there", "field.md rule 1"],
+    ["Always render `FieldError` — \"it returns nothing when errors is empty\"", "Conditionally hide it with your own logic", "field.md rule 3"],
+    ["Use `FieldSet` + `FieldLegend` for checkbox/radio groups", "Use \"a plain `div` with a heading for a group of checkboxes — an accessibility violation\"", "field.md rule 4"],
+    ["Use `FieldContent` (with `FieldTitle` + `FieldDescription`) beside a Checkbox/Radio item", "Build that stack with a manual `div`", "field.md rule 5"],
+    ["Keep one level of `FieldGroup`", "Nest `FieldGroup` inside `FieldGroup`", "field.md rule 6"],
+    ["Use `FieldLegend` only inside `FieldSet`", "Use it standalone — \"no semantic value\"", "field.md rule 7"],
+    ["Pick orientation deliberately: `vertical` (default), `horizontal` (settings rows), `responsive` (vertical on mobile, horizontal at `md`)", "—", "field.md §Field orientation"],
+  ]}
+/>
 
 </AccordionContent>
 </AccordionItem>
@@ -80,14 +84,17 @@ section cites its source; wording in quotes is verbatim.
 {/* source: .claude/specs/components/dialog.md §"Rules for LLMs" 1–8 and the header
     warning. Rules 3 and 8 render live above. */}
 
-| Do | Don't | Source |
-|----|-------|--------|
-| Keep Dialog and AlertDialog separate — "Dialog = general content/forms. AlertDialog = destructive confirmations." | Mix their sub-components | dialog.md warning + rule 1 |
-| Put `DialogTitle` inside every `DialogHeader` | Use `DialogHeader` without `DialogTitle` — "structural drift" | dialog.md rule 2 |
-| Give AlertDialog both `AlertDialogCancel` and `AlertDialogAction` — "the user must have an explicit escape" | Show an AlertDialog with only one button | dialog.md rule 4 |
-| Use `AlertDialogAction variant="destructive"` directly — "it is already a Button" | Wrap it in `<Button>` | dialog.md rule 5 |
-| Rely on the built-in close button; add `DialogClose` in the footer only for a labelled "Cancel"; set `showCloseButton={false}` "only when the footer already has a cancel action" | Write custom close logic | dialog.md rule 6 |
-| Keep the built-in width — "the built-in `sm:max-w-sm` is the Compass standard" | Hardcode widths on `DialogContent`; "only override for confirmed design exceptions noted in 'What I assumed'" | dialog.md rule 7 |
+<SpecTable
+  head={["Do", "Don't", "Source"]}
+  rows={[
+    ["Keep Dialog and AlertDialog separate — \"Dialog = general content/forms. AlertDialog = destructive confirmations.\"", "Mix their sub-components", "dialog.md warning + rule 1"],
+    ["Put `DialogTitle` inside every `DialogHeader`", "Use `DialogHeader` without `DialogTitle` — \"structural drift\"", "dialog.md rule 2"],
+    ["Give AlertDialog both `AlertDialogCancel` and `AlertDialogAction` — \"the user must have an explicit escape\"", "Show an AlertDialog with only one button", "dialog.md rule 4"],
+    ["Use `AlertDialogAction variant=\"destructive\"` directly — \"it is already a Button\"", "Wrap it in `<Button>`", "dialog.md rule 5"],
+    ["Rely on the built-in close button; add `DialogClose` in the footer only for a labelled \"Cancel\"; set `showCloseButton={false}` \"only when the footer already has a cancel action\"", "Write custom close logic", "dialog.md rule 6"],
+    ["Keep the built-in width — \"the built-in `sm:max-w-sm` is the Compass standard\"", "Hardcode widths on `DialogContent`; \"only override for confirmed design exceptions noted in 'What I assumed'\"", "dialog.md rule 7"],
+  ]}
+/>
 
 </AccordionContent>
 </AccordionItem>
@@ -98,27 +105,33 @@ section cites its source; wording in quotes is verbatim.
 {/* source: .claude/specs/components/table.md §"Rules for LLMs" 1–8 and
     §"Table with status badges" mapping table */}
 
-| Do | Don't | Source |
-|----|-------|--------|
-| Use the full sub-component tree (`Table`/`TableHeader`/`TableBody`/`TableRow`/`TableHead`/`TableCell`) | Use raw `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` | table.md rule 1 |
-| Represent status with `Badge` (mapping below) | Write colored text like `<span className="text-green-600">Active</span>` | table.md rule 2 |
-| Make linked cell text `Button render={<Link href="..." />} variant="link"` | Use `<a>`, `onClick + router.push()`, or `asChild` | table.md rule 3 |
-| Reserve `TableFooter` for summary rows | Put actions or pagination in it — "pagination goes below the `Table`, not inside it" | table.md rule 4 |
-| Right-align numeric columns (`className="text-right"` on both `TableHead` and `TableCell`) | Leave currency/counts/percentages left-aligned | table.md rule 5 |
-| Rely on the built-in `hover:bg-muted/50` on rows | Add manual hover styles — "creates doubled effects" | table.md rule 6 |
-| Put `TableCaption` inside `Table` | Place the caption outside | table.md rule 7 |
-| Flag non-standard table structures in "What I assumed" and compose with Tailwind utilities on existing sub-components | Modify the Table primitive for one-off layouts | table.md rule 8 |
+<SpecTable
+  head={["Do", "Don't", "Source"]}
+  rows={[
+    ["Use the full sub-component tree (`Table`/`TableHeader`/`TableBody`/`TableRow`/`TableHead`/`TableCell`)", "Use raw `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>`", "table.md rule 1"],
+    ["Represent status with `Badge` (mapping below)", "Write colored text like `<span className=\"text-green-600\">Active</span>`", "table.md rule 2"],
+    ["Make linked cell text `Button render={<Link href=\"...\" />} variant=\"link\"`", "Use `<a>`, `onClick + router.push()`, or `asChild`", "table.md rule 3"],
+    ["Reserve `TableFooter` for summary rows", "Put actions or pagination in it — \"pagination goes below the `Table`, not inside it\"", "table.md rule 4"],
+    ["Right-align numeric columns (`className=\"text-right\"` on both `TableHead` and `TableCell`)", "Leave currency/counts/percentages left-aligned", "table.md rule 5"],
+    ["Rely on the built-in `hover:bg-muted/50` on rows", "Add manual hover styles — \"creates doubled effects\"", "table.md rule 6"],
+    ["Put `TableCaption` inside `Table`", "Place the caption outside", "table.md rule 7"],
+    ["Flag non-standard table structures in \"What I assumed\" and compose with Tailwind utilities on existing sub-components", "Modify the Table primitive for one-off layouts", "table.md rule 8"],
+  ]}
+/>
 
 **Status → Badge variant mapping** (Acko enterprise pattern):
 
 {/* source: table.md §"Table with status badges" — table verbatim */}
 
-| Status | Badge variant |
-|--------|--------------|
-| Active / Approved / Success | `default` |
-| Pending / Processing / Draft | `outline` |
-| Expired / Failed / Rejected | `destructive` |
-| Inactive / Cancelled | `secondary` |
+<SpecTable
+  head={["Status", "Badge variant"]}
+  rows={[
+    ["Active / Approved / Success", "`default`"],
+    ["Pending / Processing / Draft", "`outline`"],
+    ["Expired / Failed / Rejected", "`destructive`"],
+    ["Inactive / Cancelled", "`secondary`"],
+  ]}
+/>
 
 </AccordionContent>
 </AccordionItem>
@@ -129,13 +142,16 @@ section cites its source; wording in quotes is verbatim.
 {/* source: .claude/specs/foundations/color.md §"Chart colors" table + Rules for LLMs rule 5 */}
 Chart series colors are tokens, and they are **ordered**:
 
-| Token | Light | Dark | Role |
-|-------|------|------|------|
-| `--chart-1` | `#6841E6` | `#9B8FF6` | Primary data series |
-| `--chart-2` | `#FF8D28` | `#FFA85C` | Second data series |
-| `--chart-3` | `#3B82F6` | `#60A5FA` | Third data series |
-| `--chart-4` | `#22C55E` | `#4ADE80` | Fourth data series |
-| `--chart-5` | `#EC4899` | `#F472B6` | Fifth data series |
+<SpecTable
+  head={["Token", "Light", "Dark", "Role"]}
+  rows={[
+    ["`--chart-1`", "`#6841E6`", "`#9B8FF6`", "Primary data series"],
+    ["`--chart-2`", "`#FF8D28`", "`#FFA85C`", "Second data series"],
+    ["`--chart-3`", "`#3B82F6`", "`#60A5FA`", "Third data series"],
+    ["`--chart-4`", "`#22C55E`", "`#4ADE80`", "Fourth data series"],
+    ["`--chart-5`", "`#EC4899`", "`#F472B6`", "Fifth data series"],
+  ]}
+/>
 
 "Chart colors are ordered. Use `--chart-1` through `--chart-5` in sequence. Do
 not reassign chart colors based on data meaning (e.g., don't use `--chart-4`
@@ -172,27 +188,33 @@ and themed Recharts overrides.
 
 {/* source: .claude/specs/foundations/spacing.md §"Rules for LLMs" 1–5 */}
 
-| Do | Don't | Source |
-|----|-------|--------|
-| Use only values from the spacing scale; if a design value isn't in the scale, "use the nearest scale value" | Invent values like `p-[13px]` or `gap-[22px]` | spacing.md rule 1 |
-| Use Tailwind spacing utilities (`p-4`, `m-2`, `gap-6`) | Write raw CSS (`padding: 16px`) — "the audit script flags raw pixel values" | spacing.md rule 2 |
-| Respect the 4px grid | — | spacing.md rule 3 |
-| Use the responsive tokens (`container-padding-x`, `section-padding-y`, ...) for page-level layout | "Hardcode different mobile/desktop values manually" | spacing.md rule 4 |
-| Map Figma spacing to the nearest Tailwind class (24px → `p-6`) | Write `p-[24px]` | spacing.md rule 5 |
+<SpecTable
+  head={["Do", "Don't", "Source"]}
+  rows={[
+    ["Use only values from the spacing scale; if a design value isn't in the scale, \"use the nearest scale value\"", "Invent values like `p-[13px]` or `gap-[22px]`", "spacing.md rule 1"],
+    ["Use Tailwind spacing utilities (`p-4`, `m-2`, `gap-6`)", "Write raw CSS (`padding: 16px`) — \"the audit script flags raw pixel values\"", "spacing.md rule 2"],
+    ["Respect the 4px grid", "—", "spacing.md rule 3"],
+    ["Use the responsive tokens (`container-padding-x`, `section-padding-y`, ...) for page-level layout", "\"Hardcode different mobile/desktop values manually\"", "spacing.md rule 4"],
+    ["Map Figma spacing to the nearest Tailwind class (24px → `p-6`)", "Write `p-[24px]`", "spacing.md rule 5"],
+  ]}
+/>
 
 **Common spacing patterns** ("not tokens — guidelines for consistent usage"):
 
 {/* source: spacing.md §"Common spacing patterns" — table verbatim */}
 
-| Context | Recommended token | Example |
-|---------|------------------|---------|
-| Inline element gap (icon + text) | `gap-2` (8px) | Button icon spacing |
-| Input internal padding | `px-3 py-2` (12px / 8px) | Text input |
-| Card internal padding | `p-4` or `p-6` (16px / 24px) | Card content area |
-| Stack gap (form fields) | `gap-4` (16px) | Vertical form layout |
-| Section gap (page sections) | `gap-8` to `gap-16` (32–64px) | Between page sections |
-| Page margin (mobile) | `px-4` (16px) | Mobile horizontal padding |
-| Page margin (desktop) | `px-6` (24px) | Desktop horizontal padding |
+<SpecTable
+  head={["Context", "Recommended token", "Example"]}
+  rows={[
+    ["Inline element gap (icon + text)", "`gap-2` (8px)", "Button icon spacing"],
+    ["Input internal padding", "`px-3 py-2` (12px / 8px)", "Text input"],
+    ["Card internal padding", "`p-4` or `p-6` (16px / 24px)", "Card content area"],
+    ["Stack gap (form fields)", "`gap-4` (16px)", "Vertical form layout"],
+    ["Section gap (page sections)", "`gap-8` to `gap-16` (32–64px)", "Between page sections"],
+    ["Page margin (mobile)", "`px-4` (16px)", "Mobile horizontal padding"],
+    ["Page margin (desktop)", "`px-6` (24px)", "Desktop horizontal padding"],
+  ]}
+/>
 
 **Cards in layouts:**
 

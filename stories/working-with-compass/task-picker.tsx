@@ -29,7 +29,9 @@ import {
 const SOP_DOCS = {
   choosing: "/?path=/docs/introduction-working-with-compass-choosing-a-component--docs",
   tasks: "/?path=/docs/introduction-working-with-compass-common-tasks--docs",
-  loop: "/?path=/docs/introduction-working-with-compass-the-figma-code-loop--docs",
+  // Storybook's id sanitizer keeps the "→" from the page title (verified
+  // against the built index.json).
+  loop: "/?path=/docs/introduction-working-with-compass-the-figma-→-code-loop--docs",
   ai: "/?path=/docs/introduction-working-with-compass-working-with-ai--docs",
 } as const
 
