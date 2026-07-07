@@ -15,7 +15,8 @@
     "prescribe": "node scripts/prescribe.mjs",
     "figma-publish": "figma connect publish --skip-validation",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "npx chromatic --build-script-name build-storybook --exit-zero-on-changes"
   },
   "dependencies": {
     "@acko/enterprise-tokens": "^1.0.0",

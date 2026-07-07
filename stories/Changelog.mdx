@@ -1,0 +1,22 @@
+{/* S2.5 versioning surface. Facts only: repo version from package.json; the
+    per-component table reads live from meta.ts. Changelog discipline
+    (Changesets / CHANGELOG.md) wires in at S3 per the roadmap. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+import { ComponentVersionTable } from "./changelog-table";
+
+<Meta title="Introduction/Changelog" />
+
+# Changelog
+
+**Compass `0.1.0`** — pre-release. All 55 components carry version `1.0.0` in
+their `meta.ts` contract; version bumps flow through the S6 promotion pipeline
+once the semver policy lands with packaging (S3).
+
+> Semver policy (roadmap, adopted at S3): additive (new component/variant) =
+> minor · token/behavior change = major, shipped with a codemod · docs-only =
+> patch.
+
+## Component versions & status
+
+<ComponentVersionTable />
