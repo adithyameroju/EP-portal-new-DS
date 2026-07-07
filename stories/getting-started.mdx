@@ -1,0 +1,48 @@
+{/* PROPOSED — S2.1 Getting Started page. Status: awaiting Nikhil's approval.
+    On approval this moves to stories/getting-started.mdx (title "Introduction/Getting Started").
+    Provenance: README.md Getting started + AI-assisted sections; .claude/skills/
+    generate-code.md workflow steps; .claude/designers.md; roadmap S2.1 structure.
+    The `npx compass init` section is explicitly marked as an S3 stub per roadmap. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction/Getting Started" />
+
+> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
+
+# Getting Started
+
+## Run Compass locally
+
+{/* README.md Getting started section, updated to current script names */}
+```bash
+npm install        # install dependencies (private @acko registry configured via .npmrc)
+npm run dev        # Next.js dev server
+npm run storybook  # this Storybook
+npm run audit      # token audit — zero errors required before committing
+```
+
+## Use Compass in your project
+
+{/* Roadmap S2.1: "npx compass init (stub until S3)" — stated as coming, not faked */}
+> `npx compass init` — scaffolds tokens, specs, skills, CLAUDE.md and the audit
+> into a consumer project. **Coming in the packaging stage (S3); not yet published.**
+> Until then, Compass is consumed by working inside this repo.
+
+## The designer workflow (Figma → code)
+
+{/* Steps: README.md "AI-assisted code generation" + .claude/skills/generate-code.md */}
+1. **Load the skill** — `.claude/skills/generate-code.md` (Cursor or Claude Code reads it before generating).
+2. **Provide a Figma frame URL** (via Figma MCP) or a screenshot.
+3. **The AI generates a component** using only Compass tokens and `components/ui/` imports — it must analyze the frame, map every element to a Compass component, and surface every assumption in a "What I assumed" list.
+4. **Run the audits** — `npm run audit` (0 errors required) and `npm run audit:compliance` (behavioral score).
+5. **Log the build** — `npm run log` appends the "What I assumed" block to the drift ledger, which feeds the monthly tightening loop.
+
+## Working with AI — how Compass constrains the LLM
+
+{/* CLAUDE.md structure, stated factually */}
+- `CLAUDE.md` is auto-loaded every session and overrides default behaviors.
+- `.claude/specs/components/` — if a spec exists, the AI must follow it exactly.
+- `components/ui/*.meta.ts` — machine-readable contracts (anti-patterns, AI hints, composition rules) with per-entry provenance; anything uncitable was omitted, never invented.
+- The token audit blocks hardcoded hex, Tailwind color utilities, and arbitrary values at commit time.
+- Read the "What I assumed" output on every build — that list is the drift-prevention mechanism.

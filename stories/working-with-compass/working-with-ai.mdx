@@ -1,0 +1,148 @@
+{/* PROPOSED — S2.4 "Working with Compass" SOP, page 5 of 5. Status: awaiting Nikhil's approval.
+    On approval this moves to stories/ (title "Working with Compass/Working with AI").
+    Provenance: CLAUDE.md (auto-load, universal rule, token/component rules);
+    generate-code.md (Step 5, self-audit); components/ui/_meta-schema.ts (provenance rule);
+    .claude/skills/compass-audit/SKILL.md (rubric, opinion firewall);
+    drift-log/README.md (ledger); .claude/designers.md + .claude/contributing.md
+    (assumption review); .claude/principles.md (tiebreaker). */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction/Working with Compass/Working with AI" />
+
+> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
+
+# Working with AI
+
+Compass doesn't trust the LLM to behave — it constrains it, checks it, and
+captures what it guessed. This page explains the constraint stack, and then
+the single most important thing you do as a designer: reading the "What I
+assumed" output.
+
+---
+
+## How the system constrains the LLM
+
+### 1. CLAUDE.md is auto-loaded and overrides defaults
+
+{/* source: CLAUDE.md header + repo-structure annotation ("auto-loaded every session") */}
+"Read this file fully before writing or modifying any code. It overrides all
+default behaviors." Claude Code loads it automatically every session; it
+carries the token rules, component rules, and the universal
+never-silently-substitute rule.
+
+### 2. Specs override everything general
+
+{/* source: CLAUDE.md "If a component spec exists in .claude/specs/components/, follow it
+    exactly."; spec headers, e.g. dialog.md: "It overrides any general foundation spec
+    where they conflict."; generate-code.md Before-you-start #2 */}
+"If a component spec exists in `.claude/specs/components/`, follow it
+exactly." Each spec states: "It overrides any general foundation spec where
+they conflict." If no spec exists, the AI falls back to the component's
+default shadcn/ui API with Compass tokens.
+
+### 3. meta.ts — the machine-readable contract, with provenance
+
+{/* source: components/ui/_meta-schema.ts doc comments — provenance rule quoted;
+    consumers listed in the schema header */}
+Every component in `components/ui/` has a `*.meta.ts` file: purpose, variants,
+anti-patterns, composition rules, AI hints. Its provenance rule is structural:
+"every antiPattern and aiHints block carries a `source` citation. Anything
+that cannot cite a spec, CLAUDE.md, or observed drift is omitted — never
+invented." Storybook docs, the compliance audit (checks C2/C3/C4), migration
+resolution, and the scaffold pipeline all read this same contract — so the
+docs you read and the rules the AI is graded against cannot diverge.
+
+### 4. The token audit — the hard gate
+
+{/* source: CLAUDE.md Token rules + Audit command */}
+`npm run audit` "must pass with zero errors before any commit." It catches
+hardcoded hex colors, arbitrary pixel values, and raw Tailwind color
+utilities. This is mechanical — no judgment, no exceptions.
+
+### 5. The compliance audit — the behavioral gate
+
+{/* source: .claude/skills/compass-audit/SKILL.md — rubric table C1–C7 and hard rule 4 */}
+`npm run audit:compliance` scores each build against the C1–C7 rubric: tokens
+(C1), primitives re-implemented as raw HTML (C2), composites used without
+their sub-components (C3), unspecced component usage (C4), file naming (C5),
+import paths (C6); C7 (paint-level font verification) is designed but not yet
+implemented. It emits a per-build score. Unlike the token audit, it is
+advisory: "token-audit stays the commit gate; the compliance audit is
+advisory."
+
+{/* source: gap — SKILL.md defines the score formula and tunable weights
+    (scripts/audit-rubric.json, default 100/−5/−1 per STATE.md) but no source states what
+    score a designer should treat as acceptable */}
+> ⚠ **NEEDS OWNER DECISION:** What compliance score counts as "good"? The
+> rubric defines how the score is computed (start score minus weighted
+> errors/warnings, owner-tunable), but no source sets an acceptance threshold
+> a designer can check their build against.
+
+### 6. Principles — the tiebreaker
+
+{/* source: .claude/principles.md "About this document" + "For LLMs" */}
+"When a design decision is ambiguous and the component specs don't resolve
+it, these principles are the tiebreaker." And when principles conflict:
+system-over-invention beats convenience, tokens-over-values beats visual
+approximation, and anything still unresolved gets surfaced to the designer —
+"don't guess."
+
+---
+
+## Reading "What I assumed"
+
+### What it is
+
+{/* source: generate-code.md Step 5 — quoted */}
+Every generation ends with two sections: "**What I did (confident)**" and
+"**What I assumed (please confirm)**." The rule that produces the second one:
+"List every place where Figma data didn't map cleanly and you made a judgment
+call. Present each as a question the designer can confirm quickly. ... Never
+hide judgment calls inside the code. Every decision made without explicit
+token/spec guidance must appear in this list."
+
+### Why it is the drift-prevention mechanism
+
+{/* source: CLAUDE.md Universal rule ("the single most important rule for preventing
+    drift"); drift-log/README.md ("a repeated assumption = a spec that failed to decide
+    something") */}
+Drift doesn't come from the AI being wrong loudly — it comes from the AI being
+wrong *quietly*. The assumptions list is the never-silently-substitute rule
+made visible: every guess is surfaced where you can catch it, instead of
+buried in a className. And it compounds: logged assumptions feed the drift
+ledger, where "a repeated assumption = a spec that failed to decide
+something" — which is exactly what the monthly tightening loop fixes.
+
+### What to do with each assumption
+
+{/* source per row: designers.md §handoff step 4 (trivial vs structural);
+    contributing.md §"Working with the AI toolchain" ("confirm or correct each item");
+    generate-code.md edge cases (color that matches no token → nearest match or new token);
+    drift-log/README.md + compass-audit SKILL.md (ledger → detect → prescribe → owner) */}
+
+| Assumption looks like | Action | Source |
+|-----------------------|--------|--------|
+| Trivial rounding or filler — "spacing rounded from 14px → 12px, placeholder text" | **Confirm** — "need no reply"; it still gets logged | designers.md |
+| Structural call — "a component it wasn't sure about, a color it couldn't map" | **Correct** — "a quick 'yes' or 'use X instead'" | designers.md; contributing.md: "confirm or correct each item" |
+| A value the system genuinely lacks — "This color (#XX) doesn't match any Compass semantic token ... does this need a new token?" | **Escalate** — that's a design decision, not a build decision; it goes to the owner (new token via the import-variables flow, or a spec change via review) | generate-code.md edge cases; contributing.md: "never modify a spec file without a design system review" |
+| The same assumption appearing build after build | **Escalate via the ledger** — `npm run log` every build; Detect clusters it; Prescribe drafts a tightening proposal the owner approves or rejects | drift-log/README.md; compass-audit SKILL.md |
+
+{/* source: compass-audit/SKILL.md hard rules 1–3 — quoted/condensed */}
+The escalation path is deliberately one-way: "the loop proposes, the owner
+approves." Every prescription must cite ledger entries as evidence, and the
+"opinion firewall" splits proposals into Case A (an existing rule was
+ambiguous — a spec-diff proposal) and Case B (Compass has no opinion yet — a
+NEEDS OWNER DECISION item with options, never a recommendation phrased as a
+rule).
+
+### Your responsibilities as reviewer, in order
+
+{/* source: contributing.md §"Working with the AI toolchain" — the four bullets, reordered
+    for the designer flow; generate-code.md Step 4 (self-audit list doubles as review
+    checklist per contributing.md) */}
+1. Check that every component import comes from `@/components/ui/`.
+2. Read the "What I assumed" section — confirm or correct each item.
+3. Run `npm run audit` before accepting the output.
+4. For a deeper check, the generate-code skill's Step 4 self-audit list "is
+   what the AI should self-verify — use it as your review checklist too."

@@ -1,0 +1,43 @@
+{/* PROPOSED — S2.1 Introduction page. Status: awaiting Nikhil's approval.
+    On approval this moves to stories/introduction.mdx (title "Introduction/Welcome").
+    Provenance: every sentence below is quoted or minimally adapted from README.md,
+    CLAUDE.md, or live repo counts — sources noted in comments. No invented voice. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction/Welcome" />
+
+> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
+
+# Compass
+
+{/* Tagline: README.md lines 5-6, verbatim */}
+Compass is Acko's enterprise design system — a single source of truth for every
+color, spacing value, component, and interaction pattern used across Acko products.
+
+{/* Stack line: README.md line 3 + package.json truth (Next 16, Base UI) */}
+Built on **shadcn/ui v4 + Base UI + Tailwind CSS v4 + Next.js**, with
+**Euclid Circular B** as the brand typeface.
+
+## Live status
+
+{/* Counts: live repo truth, S1/S4 outputs — regenerable, never hand-maintained */}
+| | |
+|---|---|
+| Components | **55** in `components/ui/`, all with machine-readable `meta.ts` |
+| Component specs | **33** full specs (LLM-enforceable rules), 22 lightweight |
+| Code Connect | **10** Tier-1 components mapped to Figma Dev Mode |
+| Token audit | **0 errors** required before every commit (`npm run audit`) |
+| Compliance audit | Behavioral checks C1–C6 (`npm run audit:compliance`) |
+
+## Quick links
+
+- **Getting Started** — install and run Compass, or pull it into your project
+- **Foundations** — color, typography, spacing, radius, elevation, motion, rendered from the live token package
+- **Components** — all 55, documented from their `meta.ts` contracts
+- **Design Principles** — the tiebreakers when specs don't resolve a decision
+
+{/* Rule statement: CLAUDE.md "Universal rule", verbatim */}
+> **The rule that runs this system:** Never silently substitute. When Figma data,
+> a spec, or a token doesn't cleanly map to what you're building, surface it
+> explicitly — never bury the judgment call inside the code.

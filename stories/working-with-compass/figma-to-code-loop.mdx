@@ -1,0 +1,187 @@
+{/* PROPOSED — S2.4 "Working with Compass" SOP, page 4 of 5. Status: awaiting Nikhil's approval.
+    On approval this moves to stories/ (title "Working with Compass/The Figma → Code Loop").
+    Provenance: .claude/designers.md (setup, Figma workflow, handoff, assumption review);
+    .claude/skills/generate-code.md (the 5-step process); README.md (AI-assisted section);
+    CLAUDE.md (audit gate); .claude/skills/compass-audit/SKILL.md + drift-log/README.md
+    (S4 capture flow: log → score → detect → prescribe); .claude/skills/write-to-figma.md
+    (write-back). Gaps designers will hit are ⚠ NEEDS OWNER DECISION blocks. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction/Working with Compass/The Figma → Code Loop" />
+
+> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
+
+# The Figma → Code Loop
+
+This is the end-to-end loop a designer runs: design in Figma → generate code
+with AI → audit → review assumptions → log the build → (optionally) write the
+result back to Figma. Each step below cites where its rules live.
+
+---
+
+## Step 0 — One-time setup
+
+{/* source: .claude/designers.md §"First-time setup" — two steps, ~2 minutes */}
+Clone the repo (`git clone ... && npm install`) and open it in Claude Code.
+"Claude Code automatically reads `CLAUDE.md` at the project root, which links
+to all the design system rules, skills, and specs. No extra setup needed."
+
+## Step 1 — Design with the system in Figma
+
+{/* source: .claude/designers.md §"What this means for your Figma workflow" — three rules
+    with their stated reasons */}
+- **Use Compass components, not custom frames.** "If you use a Compass Button,
+  the generator produces a correct `<Button variant="default">`. If you draw a
+  custom rectangle ... it may also guess wrong."
+- **Use the Compass color styles, not local colors.** "The code generator is
+  trained to refuse hardcoded hex values" — unmapped local colors get flagged
+  and questioned, never silently substituted.
+- **Use the spacing scale.** "The generator rounds to the nearest step and
+  flags the rounding in its assumptions list."
+
+{/* source: gap/conflict — designers.md §"Use the spacing scale" says "Compass uses an
+    8-point spacing grid. The named values are: 4px, 8px, 12px, 16px, 24px, 32px, 40px,
+    48px, 64px, 80px, 96px" but foundations/spacing.md publishes the full Tailwind scale
+    (0–384px incl. 2, 6, 10, 14, 20, 28px...) on a 4px grid. Two sources, two different
+    scales — not resolvable without the owner. */}
+> ⚠ **NEEDS OWNER DECISION:** Which spacing list do designers design to? The
+> Designer Guide says "an 8-point spacing grid" with 11 named values
+> (4–96px), while the spacing foundation spec publishes the full Tailwind
+> scale ("respect the 4px grid", including 6px, 10px, 20px, 28px...). A
+> designer following one list will be "rounded" against the other.
+
+## Step 2 — Frame it and copy the link
+
+{/* source: .claude/designers.md §"How to hand off a frame" steps 1–2 */}
+"The Figma frame should contain exactly the component or screen you want
+generated — no extra artboards, no helper notes on top of the design." Then
+right-click → "Copy link to selection."
+
+## Step 3 — Hand it to the AI
+
+{/* source: .claude/designers.md §"How to hand off a frame" step 3; README.md
+    §"AI-assisted code generation"; CLAUDE.md linked-documentation table (generate-code.md
+    must be read before generating UI code) */}
+Give the link to Claude Code or Cursor (with Figma MCP) with the instruction:
+"Generate code for this frame using Compass." The tool works under
+`.claude/skills/generate-code.md`, which it must read before generating any UI
+code from a Figma frame.
+
+## Step 4 — The AI runs the 5-step generate-code process
+
+{/* source: .claude/skills/generate-code.md Steps 1–5, plus "Before you start" */}
+What the skill obliges the AI to do — useful to know so you can tell when it's
+being skipped:
+
+1. **Analyze the frame** — identify every component, layout, spacing, colors,
+   text styles, states — and "output a brief analysis before writing code."
+2. **Map to Compass components** — every element maps to an existing
+   `components/ui/` component; if something doesn't map, the AI must **stop
+   and ask** before creating anything new.
+3. **Write the code** — imports only from `@/components/ui/`, icons only from
+   `lucide-react`, semantic tokens only, spacing from the scale, mobile-first
+   responsive classes.
+4. **Self-audit** — a 11-point checklist (no hex, no arbitrary values, no
+   reimplemented components, composites used "at every level," correct APIs).
+   "If any check fails, fix it before presenting."
+5. **Present with two sections** — "What I did (confident)" and "What I
+   assumed (please confirm)." More on reading that list in
+   *Working with AI*.
+
+## Step 5 — Run the token audit (the hard gate)
+
+{/* source: CLAUDE.md §Audit command ("zero errors required before committing") */}
+```bash
+npm run audit                 # token audit — hard gate, zero errors required
+```
+
+`npm run audit` catches hardcoded hex, arbitrary pixel values, and raw
+Tailwind color utilities — "zero errors required before committing. If audit
+fails, fix before proceeding."
+
+## Step 6 — Review "What I assumed"
+
+{/* source: .claude/designers.md §"How to hand off a frame" step 4 — quoted */}
+"Review the assumptions list. Trivial items (spacing rounded from 14px →
+12px, placeholder text) need no reply. Structural decisions (a component it
+wasn't sure about, a color it couldn't map) need a quick 'yes' or 'use X
+instead.'"
+
+## Step 7 — Log the build, then score it
+
+{/* source: drift-log/README.md §"How an entry gets here" — quoted/condensed;
+    .claude/skills/compass-audit/SKILL.md §"Score a build" (the log → score → dashboard
+    sequence, verbatim) + hard rule 4 (token-audit stays the commit gate; compliance
+    audit is advisory) + §Cadence ("Capture: every build") */}
+```bash
+npm run log            # capture: paste "What I assumed", files auto-detected
+npm run audit:compliance -- --entry drift-log/entries/<entry>.json
+npm run dashboard      # regenerate drift-log/dashboard.html
+```
+
+`npm run log` "asks you to paste the 'What I assumed' block from the AI's
+output," auto-detects the files the session changed and the Compass components
+they import, and writes one JSON entry to `drift-log/entries/`. It is
+"designed for zero friction — if any auto-detection fails it degrades
+gracefully." Capture happens **every build**.
+
+The compliance audit then scores that entry's files against the C1–C7 rubric
+(tokens, provenance, composites, spec coverage, naming, imports) and writes a
+report. Unlike Step 5, this score is advisory: "token-audit stays the commit
+gate ... the compliance audit is advisory." The weekly/monthly drift detection
+and the tightening proposals only read this ledger.
+
+## Step 8 — (Optional) Write the result back to Figma
+
+{/* source: .claude/skills/write-to-figma.md — critical rule, Step 1, and Fallback;
+    CLAUDE.md Component rules ("Figma write-back: library instances only") */}
+When you want the built screen represented in Figma, the write-to-figma skill
+applies. Its critical rule: "**NEVER** use `figma.createFrame()` or
+`figma.createRectangle()` to represent a Compass component. Always use
+`figma.importComponentByKeyAsync(key)`" with keys from
+`.claude/specs/figma/component-keys.md`. Raw frames are acceptable only for
+page containers, layout rows/columns, and spacers. If a component's key is
+missing from the registry, the skill must flag it ("Warning: [Component]
+written as raw frame — key not in registry"), never hide it.
+
+## What happens after — the loop closes
+
+{/* source: .claude/skills/compass-audit/SKILL.md §Detect, §Prescribe, §Cadence, hard rule 1 */}
+On a weekly-to-monthly cadence, `npm run detect` reads the last N ledger
+entries and clusters drift hotspots; `npm run prescribe` scaffolds a
+tightening-plan **proposal** in `drift-log/proposals/`. "The loop proposes,
+the owner approves" — no spec or rule is ever edited automatically. Your
+logged assumptions are the raw material: "a repeated assumption = a spec that
+failed to decide something."
+
+---
+
+## Open questions in this loop
+
+{/* source: gap — generate-code.md says the output is "a React component file" but no
+    source names the destination folder; CLAUDE.md repo structure describes
+    components/blocks/ as "Acko-specific compositions (Phase 3+)" without assigning
+    designer builds to it */}
+> ⚠ **NEEDS OWNER DECISION:** Where do designer-generated screens live? The
+> generate-code skill defines the file's *content* but no source says which
+> folder a new build belongs in (`components/blocks/`? an `app/` route?
+> somewhere else?). Designers need one stated destination.
+
+{/* source: gap — contributing.md §"PR process" is addressed to engineers; designers.md
+    stops at "review the output" and never mentions commit/branch/PR; drift-log/README
+    assumes git-tracked changes for auto-detection */}
+> ⚠ **NEEDS OWNER DECISION:** Do designers commit and open PRs for their own
+> builds, or hand the reviewed output to an engineer? The contributing guide
+> defines the PR process for engineers; the Designer Guide ends at "review
+> the output." The loop needs the ownership of the commit step stated.
+
+{/* source: gap/staleness — designers.md §"Component status" table lists specs/Code Connect
+    for Button/Input/Card only ("Phase 4+" for the rest), while CLAUDE.md/STATE.md record
+    33 specs and the roadmap records 10 Code Connect mappings */}
+> ⚠ **NEEDS OWNER DECISION:** Which surface is the truth for component status?
+> The Designer Guide's status table still says only Button/Input/Card have
+> specs and Code Connect, while the repo now has 33 specs (and the roadmap
+> records 10 Code Connect mappings). Should the SOP point to a single live
+> status surface (e.g. the meta-driven Storybook badges) and retire the
+> hand-maintained table?
