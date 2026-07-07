@@ -41,6 +41,8 @@
 - 2026-07-07 PROVISIONAL interpretation (owner may revisit): "remaining steps for S4" read as granting the C7a BUILD (static font declaration-consistency tier — the owner-originated paint-level check); C7b Playwright probe stays design-only pending its trigger-policy decision; primitiveElements/C3-severity remain open rulings.
 - 2026-07-07: S3 scope note: publish-to-registry HELD for owner credentials/go; fresh-app verification runs against a local npm-pack tarball instead. tsup devDependency install = roadmap-sanctioned (S3 names it).
 
+- 2026-07-07: Font weight-gap RULED: HOST the missing weights (100/200/800/900). Execution blocked on owner-supplied .woff2 cuts (Euclid Circular B retail family = 5 weights 300-700; foundry availability of Thin/ExtraLight/ExtraBold/Black to be confirmed by owner against the Acko license). If cuts don't exist → fallback is narrowing the spec table (owner informed). C7a warning stays live until resolved — by design.
+
 ## Current stage
 **S3 IN PROGRESS (opened 2026-07-07 on S2 exit approval) + S4 C7a build + S5 Storybook integration running in parallel.**
 Deployed: Chromatic Build 1, auto-accepted — 55 components / 171 stories / 171
