@@ -53,3 +53,7 @@ yalc.lock
 /drift-log/dashboard.html
 /drift-log/detect/
 # note: drift-log/entries/ and drift-log/proposals/ ARE committed (evidence trail)
+# package build output (S3 — `npm run build:pkg`); derived artifact, never committed
+/dist/
+# npm pack tarballs (keep out of the repo; pack to /private/tmp)
+*.tgz
