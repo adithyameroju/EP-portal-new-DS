@@ -10,6 +10,15 @@
  * conventions, per that spec's Status section).
  */
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
 const durations = [
   { token: 'duration-75', ms: '75ms', cls: 'duration-75', usage: 'Instant feedback (opacity flashes)' },
   { token: 'duration-100', ms: '100ms', cls: 'duration-100', usage: 'Micro-interactions (checkbox, toggle)' },
@@ -88,24 +97,26 @@ const patterns = [
 
 export function TransitionPatternsTable() {
   return (
-    <table className="sb-unstyled w-full border-collapse font-sans text-sm">
-      <thead>
-        <tr className="border-b border-border text-left text-muted-foreground">
-          <th className="py-2 pr-4 font-medium">Pattern</th>
-          <th className="py-2 pr-4 font-medium">Classes</th>
-          <th className="py-2 font-medium">When</th>
-        </tr>
-      </thead>
-      <tbody>
-        {patterns.map((p) => (
-          <tr key={p.pattern} className="border-b border-border">
-            <td className="py-2 pr-4 text-foreground">{p.pattern}</td>
-            <td className="py-2 pr-4"><code className="text-foreground">{p.classes}</code></td>
-            <td className="py-2 text-muted-foreground">{p.when}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="sb-unstyled font-sans">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Pattern</TableHead>
+            <TableHead>Classes</TableHead>
+            <TableHead>When</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {patterns.map((p) => (
+            <TableRow key={p.pattern}>
+              <TableCell className="text-foreground">{p.pattern}</TableCell>
+              <TableCell><code className="text-foreground">{p.classes}</code></TableCell>
+              <TableCell className="text-muted-foreground">{p.when}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 
@@ -123,23 +134,25 @@ const presets = [
 
 export function AnimationPresetsTable() {
   return (
-    <table className="sb-unstyled w-full border-collapse font-sans text-sm">
-      <thead>
-        <tr className="border-b border-border text-left text-muted-foreground">
-          <th className="py-2 pr-4 font-medium">Animation</th>
-          <th className="py-2 pr-4 font-medium">Description</th>
-          <th className="py-2 font-medium">Used by</th>
-        </tr>
-      </thead>
-      <tbody>
-        {presets.map((p) => (
-          <tr key={p.animation} className="border-b border-border">
-            <td className="py-2 pr-4"><code className="text-foreground">{p.animation}</code></td>
-            <td className="py-2 pr-4 text-foreground">{p.description}</td>
-            <td className="py-2 text-muted-foreground">{p.usedBy}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="sb-unstyled font-sans">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Animation</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Used by</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {presets.map((p) => (
+            <TableRow key={p.animation}>
+              <TableCell><code className="text-foreground">{p.animation}</code></TableCell>
+              <TableCell className="text-foreground">{p.description}</TableCell>
+              <TableCell className="text-muted-foreground">{p.usedBy}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

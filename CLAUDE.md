@@ -148,6 +148,9 @@ compass-design-system/
 **Canonical layout (owner decision, S0.1):** specs live in `.claude/specs/` —
 never in a top-level `specs/`; Storybook stories live in top-level `stories/`.
 Any tree that diverges from this conforms to this layout, not the other way round.
+Naming: component/renderer files are kebab-case everywhere (enforced by
+compliance check C5); Storybook MDX doc-page filenames follow Storybook's
+PascalCase convention and are exempt (owner ruling, 2026-07-07).
 
 ---
 

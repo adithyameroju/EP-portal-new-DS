@@ -9,6 +9,15 @@
  * `.claude/specs/foundations/radius.md`.
  */
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
 const radiusScale = [
   { token: 'radius/xs', cls: 'rounded-xs', px: 2, usage: 'Subtle rounding (tags, inline badges)' },
   { token: 'radius/sm', cls: 'rounded-sm', px: 4, usage: 'Small elements (checkboxes, small chips)' },
@@ -70,23 +79,25 @@ const componentMappings = [
 
 export function ComponentRadiusTable() {
   return (
-    <table className="sb-unstyled w-full border-collapse font-sans text-sm">
-      <thead>
-        <tr className="border-b border-border text-left text-muted-foreground">
-          <th className="py-2 pr-4 font-medium">Component</th>
-          <th className="py-2 pr-4 font-medium">Recommended radius</th>
-          <th className="py-2 font-medium">Token</th>
-        </tr>
-      </thead>
-      <tbody>
-        {componentMappings.map((m) => (
-          <tr key={m.component} className="border-b border-border">
-            <td className="py-2 pr-4 text-foreground">{m.component}</td>
-            <td className="py-2 pr-4 text-foreground">{m.radius}</td>
-            <td className="py-2"><code className="text-foreground">{m.token}</code></td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="sb-unstyled font-sans">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Component</TableHead>
+            <TableHead>Recommended radius</TableHead>
+            <TableHead>Token</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {componentMappings.map((m) => (
+            <TableRow key={m.component}>
+              <TableCell className="text-foreground">{m.component}</TableCell>
+              <TableCell className="text-foreground">{m.radius}</TableCell>
+              <TableCell><code className="text-foreground">{m.token}</code></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

@@ -9,6 +9,15 @@
  * `.claude/specs/foundations/elevation.md`.
  */
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
 const dropShadows = [
   { token: 'shadow/2xs', cls: 'shadow-2xs', usage: 'Subtle border-like shadow' },
   { token: 'shadow/xs', cls: 'shadow-xs', usage: 'Buttons resting state' },
@@ -121,23 +130,25 @@ const hierarchy = [
 
 export function ElevationHierarchyTable() {
   return (
-    <table className="sb-unstyled w-full border-collapse font-sans text-sm">
-      <thead>
-        <tr className="border-b border-border text-left text-muted-foreground">
-          <th className="py-2 pr-4 font-medium">Level</th>
-          <th className="py-2 pr-4 font-medium">Shadow token</th>
-          <th className="py-2 font-medium">When to use</th>
-        </tr>
-      </thead>
-      <tbody>
-        {hierarchy.map((h) => (
-          <tr key={h.level} className="border-b border-border">
-            <td className="py-2 pr-4 text-foreground">{h.level}</td>
-            <td className="py-2 pr-4"><code className="text-foreground">{h.token}</code></td>
-            <td className="py-2 text-muted-foreground">{h.usage}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="sb-unstyled font-sans">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Level</TableHead>
+            <TableHead>Shadow token</TableHead>
+            <TableHead>When to use</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {hierarchy.map((h) => (
+            <TableRow key={h.level}>
+              <TableCell className="text-foreground">{h.level}</TableCell>
+              <TableCell><code className="text-foreground">{h.token}</code></TableCell>
+              <TableCell className="text-muted-foreground">{h.usage}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

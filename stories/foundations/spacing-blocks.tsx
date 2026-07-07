@@ -9,6 +9,15 @@
  * `.claude/specs/foundations/spacing.md`.
  */
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
 const spacingScale = [
   { token: 'spacing/0', cls: 'w-0', px: 0 },
   { token: 'spacing/px', cls: 'w-px', px: 1 },
@@ -116,48 +125,52 @@ const breakpoints = [
 
 export function ResponsiveTokensTable() {
   return (
-    <table className="sb-unstyled w-full border-collapse font-sans text-sm">
-      <thead>
-        <tr className="border-b border-border text-left text-muted-foreground">
-          <th className="py-2 pr-4 font-medium">Token</th>
-          <th className="py-2 pr-4 font-medium">Desktop</th>
-          <th className="py-2 pr-4 font-medium">Mobile</th>
-          <th className="py-2 font-medium">Usage</th>
-        </tr>
-      </thead>
-      <tbody>
-        {responsiveTokens.map((r) => (
-          <tr key={r.token} className="border-b border-border">
-            <td className="py-2 pr-4"><code className="text-foreground">{r.token}</code></td>
-            <td className="py-2 pr-4 text-foreground">{r.desktop}</td>
-            <td className="py-2 pr-4 text-foreground">{r.mobile}</td>
-            <td className="py-2 text-muted-foreground">{r.usage}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="sb-unstyled font-sans">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Token</TableHead>
+            <TableHead>Desktop</TableHead>
+            <TableHead>Mobile</TableHead>
+            <TableHead>Usage</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {responsiveTokens.map((r) => (
+            <TableRow key={r.token}>
+              <TableCell><code className="text-foreground">{r.token}</code></TableCell>
+              <TableCell className="text-foreground">{r.desktop}</TableCell>
+              <TableCell className="text-foreground">{r.mobile}</TableCell>
+              <TableCell className="text-muted-foreground">{r.usage}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 
 export function BreakpointsTable() {
   return (
-    <table className="sb-unstyled w-full border-collapse font-sans text-sm">
-      <thead>
-        <tr className="border-b border-border text-left text-muted-foreground">
-          <th className="py-2 pr-4 font-medium">Token</th>
-          <th className="py-2 pr-4 font-medium">Value</th>
-          <th className="py-2 font-medium">Usage</th>
-        </tr>
-      </thead>
-      <tbody>
-        {breakpoints.map((b) => (
-          <tr key={b.token} className="border-b border-border">
-            <td className="py-2 pr-4"><code className="text-foreground">{b.token}</code></td>
-            <td className="py-2 pr-4 text-foreground">{b.px}px</td>
-            <td className="py-2 text-muted-foreground">{b.usage}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="sb-unstyled font-sans">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Token</TableHead>
+            <TableHead>Value</TableHead>
+            <TableHead>Usage</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {breakpoints.map((b) => (
+            <TableRow key={b.token}>
+              <TableCell><code className="text-foreground">{b.token}</code></TableCell>
+              <TableCell className="text-foreground">{b.px}px</TableCell>
+              <TableCell className="text-muted-foreground">{b.usage}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
