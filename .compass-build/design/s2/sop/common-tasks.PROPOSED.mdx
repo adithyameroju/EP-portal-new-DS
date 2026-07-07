@@ -1,0 +1,189 @@
+{/* PROPOSED — S2.4 "Working with Compass" SOP, page 3 of 5. Status: awaiting Nikhil's approval.
+    On approval this moves to stories/ (title "Working with Compass/Common Tasks").
+    Provenance: every do/don't row traces to a numbered "Rules for LLMs" item or a
+    styling/pattern section in the named spec (.claude/specs/components/ and
+    .claude/specs/foundations/), CLAUDE.md, or components/ui/chart.meta.ts.
+    Only rules that exist in those sources appear; real gaps (charts beyond tokens,
+    density defaults, the card-shadow fork) are ⚠ NEEDS OWNER DECISION blocks. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Working with Compass/Common Tasks" />
+
+# Common Tasks — Do / Don't
+
+Rules on this page are lifted from the specs, not written for this page. Each
+section cites its source; wording in quotes is verbatim.
+
+---
+
+## Forms
+
+{/* source: .claude/specs/components/field.md header callout — quoted verbatim */}
+> ⚠️ "This repo does not have a `form.tsx` (react-hook-form) component. The
+> equivalent is `field.tsx` — a framework-agnostic field layout system. Use
+> `Field` + `FieldError` for all form field structure."
+
+{/* source: field.md §"Rules for LLMs" 1–7; card.md §"Card as a form container";
+    CLAUDE.md Component rules (Field system line) */}
+
+| Do | Don't | Source |
+|----|-------|--------|
+| Use `Field` when you need errors or descriptions | Over-engineer "a 2-field login card with `Field`/`FieldGroup`" — use standalone `Label` + `Input` there | field.md rule 1 |
+| Match `FieldLabel htmlFor` to the input's `id` | Render `FieldLabel` with no `htmlFor` / input with no `id` | field.md rule 2 |
+| Always render `FieldError` — "it returns nothing when errors is empty" | Conditionally hide it with your own logic | field.md rule 3 |
+| Use `FieldSet` + `FieldLegend` for checkbox/radio groups | Use "a plain `div` with a heading for a group of checkboxes — an accessibility violation" | field.md rule 4 |
+| Use `FieldContent` (with `FieldTitle` + `FieldDescription`) beside a Checkbox/Radio item | Build that stack with a manual `div` | field.md rule 5 |
+| Keep one level of `FieldGroup` | Nest `FieldGroup` inside `FieldGroup` | field.md rule 6 |
+| Use `FieldLegend` only inside `FieldSet` | Use it standalone — "no semantic value" | field.md rule 7 |
+| Pick orientation deliberately: `vertical` (default), `horizontal` (settings rows), `responsive` (vertical on mobile, horizontal at `md`) | — | field.md §Field orientation |
+
+---
+
+## Dialogs
+
+{/* source: .claude/specs/components/dialog.md §"Rules for LLMs" 1–8 and the header warning */}
+
+| Do | Don't | Source |
+|----|-------|--------|
+| Keep Dialog and AlertDialog separate — "Dialog = general content/forms. AlertDialog = destructive confirmations." | Mix their sub-components | dialog.md warning + rule 1 |
+| Put `DialogTitle` inside every `DialogHeader` | Use `DialogHeader` without `DialogTitle` — "structural drift" | dialog.md rule 2 |
+| Pass triggers via the `render` prop: `<DialogTrigger render={<Button>Open</Button>} />` | Use `asChild` ("Radix pattern, causes React warnings in this repo") or nest a `Button` as children ("button inside a button") | dialog.md rule 3 |
+| Give AlertDialog both `AlertDialogCancel` and `AlertDialogAction` — "the user must have an explicit escape" | Show an AlertDialog with only one button | dialog.md rule 4 |
+| Use `AlertDialogAction variant="destructive"` directly — "it is already a Button" | Wrap it in `<Button>` | dialog.md rule 5 |
+| Rely on the built-in close button; add `DialogClose` in the footer only for a labelled "Cancel"; set `showCloseButton={false}` "only when the footer already has a cancel action" | Write custom close logic | dialog.md rule 6 |
+| Keep the built-in width — "the built-in `sm:max-w-sm` is the Compass standard" | Hardcode widths on `DialogContent`; "only override for confirmed design exceptions noted in 'What I assumed'" | dialog.md rule 7 |
+| Order footer buttons: "Cancel/secondary on the left, confirm/primary on the right" (matches the built-in `sm:justify-end`) | Reverse the order | dialog.md rule 8 |
+
+---
+
+## Tables
+
+{/* source: .claude/specs/components/table.md §"Rules for LLMs" 1–8 and
+    §"Table with status badges" mapping table */}
+
+| Do | Don't | Source |
+|----|-------|--------|
+| Use the full sub-component tree (`Table`/`TableHeader`/`TableBody`/`TableRow`/`TableHead`/`TableCell`) | Use raw `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` | table.md rule 1 |
+| Represent status with `Badge` (mapping below) | Write colored text like `<span className="text-green-600">Active</span>` | table.md rule 2 |
+| Make linked cell text `Button render={<Link href="..." />} variant="link"` | Use `<a>`, `onClick + router.push()`, or `asChild` | table.md rule 3 |
+| Reserve `TableFooter` for summary rows | Put actions or pagination in it — "pagination goes below the `Table`, not inside it" | table.md rule 4 |
+| Right-align numeric columns (`className="text-right"` on both `TableHead` and `TableCell`) | Leave currency/counts/percentages left-aligned | table.md rule 5 |
+| Rely on the built-in `hover:bg-muted/50` on rows | Add manual hover styles — "creates doubled effects" | table.md rule 6 |
+| Put `TableCaption` inside `Table` | Place the caption outside | table.md rule 7 |
+| Flag non-standard table structures in "What I assumed" and compose with Tailwind utilities on existing sub-components | Modify the Table primitive for one-off layouts | table.md rule 8 |
+
+**Status → Badge variant mapping** (Acko enterprise pattern):
+
+{/* source: table.md §"Table with status badges" — table verbatim */}
+
+| Status | Badge variant |
+|--------|--------------|
+| Active / Approved / Success | `default` |
+| Pending / Processing / Draft | `outline` |
+| Expired / Failed / Rejected | `destructive` |
+| Inactive / Cancelled | `secondary` |
+
+---
+
+## Charts
+
+{/* source: .claude/specs/foundations/color.md §"Chart colors" table + Rules for LLMs rule 5 */}
+Chart series colors are tokens, and they are **ordered**:
+
+| Token | Light | Dark | Role |
+|-------|-------|------|------|
+| `--chart-1` | `#6841E6` | `#9B8FF6` | Primary data series |
+| `--chart-2` | `#FF8D28` | `#FFA85C` | Second data series |
+| `--chart-3` | `#3B82F6` | `#60A5FA` | Third data series |
+| `--chart-4` | `#22C55E` | `#4ADE80` | Fourth data series |
+| `--chart-5` | `#EC4899` | `#F472B6` | Fifth data series |
+
+"Chart colors are ordered. Use `--chart-1` through `--chart-5` in sequence. Do
+not reassign chart colors based on data meaning (e.g., don't use `--chart-4`
+for 'success'...)" — color.md, Rules for LLMs.
+
+{/* source: components/ui/chart.meta.ts aiHints.compositionRules (provenance:
+    source-comment in components/ui/chart.tsx) */}
+**Composition:** chart pieces must live inside `ChartContainer` — "useChart
+(and therefore ChartTooltipContent/ChartLegendContent) must be used within a
+ChartContainer — the hook throws outside the ChartContext provider."
+`ChartContainer` provides responsive sizing, per-series CSS color variables,
+and themed Recharts overrides.
+
+{/* source: gap — chart has no component spec (chart.meta.ts specStatus: "none");
+    .claude/principles.md §"What we'll learn through building" lists "Data visualization
+    conventions — which chart types, how much annotation?" as intentionally blank */}
+> ⚠ **NEEDS OWNER DECISION:** Beyond the ordered chart tokens and the
+> ChartContainer requirement, there are no chart rules — chart has no spec,
+> and `principles.md` deliberately leaves "Data visualization conventions —
+> which chart types, how much annotation?" blank until real product work
+> decides it. Which chart types are preferred, how are axes/legends/tooltips
+> configured by default, and when is a table better than a chart? No source
+> answers these yet.
+
+---
+
+## Layout density and spacing
+
+{/* source: .claude/specs/foundations/spacing.md §"Rules for LLMs" 1–5 */}
+
+| Do | Don't | Source |
+|----|-------|--------|
+| Use only values from the spacing scale; if a design value isn't in the scale, "use the nearest scale value" | Invent values like `p-[13px]` or `gap-[22px]` | spacing.md rule 1 |
+| Use Tailwind spacing utilities (`p-4`, `m-2`, `gap-6`) | Write raw CSS (`padding: 16px`) — "the audit script flags raw pixel values" | spacing.md rule 2 |
+| Respect the 4px grid | — | spacing.md rule 3 |
+| Use the responsive tokens (`container-padding-x`, `section-padding-y`, ...) for page-level layout | "Hardcode different mobile/desktop values manually" | spacing.md rule 4 |
+| Map Figma spacing to the nearest Tailwind class (24px → `p-6`) | Write `p-[24px]` | spacing.md rule 5 |
+
+**Common spacing patterns** ("not tokens — guidelines for consistent usage"):
+
+{/* source: spacing.md §"Common spacing patterns" — table verbatim */}
+
+| Context | Recommended token | Example |
+|---------|------------------|---------|
+| Inline element gap (icon + text) | `gap-2` (8px) | Button icon spacing |
+| Input internal padding | `px-3 py-2` (12px / 8px) | Text input |
+| Card internal padding | `p-4` or `p-6` (16px / 24px) | Card content area |
+| Stack gap (form fields) | `gap-4` (16px) | Vertical form layout |
+| Section gap (page sections) | `gap-8` to `gap-16` (32–64px) | Between page sections |
+| Page margin (mobile) | `px-4` (16px) | Mobile horizontal padding |
+| Page margin (desktop) | `px-6` (24px) | Desktop horizontal padding |
+
+**Cards in layouts:**
+
+{/* source: .claude/specs/components/card.md §"Card in layouts" and Rules for LLMs 4, 7, 9;
+    content-only card note */}
+- "Spacing between cards: use `gap-4` (16px) for compact lists, `gap-6` (24px)
+  for spacious grids. Do not use margin on individual cards." (card.md)
+- "Card padding is built in. Do not add explicit padding to CardHeader,
+  CardContent, or CardFooter — they already have `px-4`. Card itself has
+  `py-4`." Content-only cards (no sub-components) need `p-6` on the Card
+  itself. (card.md)
+- "No nested cards. If Figma shows a card inside a card, the inner element is
+  a `div` with `bg-muted rounded-md p-4`, not another Card component." (card.md)
+- Do not add `border border-border` to Card — "the `ring-1 ring-foreground/10`
+  IS the card's visual border." (card.md)
+
+{/* source: gap/fork — card.md styling table + rule 4 say "Shadow: none / do NOT add shadow-sm
+    by default" while foundations/elevation.md rule 3 says "Cards default to shadow-sm.
+    Elevated on hover: hover:shadow-md"; recorded as an open owner fork in
+    .compass-build/STATE.md (2026-07-07 CARD DEFAULT entry) */}
+> ⚠ **NEEDS OWNER DECISION (open fork):** Do cards carry a default shadow?
+> `card.md` says shadow **none** ("Do NOT add `shadow-sm` or any shadow to
+> `<Card>` by default") but `elevation.md` says "Cards default to `shadow-sm`,"
+> and the Figma library card renders `shadow/xs` plus a real border. This
+> contradiction is logged as an unresolved fork in the build state — until the
+> owner rules, follow `card.md` (per generate-code.md: "If a spec exists,
+> follow it exactly — it overrides general foundation specs") and surface any
+> shadow you add in "What I assumed."
+
+{/* source: gap — .claude/principles.md §"What we'll learn through building" lists
+    "Information density preferences — compact tables vs. spacious cards?" and "Form density —
+    one field per row vs. multi-column forms?" as intentionally blank */}
+> ⚠ **NEEDS OWNER DECISION:** Default density. `principles.md` deliberately
+> leaves blank both "Information density preferences — compact tables vs.
+> spacious cards?" and "Form density — one field per row vs. multi-column
+> forms?" Until real product work fills these in, there is no Compass answer
+> to "should this screen be compact or spacious" beyond the per-context
+> spacing patterns above.

@@ -1,0 +1,98 @@
+{/* PROPOSED — S2.4 "Working with Compass" SOP, page 1 of 5. Status: awaiting Nikhil's approval.
+    On approval this moves to stories/ (title "Working with Compass/Overview").
+    Provenance: Compass_GA_Roadmap.md §S2.4 and Standing rules; CLAUDE.md
+    (Working rhythm, Universal rule, Token rules, Component rules);
+    .claude/principles.md (For LLMs). Every section below carries its own
+    source annotation. Gaps no source answers are marked
+    "⚠ NEEDS OWNER DECISION" — they are questions for the owner, not omissions. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Working with Compass/Overview" />
+
+# Working with Compass
+
+{/* source: Compass_GA_Roadmap.md §S2.4 — "a Compass-native version of the ACKO D2C SOP,
+    living inside Storybook ... an operational 'when to do what' SOP" */}
+This is the Compass standard operating procedure — the operational "when to do
+what" guide for designing and building with Compass. It lives here in Storybook
+so it's always next to the components it governs. It is written for designers;
+no code knowledge is assumed.
+
+Everything in this SOP is assembled from the rules that already exist in the
+repo — `CLAUDE.md`, the component specs in `.claude/specs/`, the skills in
+`.claude/skills/`, and `.claude/principles.md`. Nothing here is new opinion.
+Where a real question has no answer in any of those sources, you'll see a
+**⚠ NEEDS OWNER DECISION** block instead of an invented answer.
+
+---
+
+## The one rule above all others
+
+{/* source: CLAUDE.md "Universal rule" — quoted verbatim */}
+> **Never silently substitute.** When Figma data, a spec, or a token doesn't
+> cleanly map to what you're building, surface it explicitly. Present it as a
+> question the designer can confirm quickly — never bury the judgment call
+> inside the code. This is the single most important rule for preventing drift.
+
+This rule applies to every tool in the chain — the AI generating your code, the
+token importer, the Figma write-back — and to you. If something doesn't fit,
+say so out loud; don't approximate quietly.
+
+---
+
+## The working rhythm
+
+{/* source: CLAUDE.md "Working rhythm (non-negotiable)" — the four bullets, condensed
+    with key phrases quoted */}
+These four habits are non-negotiable for any AI session in this repo:
+
+| Habit | What it means |
+|-------|---------------|
+| **Plan-then-execute, always** | "For any task with more than one step, propose a checklist first, wait for confirmation, then execute one item at a time. ... Never batch changes silently." |
+| **Ask before anything irreversible** | Deleting files, restructuring folders, installing dependencies, scripts that modify many files, any Git operation — ask first. Reversible things (writing a new file, editing one just created) — proceed. |
+| **Plain English** | "Nikhil is a designer, not a developer. Explain in plain English as you go." When a command is suggested, it comes with what it does. |
+| **Strategy decisions go back to Claude.ai** | "If a real choice arises that's not in the spec files or this file, flag and pause. Don't decide unilaterally." |
+
+{/* source: Compass_GA_Roadmap.md "Standing rules" 1 and 3 */}
+Two standing rules from the roadmap sit on top of these: **propose, then
+approve** — no generative output (specs, SOP text, tightening plans) ships
+without owner review — and **evidence, not assertion** — "every 'it's done' is
+backed by a passing audit, a green typecheck, or a rendered screen — never a
+claim."
+
+---
+
+## The hard gates, in one paragraph
+
+{/* source: CLAUDE.md "Token rules (enforced by audit script)" and "Component rules" */}
+Every build must use only semantic token classes (`bg-primary`,
+`text-foreground`, ...) — never hardcoded hex, never Tailwind color utilities
+(`bg-purple-600`), never arbitrary spacing (`p-[13px]`) or radius
+(`rounded-[7px]`). Every component comes from `components/ui/` — "never write a
+raw `<button>`, `<input>`, or `<div>` where a Compass component exists." And
+`npm run audit` must pass with **zero errors** before any commit.
+
+---
+
+## Map of this SOP
+
+{/* source: Compass_GA_Roadmap.md §S2.4 — the four checklist bullets define these pages */}
+
+| Page | What it answers |
+|------|-----------------|
+| **Choosing a Component** | "Which component for this job?" — the decision tables from the specs, plus compose-vs-request-new and when a pattern earns promotion into the system |
+| **Common Tasks** | Do / don't for forms, dialogs, tables, charts, and layout density — each rule cited to its spec |
+| **The Figma → Code Loop** | The end-to-end designer loop as numbered steps: Figma frame → AI generation → audits → assumption review → drift ledger → Figma write-back |
+| **Working with AI** | How the system constrains the LLM, and how to read the "What I assumed" output — the drift-prevention mechanism |
+
+---
+
+## When the rules don't resolve it
+
+{/* source: .claude/principles.md "About this document" and "For LLMs" */}
+When a design decision is ambiguous and the component specs don't resolve it,
+`.claude/principles.md` is the tiebreaker. When the principles conflict with
+each other: "System over invention" wins over speed or convenience; "Tokens
+over values" wins over visual approximation; and "when two principles don't
+resolve the question, surface the ambiguity to the designer — don't guess."

@@ -1,0 +1,249 @@
+{/* PROPOSED — S2.4 "Working with Compass" SOP, page 2 of 5. Status: awaiting Nikhil's approval.
+    On approval this moves to stories/ (title "Working with Compass/Choosing a Component").
+    Provenance: every decision table below is quoted from the "When to use ..."
+    section of the named spec in .claude/specs/components/ — rows are verbatim,
+    not paraphrased. Compose-vs-request-new from generate-code.md Step 2,
+    designers.md, principles.md. Promotion from Compass_GA_Roadmap.md §S6.
+    Real gaps are marked ⚠ NEEDS OWNER DECISION. */}
+
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Working with Compass/Choosing a Component" />
+
+# Choosing a Component
+
+{/* source: CLAUDE.md "Spec files" — "If a component spec exists in .claude/specs/components/,
+    follow it exactly."; generate-code.md "Before you start" #2 — "If no spec exists, use the
+    component's default shadcn/ui API with Compass tokens" */}
+Every table on this page comes from a component spec's own "When to use"
+section. The rule of the road: **if a component spec exists in
+`.claude/specs/components/`, follow it exactly.** If no spec exists, use the
+component's default shadcn/ui API with Compass tokens.
+
+---
+
+## Checkbox vs Switch vs RadioGroup
+
+{/* source: .claude/specs/components/checkbox.md §"When to use Checkbox vs Switch vs RadioGroup" — table verbatim */}
+
+| Situation | Use |
+|-----------|-----|
+| One or more independent options in a form (submitted on Save) | `Checkbox` |
+| A single setting that takes effect immediately on toggle | `Switch` |
+| Selecting exactly one option from a mutually exclusive set | `RadioGroup` |
+| "Select all" with child selections | `Checkbox` (indeterminate state) |
+| Terms & conditions / consent | `Checkbox` |
+
+{/* source: switch.md §"When to use Switch vs Checkbox" — "The decisive rule" quoted;
+    radio-group.md §"When to use RadioGroup vs Checkbox vs Select" — "The key rule" quoted */}
+The decisive rule (from the Switch spec): "If toggling it should immediately
+change something in the app (no form submit), use `Switch`. If it's a form
+field that's confirmed when the user clicks Save/Continue, use `Checkbox`."
+And from the RadioGroup spec: "`RadioGroup` is for choosing exactly one option
+from a visible set. If the set is too long to show all at once, use `Select`
+instead."
+
+---
+
+## Select vs Combobox
+
+{/* source: .claude/specs/components/select.md §"When to use Select vs Combobox" — table verbatim */}
+
+| Situation | Use |
+|-----------|-----|
+| Short list (≤15 items), user picks from fixed options | `Select` |
+| Long list (15+ items) or user may type to search | `Combobox` |
+| User needs to pick multiple items | `Combobox` (multi) or `Checkbox` group |
+| Options are fixed and known at design time | `Select` |
+| Options are dynamic or fetched from API | `Combobox` |
+
+{/* source: select.md — closing sentence of the same section, quoted */}
+"Select is for fixed, short option sets. When in doubt about list length,
+default to Select — it's simpler to implement and sufficient for most Acko
+form fields."
+
+---
+
+## Choosing a value vs triggering an action
+
+{/* source: .claude/specs/components/dropdown-menu.md §"When to use DropdownMenu vs Select vs
+    other components" — table verbatim; key distinction quoted */}
+
+| Situation | Use |
+|-----------|-----|
+| List of **actions** triggered from a button (Edit, Delete, Export) | `DropdownMenu` |
+| Selecting a **value** for a form field | `Select` |
+| Top-level application navigation | `NavigationMenu` |
+| Right-click context actions on an element | `DropdownMenu` (triggered programmatically) |
+| Single-level action list with 2–5 items | `DropdownMenu` |
+| Actions with sub-menus or groupings | `DropdownMenu` |
+
+"The key distinction: `DropdownMenu` is for **triggering actions**; `Select`
+is for **choosing a value**."
+
+---
+
+## Dialog vs AlertDialog vs Sheet vs Drawer
+
+{/* source: .claude/specs/components/sheet.md §"When to use Sheet vs Dialog vs Drawer" — table verbatim */}
+
+| Situation | Use |
+|-----------|-----|
+| Full-height side panel with detailed content or a form | `Sheet` |
+| Compact confirmation or short form in the center of the screen | `Dialog` |
+| Mobile-optimised bottom panel (snap points, touch-friendly) | `Drawer` |
+| Destructive confirmation requiring explicit choice | `AlertDialog` |
+| Navigation sidebar on mobile | `Sidebar` (uses Sheet internally) |
+
+{/* source: dialog.md §"When to use which" — key distinction quoted; drawer.md §"When to use
+    Drawer vs Sheet" — key distinction quoted; sheet.md — closing sentence quoted */}
+Three distinctions from the specs, quoted:
+
+- **Dialog vs AlertDialog:** "AlertDialog traps focus and prevents closing by
+  clicking the backdrop — it forces the user to make an explicit choice.
+  Dialog allows backdrop-click to close."
+- **Drawer vs Sheet:** "`Drawer` is optimised for touch — it has a visible
+  drag handle, momentum-based dismissal, and snap points. `Sheet` is a
+  keyboard/pointer panel suited for desktop workflows."
+- **When Sheet:** "Sheet is for tasks that need more space than a Dialog but
+  shouldn't navigate away from the current page — editing a record, viewing
+  details, multi-step forms, filters/configuration panels."
+
+---
+
+## Feedback: Alert vs Toast vs AlertDialog vs Badge vs FieldError
+
+{/* source: .claude/specs/components/alert.md §"When to use Alert vs other feedback components" — table verbatim */}
+
+| Situation | Use |
+|-----------|-----|
+| Persistent status message visible in the page | `Alert` |
+| Transient confirmation that disappears after a few seconds | Toast/Sonner |
+| Blocking confirmation requiring an explicit user choice | `AlertDialog` |
+| Status label on a record (Active, Expired) | `Badge` |
+| Input validation error below a field | `FieldError` (in the Field system) |
+
+---
+
+## Hover and click panels: Tooltip vs HoverCard vs Popover
+
+{/* source: .claude/specs/components/popover.md §"What Popover is" — "Popover vs HoverCard vs
+    Tooltip" table verbatim */}
+
+| Component | Trigger | Content type |
+|-----------|---------|-------------|
+| `Tooltip` | Hover | Short text only, non-interactive |
+| `HoverCard` | Hover | Rich read-only preview |
+| `Popover` | Click | Interactive content (forms, pickers, filters) |
+
+---
+
+## Tabs vs navigation
+
+{/* source: .claude/specs/components/tabs.md §"When to use Tabs vs other navigation patterns" —
+    table verbatim; key rule quoted */}
+
+| Situation | Use |
+|-----------|-----|
+| Switching between related content views on the same page | `Tabs` |
+| Top-level app navigation (moves between pages/routes) | `Sidebar` or `NavigationMenu` |
+| Filtering a list or table (e.g. All / Active / Expired) | `Tabs` (with `variant="line"`) |
+| Step-by-step wizard with linear flow | `Stepper` (custom) — not Tabs |
+| Toggling between two views | `Tabs` with 2 triggers |
+
+"Key rule: Tabs should not cause page navigation. If clicking a tab changes
+the URL, use `NavigationMenu` or page-level routing instead. Tabs are for
+in-page view switching only."
+
+---
+
+## Input vs Textarea
+
+{/* source: .claude/specs/components/input.md §"Input vs Textarea" — table verbatim */}
+
+| When | Use |
+|------|-----|
+| Single-line text | `<Input />` |
+| Multi-line text (comments, descriptions) | `<Textarea />` |
+| Figma shows a tall text box | `<Textarea />` |
+
+---
+
+## Field system vs standalone Label + Input
+
+{/* source: .claude/specs/components/field.md §"When to use Field vs standalone Label + Input" —
+    table verbatim; rule of thumb quoted */}
+
+| Situation | Use |
+|-----------|-----|
+| Full form with validation, help text, and errors | `Field` system |
+| Simple 1–2 inputs inside a Card (login form, search) | Standalone `Label` + `Input` in a `div` |
+| Group of related checkboxes or radio buttons | `FieldSet` + `FieldLegend` |
+| Settings page with horizontal label/input rows | `Field orientation="horizontal"` |
+| Mobile-first form that goes horizontal at a breakpoint | `Field orientation="responsive"` |
+
+"Rule of thumb: If you need error messages or description text, use `Field`.
+If it's a simple card-level form (2–3 fields, no validation UI), use
+standalone `Label` + `Input` pairs."
+
+---
+
+## Card vs Item
+
+{/* source: gap — components/ui/item.meta.ts has no spec (specStatus: "none"), empty
+    selectionCriteria and empty confusedWith (aiHints source: "types-only"); no spec or
+    CLAUDE.md rule distinguishes Card from Item. Per the no-invention rule this is not
+    filled in. */}
+> ⚠ **NEEDS OWNER DECISION:** When should a designer use `Item` (the flexible
+> list-row molecule with media/title/description/actions slots) instead of a
+> `Card`, or instead of a `Table` row? Item has no spec and its meta contains
+> no selection criteria or disambiguation — no source answers this question,
+> so this SOP does not.
+
+---
+
+## Compose vs request a new component
+
+{/* source: .claude/principles.md #1 "System over invention" and #4 "Closed set, open
+    composition" — quoted; generate-code.md Step 2 STOP rule — quoted; designers.md
+    §"How to request a new component" — the 3 steps */}
+The principles: "If the system doesn't have what you need, that's a signal to
+extend the system, not work around it." And: "The primitives ... are a closed
+set — tightly specified, owned by CODEOWNERS review, not modified casually.
+But composition is open — any combination of existing primitives into layouts,
+patterns, and pages is encouraged."
+
+In practice:
+
+1. **First, compose.** For a custom or complex layout, the generate-code skill
+   says: "Compose from existing primitives. Use `div` with Tailwind flex/grid
+   for layout. Do not create wrapper components for one-off layouts."
+2. **If a Figma element doesn't map to any existing component, the AI must
+   STOP** and ask: "This would create a new primitive component called [exact
+   name]. It would handle [specific responsibility]. Should I proceed, or
+   should I compose this from existing parts?" — and wait for explicit,
+   named confirmation.
+3. **To request a new component** (from the Designer Guide): design it using
+   existing Compass tokens, flag it as "new component proposal" in the design
+   file, and bring it to the next design system review — "don't build
+   one-offs in product files." The rule: "No new component in
+   `components/ui/` without owner review."
+
+---
+
+## When a pattern earns promotion into Compass
+
+{/* source: Compass_GA_Roadmap.md §S6.1–S6.3 — scaffold flow, promotion pipeline, and
+    demand-driven coverage; §S2.4 asks for this flow in the SOP */}
+Per the roadmap (S6), a feature-local composition (like the KPI feature's
+`PillSelector` or `ChartCard`) is promoted into the system through one guided
+flow that "generates: component + spec + `meta.ts` + story + Code Connect stub
++ passing audit — so nothing enters the system half-documented," with **owner
+approval and a version bump** on each promotion. Coverage is demand-driven:
+new specs and Code Connect mappings are added "when the audit/drift signal
+says so, not front-loaded."
+
+> ⚠ **NEEDS OWNER DECISION:** What is the concrete threshold for promotion —
+> how many uses, in how many features, before a composition is brought to
+> review? The roadmap defines the *pipeline* (S6.1–S6.2) but no source defines
+> the *trigger* a designer can check against.
