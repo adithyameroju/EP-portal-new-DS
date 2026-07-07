@@ -334,3 +334,14 @@ C7 stays design-only. Meta files are read-only owner artifacts — untouched.
 scaffold, dashboard, and the compass-audit skill are all live and verified.
 Remaining S4 items are all owner-gated: C7 build approval, the 5 flags above,
 and first real (non-demo) capture once designers start building.**
+
+## 2026-07-07 — First live C2 heuristic-tuning signal (from owner ruling)
+ElevationBlocks (stories/foundations, L40 + L78): shape-match flagged demo
+swatches as "hand-rolled Menubar/Resizable" because they coincidentally carry
+those components' signature token combos (bg-muted+rounded-lg; ring-ring+
+ring-offset-background). Owner ruling: warnings stay in place as tuning data.
+Tuning direction for next S4 session: the C2 shape-match heuristic must
+distinguish "carries these token classes" from "is actually this component" —
+candidate signals: element role/interactivity (button/anchor vs presentational
+div), structural children match vs bare styled box, and count of distinctive
+vs generic tokens. Do not tune away sensitivity without a false-negative check.
