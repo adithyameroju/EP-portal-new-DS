@@ -96,6 +96,16 @@ spec edit Nikhil signs off (S0.3 follow-through):
     Value children as a render function (`{() => "4 of 10"}`); spec's plain
     strings don't type-check. Same class as the ruled-on 14.
 
+## Table component gaps (found 2026-07-07 while dogfooding Table for reference matrices — owner ruled "awkwardness is a finding"; candidates for S6 gap list)
+19. **No wrapping/prose-cell variant**: TableHead/TableCell hardcode
+    whitespace-nowrap; long prose columns now horizontal-scroll instead of wrap.
+20. **No non-interactive variant**: TableRow bakes in hover:bg-muted/50 —
+    implies row interactivity on read-only matrices.
+21. **className routes to inner <table>, not the overflow wrapper** — external
+    isolation (sb-unstyled) needs an extra outer div.
+22. Header color: Table default text-foreground vs the matrices' previous
+    muted-foreground — minor, accepted rather than fought.
+
 ## From the S4 agent — flags needing decisions
 - **Schema addition request: `primitiveElements?: string[]` on ComponentMeta**
   (C2 provenance check needs each primitive's DOM shape). Additive, optional
