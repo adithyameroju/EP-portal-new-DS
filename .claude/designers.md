@@ -129,17 +129,15 @@ You don't need to do anything to make this work — it's automatic once publishe
 
 ## Component status
 
-| Component | Figma library | Code spec | Code Connect |
-|-----------|--------------|-----------|--------------|
-| Button | Done | Done | Published |
-| Input | Done | Done | Published |
-| Card | Done | Done | Published |
-| Badge | Done | — | — |
-| Dialog | Done | — | — |
-| Form fields | Done | — | — |
-| All others | Done | — | — |
+- **55 components** live in the code library (`components/ui/`)
+- **33 components** have full code specs (`.claude/specs/components/`)
+- **10 components** have Figma Code Connect mappings: Button, Card, Dialog,
+  Field, Input, Select, Sheet, Sidebar, Table, Tabs
 
-Code specs and Code Connect will be added for remaining components in Phase 4+.
+Every component is documented in the deployed Storybook:
+**https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com**
+
+Code specs and Code Connect mappings for remaining components are added on demand.
 
 ---
 
