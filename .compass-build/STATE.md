@@ -47,6 +47,8 @@
 - 2026-07-07 (evening): **SEMVER POLICY APPROVED as proposed.** CHANGELOG = plain CHANGELOG.md (created, 0.1.0 entry). Package name = @acko/compass. react/react-dom/next → peerDependencies (kept as devDeps for local dev); "private": true DROPPED.
 - 2026-07-07 (evening): **PUSH APPROVED** to https://github.com/nikhilpthakkar/compass-in-loop.git (the standing no-push gate lifted for this remote). Storybook → GitHub Pages (/compass-in-loop/ subpath); Chromatic token via CI secret only. NO S6, NO standing-queue resolutions; stop after deploy.
 
+- 2026-07-07 (night): **PUBLIC PUSH CONFIRMED by owner** — repo stays public for now (internal Acko account; owner explicitly accepted licensed-font + internal-material exposure as temporary), devops will migrate to an internal repo after Pages/Storybook testing. Fonts pushed as-is per this ruling.
+
 ## Current stage
 **S3 BUILD COMPLETE (tag s3-build-complete, 2026-07-07) — at stage-exit gate.
 S4 and S5 buildable scopes: EXHAUSTED (everything remaining is owner-gated).**
