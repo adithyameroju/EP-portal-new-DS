@@ -382,3 +382,73 @@ flagged for Nikhil below.
 
 **Track state:** Part A + B + C-shell complete. Next gates: S2 (wire Migrate UI
 into Storybook — S2 is in progress now), S3 (`compass migrate` CLI).
+
+---
+
+## 2026-07-07 — Session 5: C-integration — Migrate UI wired into Storybook (S2 gate met)
+
+**Gate verified:** STATE.md shows S2 EXIT APPROVED by owner (2026-07-07) and
+explicitly lists "S5 Storybook integration" as ordered work. Proceeded.
+
+### Built (touched ONLY `stories/patterns/`)
+
+- [x] **`stories/patterns/migrate.stories.tsx`** (kebab-case per C5) — title
+      `Patterns/Migrate` (taxonomy slot already in `.storybook/preview.ts`
+      storySort). Five stories:
+      - `Entry`, `BatchList`, `DualPreview`, `Report` — one per shell
+        component, each fed by the block's own `mock-data.ts` SAMPLE data.
+      - `FullFlow` — composition arranging all four in the roadmap S5.3 order
+        (entry → batch breakdown → dual preview → batch report).
+      - All callback props are named `fn()` spies from `storybook/test` →
+        log to the Actions panel; shell stays pure presentation, nothing
+        executes in the browser.
+      - `DualPreview` panes: original = inert grey-box sketch (semantic
+        tokens only), Compass = real Field/Input/Button primitives; both
+        clearly marked SAMPLE (the shell accepts arbitrary children and
+        never runs foreign code).
+- [x] **`stories/patterns/Migrate.mdx`** (PascalCase per owner MDX ruling
+      2026-07-07) — attached docs page (`<Meta of={migrate.stories}>`).
+      Factual content only, quoted verbatim from
+      `.claude/skills/compass-migrate/SKILL.md`: v1 scope (React + Tailwind
+      only; presentation layer only), strangler-fig (`-compass` variant
+      coexistence, never big-bang), owner-gated repointing (hard rule 7),
+      honest reporting (skipped ≠ migrated), never-guess/gap-list rules.
+      Prominent banner: this is the UI SHELL rendering SAMPLE data — the
+      engine runs via the `compass-migrate` skill in Claude Code, not in the
+      browser. No authored marketing prose.
+
+### Verification
+
+- `npx tsc --noEmit` → **exit 0, clean** (first run caught untyped story
+  args on the composition story; fixed by typing stories with the shell's
+  exported prop types + a `FullFlowArgs` pick-union).
+- `npm run build-storybook` → **success**; `index.json` contains all six
+  entries (`patterns-migrate--entry/batch-list/dual-preview/report/full-flow`
+  + docs). `storybook-static/` **deleted after verification** (note: a stale
+  `storybook-static/` from an earlier run existed before this session; it
+  was replaced by the verification build and then deleted per instruction).
+- `npm run audit` → **1 error / 68 warnings TOTAL, but ALL of the delta is
+  in `dist/index.js`** — the parallel S3 track's package bundle (built
+  2026-07-07 20:31, not this track's file): 35 findings there (the 1 error
+  = `bg-white` in bundled slider-thumb code at line 5806, + 34 warnings
+  mirroring the pre-existing `components/ui/` set). Excluding `dist/`:
+  **0 errors / 34 warnings = exact baseline parity**, and **0 findings in
+  `stories/patterns/`**.
+- Constraint compliance: only `stories/patterns/*` created; no git; no
+  touches to `components/`, `scripts/`, `.storybook/`, `package.json`.
+
+### Flags for Nikhil
+
+1. **`scripts/token-audit.mjs` does not exclude `dist/`** — the S3 package
+   build output now fails the repo-wide audit (1 error: `bg-white` in the
+   bundled slider thumb; that class does not exist in
+   `components/ui/slider.tsx`, so it comes in via bundled dependency code).
+   Needs either a `dist/` exclusion in the audit script or an S3-side fix —
+   S3 track's call, not changed here (out of this session's allowed paths).
+2. Attached-docs entry is named "Migrate" (id `patterns-migrate--migrate`)
+   rather than Storybook's default "Docs" — cosmetic, from the MDX filename;
+   rename to `Docs` via `name` prop on `<Meta>` if unwanted.
+
+**Track state:** Part A + B + C-shell + C-integration (Storybook) complete.
+Remaining gates: golden-pair validation (blocked on owner sample repos) and
+S3 `compass migrate` CLI shipping.

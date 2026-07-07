@@ -31,6 +31,7 @@ const EXCLUDE_DIRS = [
   'scripts',
   'public',
   'storybook-static',
+  'dist',
 ];
 
 const EXCLUDE_FILES = [

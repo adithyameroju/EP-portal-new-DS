@@ -1,0 +1,99 @@
+{/* S5 C-integration — "Migrate" overview page (Storybook wiring; S2 gate met
+    per .compass-build/STATE.md, wired 2026-07-07).
+    All descriptive claims below are quoted from
+    .claude/skills/compass-migrate/SKILL.md — no authored marketing prose.
+    MDX filename is PascalCase per owner ruling 2026-07-07 (Storybook MDX
+    doc pages are exempt from the kebab-case rule). */}
+
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import * as MigrateStories from "./migrate.stories";
+
+<Meta of={MigrateStories} />
+
+# Migrate
+
+> **This page shows the UI shell rendering SAMPLE data.** The migration
+> engine does not run in the browser — it runs via the `compass-migrate`
+> skill (`.claude/skills/compass-migrate/`) in Claude Code, against a target
+> repo. Every batch, confidence number and report entry below comes from
+> `components/blocks/migrate/mock-data.ts`, a fictitious sample "used to
+> render the S5 'Migrate' UI shell in isolation. Nothing here comes from a
+> real repo or a real mapping run." The shell components in
+> `components/blocks/migrate/` are pure presentation: props in, callbacks
+> out, no network, no unzipping, no execution.
+
+## What the migration is
+
+Quoted from the skill (`.claude/skills/compass-migrate/SKILL.md`):
+
+**Scope (v1):**
+
+> "Targets: React + Tailwind codebases only. Other stacks: stop and tell the
+> user this is out of scope for v1. Prove the loop on one internal repo
+> end-to-end before widening."
+
+> "Presentation layer only. You may rewrite JSX, className/styling, and
+> component imports. You may NOT touch hooks logic, data fetching, routing,
+> state management, business logic, API contracts, or copy."
+
+**Strangler-fig procedure (Step 2 — "Never big-bang"):**
+
+> "Write the migrated version beside the original as a `-compass` variant
+> (`stat-card.tsx` → `stat-card-compass.tsx`). Original and variant coexist;
+> the project stays buildable at every step."
+
+**Owner-gated repointing (hard rule 7, ruling 2026-07-07):**
+
+> "No consumer repointing and no deletion/renaming of originals until the
+> owner confirms the batch. Unattended runs stop at `-compass` variants +
+> reports. Every snapped value (token or spacing) is logged, never silent."
+
+**Honest reporting (hard rule 5):**
+
+> "Skipped ≠ migrated. Reverted units are listed as flagged. Pre-existing
+> failures are named as pre-existing (that's what the baseline is for)."
+
+**Mapping discipline (hard rules 2 and 3):**
+
+> "Never guess a mapping. Low-confidence component mappings and tokens that
+> don't cluster cleanly go to the owner (Nikhil) via
+> `.migration/_needs-decision.md`."
+
+> "No Compass equivalent = gap list item (`.migration/_gap-list.md`, feeds
+> S6 extensibility). [...] The gap list is a feature, not a failure."
+
+## The flow
+
+The four shell components below follow the roadmap S5.3 order:
+entry → batch breakdown → per-batch dual preview → batch report.
+
+### 1. Entry — GitHub URL or zip upload
+
+<Canvas of={MigrateStories.Entry} />
+
+### 2. Batch breakdown — one flow at a time, never a monolith
+
+<Canvas of={MigrateStories.BatchList} />
+
+### 3. Dual preview — original beside the Compass version
+
+The panes accept arbitrary children (SAMPLE frames here); the shell never
+runs or renders foreign code itself. Omitting a pane's children shows its
+skeleton state.
+
+<Canvas of={MigrateStories.DualPreview} />
+
+### 4. Batch report — the fixed `.migration/` structure
+
+Changed / Left alone / Behavior changes / Verify by hand, plus the gap list
+and the owner review queue. Approve is disabled while needs-decision items
+are pending.
+
+<Canvas of={MigrateStories.Report} />
+
+### Full flow
+
+All four arranged as one page. Callback props log to the Actions panel of
+each story — nothing executes.
+
+<Canvas of={MigrateStories.FullFlow} />
