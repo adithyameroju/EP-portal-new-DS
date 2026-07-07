@@ -1,16 +1,32 @@
-{/* PROPOSED — S2.4 "Working with Compass" SOP, page 3 of 5. Status: awaiting Nikhil's approval.
-    On approval this moves to stories/ (title "Working with Compass/Common Tasks").
+{/* OWNER-APPROVED — S2.4 "Working with Compass" SOP, page 3 of 5.
+    Content approved by Nikhil (owner directive 2026-07-07); presentation rebuilt
+    interactive per .compass-build/design/s2/sop-interactive-structure.PROPOSED.md:
+    Accordion per task (Forms, Dialogs, Tables, Charts, Layout density —
+    dogfooding Accordion); inside each, live do/don't pairs (./live-do-dont.tsx)
+    where the spec provides both code sides, text rows otherwise. Rows replaced
+    by a live pair carry their exact cell text as the pair's Don't/Do notes.
     Provenance: every do/don't row traces to a numbered "Rules for LLMs" item or a
     styling/pattern section in the named spec (.claude/specs/components/ and
     .claude/specs/foundations/), CLAUDE.md, or components/ui/chart.meta.ts.
     Only rules that exist in those sources appear; real gaps (charts beyond tokens,
-    density defaults, the card-shadow fork) are ⚠ NEEDS OWNER DECISION blocks. */}
+    density defaults, the card-shadow fork) are ⚠ NEEDS OWNER DECISION blocks —
+    the Charts one renders as the flagged leaf the structure doc calls for. */}
 
 import { Meta } from "@storybook/addon-docs/blocks";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { GapCard } from "./decision-flow";
+import {
+  DialogFooterOrderPair,
+  DialogTriggerPair,
+  FieldLabelPair,
+} from "./live-do-dont";
 
 <Meta title="Introduction/Working with Compass/Common Tasks" />
-
-> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
 
 # Common Tasks — Do / Don't
 
@@ -19,20 +35,27 @@ section cites its source; wording in quotes is verbatim.
 
 ---
 
-## Forms
+<Accordion>
+<AccordionItem value="forms">
+<AccordionTrigger>Forms</AccordionTrigger>
+<AccordionContent>
 
 {/* source: .claude/specs/components/field.md header callout — quoted verbatim */}
 > ⚠️ "This repo does not have a `form.tsx` (react-hook-form) component. The
 > equivalent is `field.tsx` — a framework-agnostic field layout system. Use
 > `Field` + `FieldError` for all form field structure."
 
+{/* Live pair: field.md rule 2 — both sides renderable, so the table row became
+    ./live-do-dont.tsx FieldLabelPair (its Don't/Do notes are the row's cells). */}
+
+<FieldLabelPair />
+
 {/* source: field.md §"Rules for LLMs" 1–7; card.md §"Card as a form container";
-    CLAUDE.md Component rules (Field system line) */}
+    CLAUDE.md Component rules (Field system line). Rule 2 renders live above. */}
 
 | Do | Don't | Source |
 |----|-------|--------|
 | Use `Field` when you need errors or descriptions | Over-engineer "a 2-field login card with `Field`/`FieldGroup`" — use standalone `Label` + `Input` there | field.md rule 1 |
-| Match `FieldLabel htmlFor` to the input's `id` | Render `FieldLabel` with no `htmlFor` / input with no `id` | field.md rule 2 |
 | Always render `FieldError` — "it returns nothing when errors is empty" | Conditionally hide it with your own logic | field.md rule 3 |
 | Use `FieldSet` + `FieldLegend` for checkbox/radio groups | Use "a plain `div` with a heading for a group of checkboxes — an accessibility violation" | field.md rule 4 |
 | Use `FieldContent` (with `FieldTitle` + `FieldDescription`) beside a Checkbox/Radio item | Build that stack with a manual `div` | field.md rule 5 |
@@ -40,26 +63,37 @@ section cites its source; wording in quotes is verbatim.
 | Use `FieldLegend` only inside `FieldSet` | Use it standalone — "no semantic value" | field.md rule 7 |
 | Pick orientation deliberately: `vertical` (default), `horizontal` (settings rows), `responsive` (vertical on mobile, horizontal at `md`) | — | field.md §Field orientation |
 
----
+</AccordionContent>
+</AccordionItem>
+<AccordionItem value="dialogs">
+<AccordionTrigger>Dialogs</AccordionTrigger>
+<AccordionContent>
 
-## Dialogs
+{/* Live pairs: dialog.md rules 3 and 8 — both sides renderable, so those table
+    rows became ./live-do-dont.tsx DialogTriggerPair / DialogFooterOrderPair
+    (their Don't/Do notes are the rows' cells). */}
 
-{/* source: .claude/specs/components/dialog.md §"Rules for LLMs" 1–8 and the header warning */}
+<DialogTriggerPair />
+
+<DialogFooterOrderPair />
+
+{/* source: .claude/specs/components/dialog.md §"Rules for LLMs" 1–8 and the header
+    warning. Rules 3 and 8 render live above. */}
 
 | Do | Don't | Source |
 |----|-------|--------|
 | Keep Dialog and AlertDialog separate — "Dialog = general content/forms. AlertDialog = destructive confirmations." | Mix their sub-components | dialog.md warning + rule 1 |
 | Put `DialogTitle` inside every `DialogHeader` | Use `DialogHeader` without `DialogTitle` — "structural drift" | dialog.md rule 2 |
-| Pass triggers via the `render` prop: `<DialogTrigger render={<Button>Open</Button>} />` | Use `asChild` ("Radix pattern, causes React warnings in this repo") or nest a `Button` as children ("button inside a button") | dialog.md rule 3 |
 | Give AlertDialog both `AlertDialogCancel` and `AlertDialogAction` — "the user must have an explicit escape" | Show an AlertDialog with only one button | dialog.md rule 4 |
 | Use `AlertDialogAction variant="destructive"` directly — "it is already a Button" | Wrap it in `<Button>` | dialog.md rule 5 |
 | Rely on the built-in close button; add `DialogClose` in the footer only for a labelled "Cancel"; set `showCloseButton={false}` "only when the footer already has a cancel action" | Write custom close logic | dialog.md rule 6 |
 | Keep the built-in width — "the built-in `sm:max-w-sm` is the Compass standard" | Hardcode widths on `DialogContent`; "only override for confirmed design exceptions noted in 'What I assumed'" | dialog.md rule 7 |
-| Order footer buttons: "Cancel/secondary on the left, confirm/primary on the right" (matches the built-in `sm:justify-end`) | Reverse the order | dialog.md rule 8 |
 
----
-
-## Tables
+</AccordionContent>
+</AccordionItem>
+<AccordionItem value="tables">
+<AccordionTrigger>Tables</AccordionTrigger>
+<AccordionContent>
 
 {/* source: .claude/specs/components/table.md §"Rules for LLMs" 1–8 and
     §"Table with status badges" mapping table */}
@@ -86,15 +120,17 @@ section cites its source; wording in quotes is verbatim.
 | Expired / Failed / Rejected | `destructive` |
 | Inactive / Cancelled | `secondary` |
 
----
-
-## Charts
+</AccordionContent>
+</AccordionItem>
+<AccordionItem value="charts">
+<AccordionTrigger>Charts</AccordionTrigger>
+<AccordionContent>
 
 {/* source: .claude/specs/foundations/color.md §"Chart colors" table + Rules for LLMs rule 5 */}
 Chart series colors are tokens, and they are **ordered**:
 
 | Token | Light | Dark | Role |
-|-------|-------|------|------|
+|-------|------|------|------|
 | `--chart-1` | `#6841E6` | `#9B8FF6` | Primary data series |
 | `--chart-2` | `#FF8D28` | `#FFA85C` | Second data series |
 | `--chart-3` | `#3B82F6` | `#60A5FA` | Third data series |
@@ -115,18 +151,24 @@ and themed Recharts overrides.
 
 {/* source: gap — chart has no component spec (chart.meta.ts specStatus: "none");
     .claude/principles.md §"What we'll learn through building" lists "Data visualization
-    conventions — which chart types, how much annotation?" as intentionally blank */}
-> ⚠ **NEEDS OWNER DECISION:** Beyond the ordered chart tokens and the
-> ChartContainer requirement, there are no chart rules — chart has no spec,
-> and `principles.md` deliberately leaves "Data visualization conventions —
-> which chart types, how much annotation?" blank until real product work
-> decides it. Which chart types are preferred, how are axes/legends/tooltips
-> configured by default, and when is a table better than a chart? No source
-> answers these yet.
+    conventions — which chart types, how much annotation?" as intentionally blank.
+    Rendered as the flagged leaf the structure doc calls for (#13: "the Charts
+    accordion gets a flagged leaf, not a flow"). */}
 
----
+<GapCard source='gap — chart has no component spec (chart.meta.ts specStatus: "none"); principles.md leaves data-visualization conventions intentionally blank'>
+  Beyond the ordered chart tokens and the ChartContainer requirement, there are
+  no chart rules — chart has no spec, and `principles.md` deliberately leaves
+  "Data visualization conventions — which chart types, how much annotation?"
+  blank until real product work decides it. Which chart types are preferred,
+  how are axes/legends/tooltips configured by default, and when is a table
+  better than a chart? No source answers these yet.
+</GapCard>
 
-## Layout density and spacing
+</AccordionContent>
+</AccordionItem>
+<AccordionItem value="layout-density">
+<AccordionTrigger>Layout density and spacing</AccordionTrigger>
+<AccordionContent>
 
 {/* source: .claude/specs/foundations/spacing.md §"Rules for LLMs" 1–5 */}
 
@@ -189,3 +231,7 @@ and themed Recharts overrides.
 > forms?" Until real product work fills these in, there is no Compass answer
 > to "should this screen be compact or spacious" beyond the per-context
 > spacing patterns above.
+
+</AccordionContent>
+</AccordionItem>
+</Accordion>

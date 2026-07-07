@@ -1,16 +1,28 @@
-{/* PROPOSED — S2.4 "Working with Compass" SOP, page 2 of 5. Status: awaiting Nikhil's approval.
-    On approval this moves to stories/ (title "Working with Compass/Choosing a Component").
+{/* OWNER-APPROVED — S2.4 "Working with Compass" SOP, page 2 of 5.
+    Content approved by Nikhil (owner directive 2026-07-07); presentation rebuilt
+    interactive per .compass-build/design/s2/sop-interactive-structure.PROPOSED.md:
+    the nine when-to-use tables become five decision flows (rendered by
+    ./decision-flow.tsx from ./decision-flows.ts — every node cites its source,
+    the renderer throws on any node without one); the original tables remain
+    below each flow inside a Collapsible ("Show the source table").
     Provenance: every decision table below is quoted from the "When to use ..."
     section of the named spec in .claude/specs/components/ — rows are verbatim,
     not paraphrased. Compose-vs-request-new from generate-code.md Step 2,
     designers.md, principles.md. Promotion from Compass_GA_Roadmap.md §S6.
-    Real gaps are marked ⚠ NEEDS OWNER DECISION. */}
+    Real gaps are marked ⚠ NEEDS OWNER DECISION — including the flagged leaves
+    inside the flows (#11 link-vs-ghost, #12 thin sonner citation). */}
 
 import { Meta } from "@storybook/addon-docs/blocks";
+import { DecisionFlow, GapCard, SourceCollapsible } from "./decision-flow";
+import {
+  selectionControlFlow,
+  overlayFlow,
+  feedbackFlow,
+  textInputFlow,
+  composeVsRequestNewFlow,
+} from "./decision-flows";
 
 <Meta title="Introduction/Working with Compass/Choosing a Component" />
-
-> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
 
 # Choosing a Component
 
@@ -24,7 +36,14 @@ component's default shadcn/ui API with Compass tokens.
 
 ---
 
-## Checkbox vs Switch vs RadioGroup
+## Selection control
+
+{/* Flow data: ./decision-flows.ts selectionControlFlow — derived only from the
+    three tables/rules below; gap #11 (link vs ghost) is a flagged leaf. */}
+
+<DecisionFlow flow={selectionControlFlow} />
+
+<SourceCollapsible heading="Checkbox vs Switch vs RadioGroup">
 
 {/* source: .claude/specs/components/checkbox.md §"When to use Checkbox vs Switch vs RadioGroup" — table verbatim */}
 
@@ -45,9 +64,9 @@ And from the RadioGroup spec: "`RadioGroup` is for choosing exactly one option
 from a visible set. If the set is too long to show all at once, use `Select`
 instead."
 
----
+</SourceCollapsible>
 
-## Select vs Combobox
+<SourceCollapsible heading="Select vs Combobox">
 
 {/* source: .claude/specs/components/select.md §"When to use Select vs Combobox" — table verbatim */}
 
@@ -64,9 +83,9 @@ instead."
 default to Select — it's simpler to implement and sufficient for most Acko
 form fields."
 
----
+</SourceCollapsible>
 
-## Choosing a value vs triggering an action
+<SourceCollapsible heading="Choosing a value vs triggering an action">
 
 {/* source: .claude/specs/components/dropdown-menu.md §"When to use DropdownMenu vs Select vs
     other components" — table verbatim; key distinction quoted */}
@@ -83,9 +102,18 @@ form fields."
 "The key distinction: `DropdownMenu` is for **triggering actions**; `Select`
 is for **choosing a value**."
 
+</SourceCollapsible>
+
 ---
 
-## Dialog vs AlertDialog vs Sheet vs Drawer
+## Overlay
+
+{/* Flow data: ./decision-flows.ts overlayFlow — derived only from the two
+    tables/quotes below. */}
+
+<DecisionFlow flow={overlayFlow} />
+
+<SourceCollapsible heading="Dialog vs AlertDialog vs Sheet vs Drawer">
 
 {/* source: .claude/specs/components/sheet.md §"When to use Sheet vs Dialog vs Drawer" — table verbatim */}
 
@@ -111,9 +139,32 @@ Three distinctions from the specs, quoted:
   shouldn't navigate away from the current page — editing a record, viewing
   details, multi-step forms, filters/configuration panels."
 
+</SourceCollapsible>
+
+<SourceCollapsible heading="Hover and click panels: Tooltip vs HoverCard vs Popover">
+
+{/* source: .claude/specs/components/popover.md §"What Popover is" — "Popover vs HoverCard vs
+    Tooltip" table verbatim */}
+
+| Component | Trigger | Content type |
+|-----------|---------|-------------|
+| `Tooltip` | Hover | Short text only, non-interactive |
+| `HoverCard` | Hover | Rich read-only preview |
+| `Popover` | Click | Interactive content (forms, pickers, filters) |
+
+</SourceCollapsible>
+
 ---
 
-## Feedback: Alert vs Toast vs AlertDialog vs Badge vs FieldError
+## Feedback
+
+{/* Flow data: ./decision-flows.ts feedbackFlow — derived only from the table
+    below; the Toast/Sonner leaf is flagged (#12: sonner has no spec — the
+    leaf can cite only the alert.md table row). */}
+
+<DecisionFlow flow={feedbackFlow} />
+
+<SourceCollapsible heading="Feedback: Alert vs Toast vs AlertDialog vs Badge vs FieldError">
 
 {/* source: .claude/specs/components/alert.md §"When to use Alert vs other feedback components" — table verbatim */}
 
@@ -125,25 +176,15 @@ Three distinctions from the specs, quoted:
 | Status label on a record (Active, Expired) | `Badge` |
 | Input validation error below a field | `FieldError` (in the Field system) |
 
----
-
-## Hover and click panels: Tooltip vs HoverCard vs Popover
-
-{/* source: .claude/specs/components/popover.md §"What Popover is" — "Popover vs HoverCard vs
-    Tooltip" table verbatim */}
-
-| Component | Trigger | Content type |
-|-----------|---------|-------------|
-| `Tooltip` | Hover | Short text only, non-interactive |
-| `HoverCard` | Hover | Rich read-only preview |
-| `Popover` | Click | Interactive content (forms, pickers, filters) |
+</SourceCollapsible>
 
 ---
 
 ## Tabs vs navigation
 
 {/* source: .claude/specs/components/tabs.md §"When to use Tabs vs other navigation patterns" —
-    table verbatim; key rule quoted */}
+    table verbatim; key rule quoted. Not part of any of the five approved flows
+    (the structure doc's flows don't cover tabs) — the table stays as-is. */}
 
 | Situation | Use |
 |-----------|-----|
@@ -159,7 +200,14 @@ in-page view switching only."
 
 ---
 
-## Input vs Textarea
+## Text input
+
+{/* Flow data: ./decision-flows.ts textInputFlow — derived only from the two
+    tables below. */}
+
+<DecisionFlow flow={textInputFlow} />
+
+<SourceCollapsible heading="Input vs Textarea">
 
 {/* source: .claude/specs/components/input.md §"Input vs Textarea" — table verbatim */}
 
@@ -169,9 +217,9 @@ in-page view switching only."
 | Multi-line text (comments, descriptions) | `<Textarea />` |
 | Figma shows a tall text box | `<Textarea />` |
 
----
+</SourceCollapsible>
 
-## Field system vs standalone Label + Input
+<SourceCollapsible heading="Field system vs standalone Label + Input">
 
 {/* source: .claude/specs/components/field.md §"When to use Field vs standalone Label + Input" —
     table verbatim; rule of thumb quoted */}
@@ -188,6 +236,8 @@ in-page view switching only."
 If it's a simple card-level form (2–3 fields, no validation UI), use
 standalone `Label` + `Input` pairs."
 
+</SourceCollapsible>
+
 ---
 
 ## Card vs Item
@@ -196,15 +246,26 @@ standalone `Label` + `Input` pairs."
     selectionCriteria and empty confusedWith (aiHints source: "types-only"); no spec or
     CLAUDE.md rule distinguishes Card from Item. Per the no-invention rule this is not
     filled in. */}
-> ⚠ **NEEDS OWNER DECISION:** When should a designer use `Item` (the flexible
-> list-row molecule with media/title/description/actions slots) instead of a
-> `Card`, or instead of a `Table` row? Item has no spec and its meta contains
-> no selection criteria or disambiguation — no source answers this question,
-> so this SOP does not.
+
+<GapCard source='gap — components/ui/item.meta.ts has no spec (specStatus: "none"), empty selectionCriteria and empty confusedWith (aiHints source: "types-only")'>
+  When should a designer use `Item` (the flexible list-row molecule with
+  media/title/description/actions slots) instead of a `Card`, or instead of a
+  `Table` row? Item has no spec and its meta contains no selection criteria or
+  disambiguation — no source answers this question, so this SOP does not.
+</GapCard>
 
 ---
 
-## Compose vs request a new component
+## Compose vs request new
+
+{/* Flow data: ./decision-flows.ts composeVsRequestNewFlow — derived only from
+    the principles/generate-code/designers.md quotes and the roadmap §S6
+    promotion pipeline below; the promotion leaf carries the standing
+    promotion-threshold gap. */}
+
+<DecisionFlow flow={composeVsRequestNewFlow} />
+
+<SourceCollapsible heading="Compose vs request a new component">
 
 {/* source: .claude/principles.md #1 "System over invention" and #4 "Closed set, open
     composition" — quoted; generate-code.md Step 2 STOP rule — quoted; designers.md
@@ -231,9 +292,9 @@ In practice:
    one-offs in product files." The rule: "No new component in
    `components/ui/` without owner review."
 
----
+</SourceCollapsible>
 
-## When a pattern earns promotion into Compass
+<SourceCollapsible heading="When a pattern earns promotion into Compass">
 
 {/* source: Compass_GA_Roadmap.md §S6.1–S6.3 — scaffold flow, promotion pipeline, and
     demand-driven coverage; §S2.4 asks for this flow in the SOP */}
@@ -245,7 +306,11 @@ approval and a version bump** on each promotion. Coverage is demand-driven:
 new specs and Code Connect mappings are added "when the audit/drift signal
 says so, not front-loaded."
 
-> ⚠ **NEEDS OWNER DECISION:** What is the concrete threshold for promotion —
-> how many uses, in how many features, before a composition is brought to
-> review? The roadmap defines the *pipeline* (S6.1–S6.2) but no source defines
-> the *trigger* a designer can check against.
+</SourceCollapsible>
+
+<GapCard source="gap — Compass_GA_Roadmap.md §S6.1–S6.2 defines the pipeline; no source defines the trigger">
+  What is the concrete threshold for promotion — how many uses, in how many
+  features, before a composition is brought to review? The roadmap defines the
+  *pipeline* (S6.1–S6.2) but no source defines the *trigger* a designer can
+  check against.
+</GapCard>

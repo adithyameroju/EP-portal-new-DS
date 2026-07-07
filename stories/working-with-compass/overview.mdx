@@ -1,5 +1,7 @@
-{/* PROPOSED — S2.4 "Working with Compass" SOP, page 1 of 5. Status: awaiting Nikhil's approval.
-    On approval this moves to stories/ (title "Working with Compass/Overview").
+{/* OWNER-APPROVED — S2.4 "Working with Compass" SOP, page 1 of 5.
+    Content approved by Nikhil (owner directive 2026-07-07); presentation rebuilt
+    interactive per .compass-build/design/s2/sop-interactive-structure.PROPOSED.md
+    (leads with the task-picker grid; working-rhythm rules stay as the existing list).
     Provenance: Compass_GA_Roadmap.md §S2.4 and Standing rules; CLAUDE.md
     (Working rhythm, Universal rule, Token rules, Component rules);
     .claude/principles.md (For LLMs). Every section below carries its own
@@ -7,12 +9,18 @@
     "⚠ NEEDS OWNER DECISION" — they are questions for the owner, not omissions. */}
 
 import { Meta } from "@storybook/addon-docs/blocks";
+import { TaskPicker } from "./task-picker";
 
 <Meta title="Introduction/Working with Compass/Overview" />
 
-> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
-
 # Working with Compass
+
+{/* Entry grid — the approved structure doc's "What do you want to do?" task
+    cards; each links to the SOP page that answers it. */}
+
+## What do you want to do?
+
+<TaskPicker />
 
 {/* source: Compass_GA_Roadmap.md §S2.4 — "a Compass-native version of the ACKO D2C SOP,
     living inside Storybook ... an operational 'when to do what' SOP" */}

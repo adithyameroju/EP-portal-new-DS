@@ -1,5 +1,10 @@
-{/* PROPOSED — S2.4 "Working with Compass" SOP, page 4 of 5. Status: awaiting Nikhil's approval.
-    On approval this moves to stories/ (title "Working with Compass/The Figma → Code Loop").
+{/* OWNER-APPROVED — S2.4 "Working with Compass" SOP, page 4 of 5.
+    Content approved by Nikhil (owner directive 2026-07-07); presentation rebuilt
+    interactive per .compass-build/design/s2/sop-interactive-structure.PROPOSED.md:
+    vertical stepper (numbered Cards) with copyable command blocks per step;
+    step content byte-identical to the approved draft. StepCard/CommandLine
+    below are UI chrome composed from Compass primitives (Card, Badge, Button);
+    every rendered sentence is the approved draft's text.
     Provenance: .claude/designers.md (setup, Figma workflow, handoff, assumption review);
     .claude/skills/generate-code.md (the 5-step process); README.md (AI-assisted section);
     CLAUDE.md (audit gate); .claude/skills/compass-audit/SKILL.md + drift-log/README.md
@@ -7,10 +12,44 @@
     (write-back). Gaps designers will hit are ⚠ NEEDS OWNER DECISION blocks. */}
 
 import { Meta } from "@storybook/addon-docs/blocks";
+import { CopyIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export function StepCard({ n, title, children }) {
+  return (
+    <Card>
+      <CardHeader className="border-b">
+        <CardTitle className="sb-unstyled flex items-center gap-3 font-sans">
+          {n != null ? (
+            <Badge className="shrink-0 font-mono">{n}</Badge>
+          ) : null}
+          <span>{title}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">{children}</CardContent>
+    </Card>
+  );
+}
+
+export function CommandLine({ line, command }) {
+  return (
+    <div className="sb-unstyled flex items-center justify-between gap-2 rounded-lg bg-muted px-3 py-1.5 font-sans">
+      <code className="font-mono text-xs whitespace-pre-wrap text-foreground">{line}</code>
+      <Button
+        variant="ghost"
+        size="icon-xs"
+        aria-label="Copy command"
+        onClick={() => navigator.clipboard.writeText(command)}
+      >
+        <CopyIcon />
+      </Button>
+    </div>
+  );
+}
 
 <Meta title="Introduction/Working with Compass/The Figma → Code Loop" />
-
-> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
 
 # The Figma → Code Loop
 
@@ -20,14 +59,18 @@ result back to Figma. Each step below cites where its rules live.
 
 ---
 
-## Step 0 — One-time setup
+<div className="flex flex-col gap-4">
+
+<StepCard n="0" title="Step 0 — One-time setup">
 
 {/* source: .claude/designers.md §"First-time setup" — two steps, ~2 minutes */}
 Clone the repo (`git clone ... && npm install`) and open it in Claude Code.
 "Claude Code automatically reads `CLAUDE.md` at the project root, which links
 to all the design system rules, skills, and specs. No extra setup needed."
 
-## Step 1 — Design with the system in Figma
+</StepCard>
+
+<StepCard n="1" title="Step 1 — Design with the system in Figma">
 
 {/* source: .claude/designers.md §"What this means for your Figma workflow" — three rules
     with their stated reasons */}
@@ -51,14 +94,18 @@ to all the design system rules, skills, and specs. No extra setup needed."
 > scale ("respect the 4px grid", including 6px, 10px, 20px, 28px...). A
 > designer following one list will be "rounded" against the other.
 
-## Step 2 — Frame it and copy the link
+</StepCard>
+
+<StepCard n="2" title="Step 2 — Frame it and copy the link">
 
 {/* source: .claude/designers.md §"How to hand off a frame" steps 1–2 */}
 "The Figma frame should contain exactly the component or screen you want
 generated — no extra artboards, no helper notes on top of the design." Then
 right-click → "Copy link to selection."
 
-## Step 3 — Hand it to the AI
+</StepCard>
+
+<StepCard n="3" title="Step 3 — Hand it to the AI">
 
 {/* source: .claude/designers.md §"How to hand off a frame" step 3; README.md
     §"AI-assisted code generation"; CLAUDE.md linked-documentation table (generate-code.md
@@ -68,7 +115,9 @@ Give the link to Claude Code or Cursor (with Figma MCP) with the instruction:
 `.claude/skills/generate-code.md`, which it must read before generating any UI
 code from a Figma frame.
 
-## Step 4 — The AI runs the 5-step generate-code process
+</StepCard>
+
+<StepCard n="4" title="Step 4 — The AI runs the 5-step generate-code process">
 
 {/* source: .claude/skills/generate-code.md Steps 1–5, plus "Before you start" */}
 What the skill obliges the AI to do — useful to know so you can tell when it's
@@ -89,18 +138,24 @@ being skipped:
    assumed (please confirm)." More on reading that list in
    *Working with AI*.
 
-## Step 5 — Run the token audit (the hard gate)
+</StepCard>
+
+<StepCard n="5" title="Step 5 — Run the token audit (the hard gate)">
 
 {/* source: CLAUDE.md §Audit command ("zero errors required before committing") */}
-```bash
-npm run audit                 # token audit — hard gate, zero errors required
-```
+
+<CommandLine
+  line="npm run audit                 # token audit — hard gate, zero errors required"
+  command="npm run audit"
+/>
 
 `npm run audit` catches hardcoded hex, arbitrary pixel values, and raw
 Tailwind color utilities — "zero errors required before committing. If audit
 fails, fix before proceeding."
 
-## Step 6 — Review "What I assumed"
+</StepCard>
+
+<StepCard n="6" title='Step 6 — Review "What I assumed"'>
 
 {/* source: .claude/designers.md §"How to hand off a frame" step 4 — quoted */}
 "Review the assumptions list. Trivial items (spacing rounded from 14px →
@@ -108,17 +163,29 @@ fails, fix before proceeding."
 wasn't sure about, a color it couldn't map) need a quick 'yes' or 'use X
 instead.'"
 
-## Step 7 — Log the build, then score it
+</StepCard>
+
+<StepCard n="7" title="Step 7 — Log the build, then score it">
 
 {/* source: drift-log/README.md §"How an entry gets here" — quoted/condensed;
     .claude/skills/compass-audit/SKILL.md §"Score a build" (the log → score → dashboard
     sequence, verbatim) + hard rule 4 (token-audit stays the commit gate; compliance
     audit is advisory) + §Cadence ("Capture: every build") */}
-```bash
-npm run log            # capture: paste "What I assumed", files auto-detected
-npm run audit:compliance -- --entry drift-log/entries/<entry>.json
-npm run dashboard      # regenerate drift-log/dashboard.html
-```
+
+<div className="flex flex-col gap-1">
+  <CommandLine
+    line='npm run log            # capture: paste "What I assumed", files auto-detected'
+    command="npm run log"
+  />
+  <CommandLine
+    line="npm run audit:compliance -- --entry drift-log/entries/<entry>.json"
+    command="npm run audit:compliance -- --entry drift-log/entries/<entry>.json"
+  />
+  <CommandLine
+    line="npm run dashboard      # regenerate drift-log/dashboard.html"
+    command="npm run dashboard"
+  />
+</div>
 
 `npm run log` "asks you to paste the 'What I assumed' block from the AI's
 output," auto-detects the files the session changed and the Compass components
@@ -132,7 +199,9 @@ report. Unlike Step 5, this score is advisory: "token-audit stays the commit
 gate ... the compliance audit is advisory." The weekly/monthly drift detection
 and the tightening proposals only read this ledger.
 
-## Step 8 — (Optional) Write the result back to Figma
+</StepCard>
+
+<StepCard n="8" title="Step 8 — (Optional) Write the result back to Figma">
 
 {/* source: .claude/skills/write-to-figma.md — critical rule, Step 1, and Fallback;
     CLAUDE.md Component rules ("Figma write-back: library instances only") */}
@@ -145,7 +214,9 @@ page containers, layout rows/columns, and spacers. If a component's key is
 missing from the registry, the skill must flag it ("Warning: [Component]
 written as raw frame — key not in registry"), never hide it.
 
-## What happens after — the loop closes
+</StepCard>
+
+<StepCard title="What happens after — the loop closes">
 
 {/* source: .claude/skills/compass-audit/SKILL.md §Detect, §Prescribe, §Cadence, hard rule 1 */}
 On a weekly-to-monthly cadence, `npm run detect` reads the last N ledger
@@ -154,6 +225,10 @@ tightening-plan **proposal** in `drift-log/proposals/`. "The loop proposes,
 the owner approves" — no spec or rule is ever edited automatically. Your
 logged assumptions are the raw material: "a repeated assumption = a spec that
 failed to decide something."
+
+</StepCard>
+
+</div>
 
 ---
 

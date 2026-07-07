@@ -1,5 +1,10 @@
-{/* PROPOSED — S2.4 "Working with Compass" SOP, page 5 of 5. Status: awaiting Nikhil's approval.
-    On approval this moves to stories/ (title "Working with Compass/Working with AI").
+{/* OWNER-APPROVED — S2.4 "Working with Compass" SOP, page 5 of 5.
+    Content approved by Nikhil (owner directive 2026-07-07); presentation rebuilt
+    interactive per .compass-build/design/s2/sop-interactive-structure.PROPOSED.md:
+    the six-layer constraint stack renders as a stacked Card diagram (LayerCard
+    below is UI chrome composed from Compass Card/Badge; every rendered sentence
+    is the approved draft's text); assumption-reading confirm/correct/escalate
+    stays a table.
     Provenance: CLAUDE.md (auto-load, universal rule, token/component rules);
     generate-code.md (Step 5, self-audit); components/ui/_meta-schema.ts (provenance rule);
     .claude/skills/compass-audit/SKILL.md (rubric, opinion firewall);
@@ -7,10 +12,25 @@
     (assumption review); .claude/principles.md (tiebreaker). */}
 
 import { Meta } from "@storybook/addon-docs/blocks";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GapCard } from "./decision-flow";
+
+export function LayerCard({ n, title, children }) {
+  return (
+    <Card size="sm">
+      <CardHeader className="border-b">
+        <CardTitle className="sb-unstyled flex items-center gap-3 font-sans">
+          <Badge className="shrink-0 font-mono">{n}</Badge>
+          <span>{title}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">{children}</CardContent>
+    </Card>
+  );
+}
 
 <Meta title="Introduction/Working with Compass/Working with AI" />
-
-> ⚠️ **PROPOSED — under owner review.** Wording on this page is a draft assembled strictly from existing Compass sources; it is not yet approved and may change. This banner is removed on approval.
 
 # Working with AI
 
@@ -23,7 +43,12 @@ assumed" output.
 
 ## How the system constrains the LLM
 
-### 1. CLAUDE.md is auto-loaded and overrides defaults
+{/* The six layers, rendered as the stacked Card diagram the approved structure
+    doc calls for — layer text unchanged from the approved draft. */}
+
+<div className="flex flex-col gap-2">
+
+<LayerCard n="1" title="CLAUDE.md is auto-loaded and overrides defaults">
 
 {/* source: CLAUDE.md header + repo-structure annotation ("auto-loaded every session") */}
 "Read this file fully before writing or modifying any code. It overrides all
@@ -31,7 +56,9 @@ default behaviors." Claude Code loads it automatically every session; it
 carries the token rules, component rules, and the universal
 never-silently-substitute rule.
 
-### 2. Specs override everything general
+</LayerCard>
+
+<LayerCard n="2" title="Specs override everything general">
 
 {/* source: CLAUDE.md "If a component spec exists in .claude/specs/components/, follow it
     exactly."; spec headers, e.g. dialog.md: "It overrides any general foundation spec
@@ -41,7 +68,9 @@ exactly." Each spec states: "It overrides any general foundation spec where
 they conflict." If no spec exists, the AI falls back to the component's
 default shadcn/ui API with Compass tokens.
 
-### 3. meta.ts — the machine-readable contract, with provenance
+</LayerCard>
+
+<LayerCard n="3" title="meta.ts — the machine-readable contract, with provenance">
 
 {/* source: components/ui/_meta-schema.ts doc comments — provenance rule quoted;
     consumers listed in the schema header */}
@@ -53,14 +82,18 @@ invented." Storybook docs, the compliance audit (checks C2/C3/C4), migration
 resolution, and the scaffold pipeline all read this same contract — so the
 docs you read and the rules the AI is graded against cannot diverge.
 
-### 4. The token audit — the hard gate
+</LayerCard>
+
+<LayerCard n="4" title="The token audit — the hard gate">
 
 {/* source: CLAUDE.md Token rules + Audit command */}
 `npm run audit` "must pass with zero errors before any commit." It catches
 hardcoded hex colors, arbitrary pixel values, and raw Tailwind color
 utilities. This is mechanical — no judgment, no exceptions.
 
-### 5. The compliance audit — the behavioral gate
+</LayerCard>
+
+<LayerCard n="5" title="The compliance audit — the behavioral gate">
 
 {/* source: .claude/skills/compass-audit/SKILL.md — rubric table C1–C7 and hard rule 4 */}
 `npm run audit:compliance` scores each build against the C1–C7 rubric: tokens
@@ -71,15 +104,20 @@ implemented. It emits a per-build score. Unlike the token audit, it is
 advisory: "token-audit stays the commit gate; the compliance audit is
 advisory."
 
+</LayerCard>
+
 {/* source: gap — SKILL.md defines the score formula and tunable weights
     (scripts/audit-rubric.json, default 100/−5/−1 per STATE.md) but no source states what
-    score a designer should treat as acceptable */}
-> ⚠ **NEEDS OWNER DECISION:** What compliance score counts as "good"? The
-> rubric defines how the score is computed (start score minus weighted
-> errors/warnings, owner-tunable), but no source sets an acceptance threshold
-> a designer can check their build against.
+    score a designer should treat as acceptable. Sits in the stack right below
+    layer 5, not nested inside it (card.md: no nested cards). */}
 
-### 6. Principles — the tiebreaker
+<GapCard source="gap — SKILL.md defines the score formula and tunable weights (scripts/audit-rubric.json); no source sets an acceptance threshold">
+  What compliance score counts as "good"? The rubric defines how the score is
+  computed (start score minus weighted errors/warnings, owner-tunable), but no
+  source sets an acceptance threshold a designer can check their build against.
+</GapCard>
+
+<LayerCard n="6" title="Principles — the tiebreaker">
 
 {/* source: .claude/principles.md "About this document" + "For LLMs" */}
 "When a design decision is ambiguous and the component specs don't resolve
@@ -87,6 +125,10 @@ it, these principles are the tiebreaker." And when principles conflict:
 system-over-invention beats convenience, tokens-over-values beats visual
 approximation, and anything still unresolved gets surfaced to the designer —
 "don't guess."
+
+</LayerCard>
+
+</div>
 
 ---
 
