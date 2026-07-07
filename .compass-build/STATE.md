@@ -44,13 +44,17 @@
 - 2026-07-07: Font weight-gap RULED: HOST the missing weights (100/200/800/900). Execution blocked on owner-supplied .woff2 cuts (Euclid Circular B retail family = 5 weights 300-700; foundry availability of Thin/ExtraLight/ExtraBold/Black to be confirmed by owner against the Acko license). If cuts don't exist → fallback is narrowing the spec table (owner informed). C7a warning stays live until resolved — by design.
 
 ## Current stage
-**S3 IN PROGRESS (opened 2026-07-07 on S2 exit approval) + S4 C7a build + S5 Storybook integration running in parallel.**
-Deployed: Chromatic Build 1, auto-accepted — 55 components / 171 stories / 171
-snapshots. App: https://www.chromatic.com/setup?appId=6a4c6bc7a7294c9b64f0b80e
-Permalink: https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com
-Everything committed; tree clean. Open owner items (non-blocking): card fork,
-primitiveElements, direction category, C3 severity, C7 build go, S5 sample
-repos, 13 SOP flagged gaps, Table gaps #19-22 (S6 candidates).
+**S3 BUILD COMPLETE (tag s3-build-complete, 2026-07-07) — at stage-exit gate.
+S4 and S5 buildable scopes: EXHAUSTED (everything remaining is owner-gated).**
+S3 proven: fresh Next 16 consumer installed the npm-pack tarball; tsc + next
+build pass; CSS/token/font chain works; CLI works from node_modules (58-item
+init). HELD FOR OWNER: registry publish (credentials + package name
+@acko/compass placeholder + react/next→peerDeps flip + semver policy approval
++ CHANGELOG choice a/b).
+Owner-gated queue (everything left): card fork · primitiveElements + C3
+severity · direction category · C7b trigger policy · S5 sample repos (Lovable
+first) · SOP 13 flagged gaps · Table gaps 19-22 · weight cuts (host ruling
+pending files) · semver/CHANGELOG · publish go.
 
 ### S0 rulings (Nikhil, 2026-07-06)
 1. Metadata text approved as proposed.
