@@ -35,20 +35,17 @@
 - 2026-07-07: SOP content APPROVED; presentation to be rebuilt INTERACTIVE (visual decision branches, live do/don't pairs, task-oriented collapsibles, "what do you want to do?" entry). HARD RULE: interactivity adds zero content; incomplete branches = needs-owner-decision flags. Structure proposal + flagged-gaps list gated on owner approval BEFORE build.
 - 2026-07-07: Intro/Getting Started prose: propose-text-then-approve (traceable wording only).
 
-- 2026-07-07: Deploy = CHROMATIC (owner choice); project token received, stored in .env.local (gitignored — never committed). Publish runs once interactive SOP lands.
+- 2026-07-07: Deploy = CHROMATIC (owner choice); token in .env.local (gitignored). DEPLOYED: Build 1 auto-accepted, 55 comp/171 stories, appId 6a4c6bc7a7294c9b64f0b80e.
 
 ## Current stage
-**S2 — FINAL STEPS (2026-07-07). Resume here if session died:**
-1. Interactive SOP build agent was in flight (structure approved; content =
-   the 5 stories/working-with-compass pages; renderers decision-flow/
-   live-do-dont/task-picker per .compass-build/design/s2/
-   sop-interactive-structure.PROPOSED.md). Check disk state; finish/relaunch;
-   verify tsc + audit 0 + build-storybook; commit.
-2. DEPLOY: run `npm run chromatic` (token in .env.local). Owner approved.
-3. Then S2 EXIT REPORT to owner (stage gate) — evidence: 233+ entries, all
-   green, Chromatic URL. Await his approval, then S3 opens.
-Everything else committed. Owner items open: card fork, primitiveElements,
-direction category, S5 sample repos, C3 severity, C7 build go.
+**S2 BUILD + DEPLOY COMPLETE (2026-07-07) — AT STAGE-EXIT GATE, awaiting owner
+approval. Then S3 (packaging) opens.**
+Deployed: Chromatic Build 1, auto-accepted — 55 components / 171 stories / 171
+snapshots. App: https://www.chromatic.com/setup?appId=6a4c6bc7a7294c9b64f0b80e
+Permalink: https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com
+Everything committed; tree clean. Open owner items (non-blocking): card fork,
+primitiveElements, direction category, C3 severity, C7 build go, S5 sample
+repos, 13 SOP flagged gaps, Table gaps #19-22 (S6 candidates).
 
 ### S0 rulings (Nikhil, 2026-07-06)
 1. Metadata text approved as proposed.
