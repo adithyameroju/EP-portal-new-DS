@@ -52,6 +52,9 @@
 - 2026-07-07 (night): **DEPLOYED.** Pushed to github.com/nikhilpthakkar/compass-in-loop (main + 5 stage tags, 72 commits); Storybook live on GitHub Pages https://nikhilpthakkar.github.io/compass-in-loop/ (gh-pages branch, HTTP 200); CHROMATIC_PROJECT_TOKEN set as repo CI secret.
 - 2026-07-07 (night): **DO NOT PUBLISH TO NEXUS** — owner interrupted the publish attempt and ruled it off. Package remains prepared-not-published: @acko/compass@0.1.0, tarball-verified. Any future registry publish requires a fresh owner instruction.
 
+- 2026-07-07 (night): **EUCLID COMMERCIAL LICENSE CONFIRMED** by owner — public-repo font exposure is authorized; the licensed-font concern raised at push time is resolved. (Repo-visibility migration to internal still planned via devops, separate reason.)
+- 2026-07-07 (night): **SECURITY SCAN of pushed repo = CLEAN.** No Chromatic token (chpt_/literal value) in any blob across main+gh-pages+full history; .env.local untracked/gitignored; .npmrc carries only the Nexus registry URL (internal infra name, no credentials); no _auth/authToken in lockfile. Only "password" hits are UI demo copy / input types. Chromatic token lives in .env.local (local) + GitHub Actions secret (CI) only.
+
 ## Current stage
 **S3 BUILD COMPLETE (tag s3-build-complete, 2026-07-07) — at stage-exit gate.
 S4 and S5 buildable scopes: EXHAUSTED (everything remaining is owner-gated).**
