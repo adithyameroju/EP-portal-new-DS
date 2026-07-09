@@ -64,21 +64,19 @@ do not recreate their layout manually with divs.
 |----------|---------------|-------|
 | Background | `bg-card` | White in light, dark elevated gray in dark |
 | Text | `text-card-foreground` | Inherits for all sub-components |
-| Border | `ring-1 ring-foreground/10` | Subtle ring — this IS the card border |
-| Border radius | `rounded-xl` | 16px outer, sub-components round their corners too |
-| Shadow | none | Card has no default shadow — add only if Figma explicitly shows one |
+| Border | `border border-border` | 1px solid border (the `base/border` token) — matches the Figma card component |
+| Border radius | `rounded-xl` | 12px outer (the `rounded-xl` token), sub-components round their corners too |
+| Shadow | `shadow-xs` | Subtle drop shadow (the `shadow/xs` token) — matches the Figma card component |
 | Outer vertical padding | `py-4` | 16px top/bottom on the Card itself |
 | Header/content/footer padding | `px-4` | 16px left/right on each sub-component |
 | Footer background | `bg-muted/50` | Footer is subtly differentiated from content |
 | Gap between sections | `gap-4` | 16px between CardHeader, CardContent, CardFooter |
 
-> **Do NOT add `border border-border` to `<Card>`.** The `ring-1 ring-foreground/10`
-> is the card's visual border. Adding an explicit `border` on top creates a visible
-> double frame. If the Figma shows a border, that IS the ring — do not add a separate one.
->
-> **Do NOT add `shadow-sm` or any shadow to `<Card>` by default.** Card has no built-in
-> shadow. If the Figma frame shows a shadow on the card, add `shadow-sm` and note it
-> in your "What I assumed" section — do not add shadow speculatively.
+> **The Card ships with `border border-border` + `shadow-xs` + `rounded-xl` (12px)
+> + `bg-card` by default — matching the Figma card component** (owner ruling,
+> 2026-07-07). These are already built into `card.tsx`; do not re-apply them as
+> className overrides, and do not add a SECOND `border` or `shadow` on top (that
+> creates a double frame / double shadow).
 
 ---
 
@@ -246,7 +244,7 @@ When a card is clickable (navigates to a detail view):
 | Grid of cards | `grid grid-cols-N gap-6` wrapper |
 | Clickable card | Card with `hover:bg-accent cursor-pointer` |
 | Card with no visible border | Add `border-0 shadow-none` overrides |
-| Card with extra shadow | Use `shadow-md` override — but default `shadow-sm` is preferred |
+| Card with extra shadow | Use `shadow-md` override — the default is `shadow-xs` |
 
 ---
 
@@ -277,13 +275,13 @@ When a card is clickable (navigates to a detail view):
    the Generate Code skill will fail if heading text is in a plain div instead
    of `<CardTitle>`.
 
-3. **Do not recreate Card from scratch.** No `<div className="rounded-xl ring-1 bg-card ...">`.
+3. **Do not recreate Card from scratch.** No `<div className="rounded-xl border shadow-xs bg-card ...">`.
    Import and use the Card component.
 
-4. **Do not add `border` or `shadow` to Card unless Figma explicitly shows them.**
-   The `ring-1 ring-foreground/10` IS the card's visual border — do not add
-   `border border-border` on top. Only add a shadow class if the Figma frame
-   clearly shows elevation. Note it in "What I assumed."
+4. **Do not add a second `border` or `shadow` to Card.** The card already has a
+   built-in `border border-border` and `shadow-xs` (matching Figma). Adding
+   another `border`, or a heavier shadow, on top creates a double frame. Change
+   the default only for a confirmed Figma exception, noted in "What I assumed."
 
 5. **One CardTitle per card.** If you need multiple headings inside a card,
    use `text-lg font-semibold` on additional headings, not multiple CardTitle.

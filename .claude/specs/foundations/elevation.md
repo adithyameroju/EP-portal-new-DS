@@ -15,8 +15,8 @@ Compass defines three categories of shadows: **drop shadows** for elevated surfa
 | Token | Offset Y | Blur | Spread | Color | Tailwind class | Typical usage |
 |-------|----------|------|--------|-------|---------------|---------------|
 | `shadow/2xs` | 1px | 0 | 0 | `#0000000D` (5%) | `shadow-2xs` | Subtle border-like shadow |
-| `shadow/xs` | 1px | 2px | 0 | `#0000000D` (5%) | `shadow-xs` | Buttons resting state |
-| `shadow/sm` | 1px | 2px + 3px (layered) | -1px + 0 | `#0000001A` (10%) | `shadow-sm` | Cards, dropdowns resting |
+| `shadow/xs` | 1px | 2px | 0 | `#0000000D` (5%) | `shadow-xs` | Buttons and cards, resting state |
+| `shadow/sm` | 1px | 2px + 3px (layered) | -1px + 0 | `#0000001A` (10%) | `shadow-sm` | Dropdowns resting |
 | `shadow/md` | 2px + 4px | 4px + 6px (layered) | -2px + -1px | `#0000001A` (10%) | `shadow-md` | Elevated cards, popovers |
 | `shadow/lg` | 4px + 10px | 6px + 15px (layered) | -4px + -3px | `#0000001A` (10%) | `shadow-lg` | Modals, dialogs |
 | `shadow/xl` | 8px + 20px | 10px + 25px (layered) | -6px + -5px | `#0000001A` (10%) | `shadow-xl` | Prominent floating panels |
@@ -67,8 +67,8 @@ Use this to pick the right shadow level. Higher = more elevated = more shadow.
 | Level | Shadow token | When to use |
 |-------|-------------|-------------|
 | 0 (flat) | none | Sections within the page, no elevation |
-| 1 (subtle) | `shadow-2xs` or `shadow-xs` | Buttons, chips, subtle separation |
-| 2 (resting) | `shadow-sm` | Cards, list items on hover |
+| 1 (subtle) | `shadow-2xs` or `shadow-xs` | Buttons, chips, cards, subtle separation |
+| 2 (resting) | `shadow-sm` | List items on hover |
 | 3 (raised) | `shadow-md` | Popovers, dropdown menus, tooltips |
 | 4 (floating) | `shadow-lg` | Modals, dialogs, command palettes |
 | 5 (overlay) | `shadow-xl` or `shadow-2xl` | Full-screen overlays, spotlight effects |
@@ -79,7 +79,8 @@ Use this to pick the right shadow level. Higher = more elevated = more shadow.
 
 1. **Only use tokens from this file.** Do not write arbitrary `box-shadow` values.
 2. **Use Tailwind shadow classes** (`shadow-md`, `shadow-lg`), not raw CSS.
-3. **Cards default to `shadow-sm`.** Elevated on hover: `hover:shadow-md`.
+3. **Cards default to `shadow-xs`** (1px border + `shadow-xs`, matching the Figma
+   card — owner ruling 2026-07-07). Elevated on hover: `hover:shadow-md`.
 4. **Dialogs and modals use `shadow-lg`.** Not `shadow-2xl` — that's for rare emphasis.
 5. **Focus rings use `focus/default` or `focus/destructive`.** Implement via
    Tailwind's `focus-visible:ring-2 focus-visible:ring-ring` pattern.

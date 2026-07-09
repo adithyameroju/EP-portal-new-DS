@@ -24,15 +24,15 @@ export const cardMeta: ComponentMeta = {
     },
     {
       wrong:
-        "Recreate Card from scratch with a div carrying rounded, ring, and card background classes",
+        "Recreate Card from scratch with a div carrying rounded, border, shadow, and card background classes",
       instead: "Import and use the Card component from components/ui/card",
       source: "spec:.claude/specs/components/card.md#rules-for-llms",
     },
     {
       wrong:
-        "Add border classes or a shadow to Card when Figma doesn't explicitly show them",
+        "Add a second border, or a heavier shadow, on top of Card's built-in border and shadow",
       instead:
-        "The built-in subtle foreground ring IS the card's visual border — adding border classes creates a double frame; Card has no default shadow, so only add one if the Figma frame clearly shows elevation and note it in 'What I assumed'",
+        "The card already ships with a 1px border-border and shadow-xs (matching the Figma card); do not double them up — change the default only for a confirmed Figma exception, noted in 'What I assumed'",
       source: "spec:.claude/specs/components/card.md#rules-for-llms",
     },
     {
@@ -102,7 +102,8 @@ export const cardMeta: ComponentMeta = {
   tokens: [
     "bg-card",
     "text-card-foreground",
-    "ring-foreground/10",
+    "border-border",
+    "shadow-xs",
     "bg-muted/50",
     "text-muted-foreground",
   ],
