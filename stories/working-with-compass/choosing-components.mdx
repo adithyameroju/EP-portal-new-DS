@@ -276,11 +276,18 @@ standalone `Label` + `Input` pairs."
     CLAUDE.md rule distinguishes Card from Item. Per the no-invention rule this is not
     filled in. */}
 
-<GapCard source='gap — components/ui/item.meta.ts has no spec (specStatus: "none"), empty selectionCriteria and empty confusedWith (aiHints source: "types-only")'>
+<GapCard source='gap — components/ui/item.meta.ts has no spec (specStatus: "none"), empty selectionCriteria and empty confusedWith (aiHints source: "types-only"); resolves via demand-driven backfill (Compass_GA_Roadmap.md:283-284 §S6.3)'>
   When should a designer use `Item` (the flexible list-row molecule with
   media/title/description/actions slots) instead of a `Card`, or instead of a
   `Table` row? Item has no spec and its meta contains no selection criteria or
   disambiguation — no source answers this question, so this SOP does not.
+
+  **Why this stays open:** no source draws the `Card` / `Item` / `Table`-row
+  boundary — Item's meta carries empty `selectionCriteria` and `confusedWith`.
+  **What will resolve it:** demand-driven backfill — once real product usage
+  makes the boundary concrete, a selection rule is written per the roadmap's
+  demand-driven coverage (`Compass_GA_Roadmap.md:283-284` §S6.3), rather than
+  invented here.
 </GapCard>
 
 ---
@@ -337,9 +344,15 @@ says so, not front-loaded."
 
 </SourceCollapsible>
 
-<GapCard source="gap — Compass_GA_Roadmap.md §S6.1–S6.2 defines the pipeline; no source defines the trigger">
-  What is the concrete threshold for promotion — how many uses, in how many
-  features, before a composition is brought to review? The roadmap defines the
-  *pipeline* (S6.1–S6.2) but no source defines the *trigger* a designer can
-  check against.
-</GapCard>
+{/* source: RESOLVED — a pattern earns review when the drift-hotspot detector flags it;
+    no fixed numeric count. .claude/skills/compass-audit/SKILL.md §Detect (hotspot at
+    ≥ rubric.detect.hotspotMinBuilds); Compass_GA_Roadmap.md:283-284 §S6.3 */}
+**What triggers promotion review?** A pattern earns promotion review **when the
+drift-hotspot detector flags it** — there is **no fixed numeric count**. `npm
+run detect` clusters `{component, rule}` hotspots across *distinct* builds (a
+hotspot at `≥ rubric.detect.hotspotMinBuilds`), and coverage is demand-driven:
+specs and Code Connect are added "when the audit/drift signal says so, not
+front-loaded." That drift signal — not a "used in N features" number — is the
+trigger a designer can check against.
+
+{/* source: .claude/skills/compass-audit/SKILL.md §Detect; Compass_GA_Roadmap.md:283-284 §S6.3 */}

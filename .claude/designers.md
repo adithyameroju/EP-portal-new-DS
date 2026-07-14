@@ -74,8 +74,15 @@ silently substitute.
 
 ### Use the spacing scale
 
-Compass uses an 8-point spacing grid. The named values are:
+For everyday design work, this is the subset of values you'll reach for most:
 `4px, 8px, 12px, 16px, 24px, 32px, 40px, 48px, 64px, 80px, 96px`
+
+Think of these as a helpful shortcut, not a separate system. The **authoritative
+full scale** — including in-between values like `6px, 10px, 14px, 20px, 28px` —
+lives in [`.claude/specs/foundations/spacing.md`](specs/foundations/spacing.md),
+which is the source of truth for every allowed spacing value. As that spec puts
+it: if a value isn't listed there, it doesn't exist in the system. When the
+everyday subset and the full scale ever seem to differ, the full scale governs.
 
 Design your padding, gaps, and margins to these values. The generator rounds
 to the nearest step and flags the rounding in its assumptions list.
@@ -105,6 +112,13 @@ When you want code generated from a Figma frame:
    placeholder text) need no reply. Structural decisions (a component it wasn't
    sure about, a color it couldn't map) need a quick "yes" or "use X instead."
 
+5. **Commit the reviewed build.** Once the output looks right, the designer
+   commits it to `components/blocks/` — the compositions area, which is less
+   strictly gated than the `components/ui/` primitives. A developer then picks
+   it up from `components/blocks/` and integrates it into the product. That
+   hand-off from `components/blocks/` closes the loop: review is not the last
+   step, committing to `components/blocks/` is.
+
 ---
 
 ## Figma Code Connect — what it is and why it matters
@@ -129,15 +143,17 @@ You don't need to do anything to make this work — it's automatic once publishe
 
 ## Component status
 
-- **55 components** live in the code library (`components/ui/`)
-- **33 components** have full code specs (`.claude/specs/components/`)
-- **10 components** have Figma Code Connect mappings: Button, Card, Dialog,
-  Field, Input, Select, Sheet, Sidebar, Table, Tabs
+**Don't rely on a hand-maintained count here — it drifts out of date.** The live
+source of truth for component status is the deployed Storybook, where each
+component's status badges (spec status, Code Connect status, and version) are
+generated automatically from that component's `meta.ts`. Read status there, plus
+the **Changelog** page for what changed and when:
 
-Every component is documented in the deployed Storybook:
 **https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com**
 
-Code specs and Code Connect mappings for remaining components are added on demand.
+Because the badges are meta-driven, Storybook always reflects the current state
+of every component — no parallel count in this guide to keep in sync. Code specs
+and Code Connect mappings for remaining components are added on demand.
 
 ---
 

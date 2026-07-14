@@ -7,10 +7,10 @@
  * lifted verbatim from stories/working-with-compass/choosing-components.mdx
  * (which itself quotes the named specs — the `source` field on every node and
  * leaf carries that citation). Node questions and structural option labels
- * that only name components are UI labels, not content. The two flagged gaps
- * (#11 link-vs-ghost, #12 thin sonner citation) and the standing promotion-
- * threshold gap quote the flagged-gaps list of the approved structure doc /
- * the existing ⚠ blocks — they are questions for the owner, not answers.
+ * that only name components are UI labels, not content. Gaps #2 (promotion),
+ * #11 (link-vs-ghost) and #12 (sonner) were RESOLVED by owner ruling
+ * 2026-07-07 and now render as answers with cited sources; the remaining
+ * deferred gaps live as flagged GapCards in the .mdx pages.
  *
  * ENFORCEMENT: decision-flow.tsx validates these flows at module load and
  * THROWS if any node or leaf is missing its `source` field.
@@ -68,7 +68,8 @@ export interface DecisionFlowData {
  * Flow 1 — Selection control
  * Derived from: checkbox.md, switch.md, radio-group.md, select.md and
  * dropdown-menu.md "When to use" tables/rules as quoted on Choosing a
- * Component. Gap #11 (link vs ghost) renders as a flagged leaf.
+ * Component. Gap #11 (link vs ghost) RESOLVED (owner ruling 2026-07-07):
+ * promotes button.md:182-189's color rule as the general link-vs-ghost rule.
  * ──────────────────────────────────────────────────────────────────────────── */
 
 export const selectionControlFlow: DecisionFlowData = {
@@ -185,9 +186,11 @@ export const selectionControlFlow: DecisionFlowData = {
       kind: "leaf",
       id: "leaf-gap-link-vs-ghost",
       title: "Text link vs ghost button",
-      gap: "Button vs link-variant vs icon-button: button.md decides navigation (render prop) and icon-buttons (size=icon + aria-label), but no source decides “when is an action a text link vs a ghost button” as a general rule.",
+      component: "button",
+      detail:
+        "Choose by color (button.md's color-based rule, promoted to the general rule): primary/purple-colored navigational text → “variant=\"link\"” (with “render={<Link href=\"...\" />}” when it routes); foreground-colored (gray, low-emphasis) inline action → “variant=\"ghost\" size=\"sm\"”. For ghost here, accept the subtle hover background — it is intentional; do not override it.",
       source:
-        ".compass-build/design/s2/sop-interactive-structure.PROPOSED.md §Flagged-gaps #11 — no source decides this branch",
+        ".claude/specs/components/button.md:182-189 — color-based rule for an inline text action (primary/navigational → link; foreground/low-emphasis → ghost size=\"sm\")",
     },
     "leaf-checkbox": {
       kind: "leaf",
@@ -424,8 +427,8 @@ export const overlayFlow: DecisionFlowData = {
 /* ────────────────────────────────────────────────────────────────────────────
  * Flow 3 — Feedback
  * Derived from: alert.md "When to use Alert vs other feedback components"
- * table. Gap #12 (sonner has no spec — the leaf can cite only the alert.md
- * row) renders as a flagged leaf.
+ * table. Gap #12 RESOLVED (owner ruling 2026-07-07): resolves to Sonner and
+ * points at the now-authored .claude/specs/components/sonner.md.
  * ──────────────────────────────────────────────────────────────────────────── */
 
 export const feedbackFlow: DecisionFlowData = {
@@ -489,9 +492,10 @@ export const feedbackFlow: DecisionFlowData = {
       id: "leaf-sonner",
       title: "Toast/Sonner",
       component: "sonner",
-      gap: "Sonner has no spec; this leaf can cite only the alert.md table row (thin but citable — flagged per the hard rule rather than silently accepting).",
+      detail:
+        "A transient success confirmation that disappears after a few seconds → Toast/Sonner. Build it per the Sonner spec.",
       source:
-        ".claude/specs/components/alert.md §“When to use Alert vs other feedback components” — row: “Transient confirmation that disappears after a few seconds → Toast/Sonner”",
+        ".claude/specs/components/alert.md:33 — row “Transient confirmation that disappears after a few seconds → Toast/Sonner”; usage/API per .claude/specs/components/sonner.md",
     },
     "leaf-alert-dialog": {
       kind: "leaf",
@@ -743,10 +747,9 @@ export const composeVsRequestNewFlow: DecisionFlowData = {
       id: "leaf-promotion",
       title: "Promotion pipeline (roadmap S6)",
       detail:
-        "One guided flow “generates: component + spec + meta.ts + story + Code Connect stub + passing audit — so nothing enters the system half-documented,” with owner approval and a version bump on each promotion. Coverage is demand-driven: new specs and Code Connect mappings are added “when the audit/drift signal says so, not front-loaded.”",
-      gap: "What is the concrete threshold for promotion — how many uses, in how many features, before a composition is brought to review? The roadmap defines the pipeline (S6.1–S6.2) but no source defines the trigger a designer can check against.",
+        "A pattern earns promotion review when the drift-hotspot detector flags it — there is NO fixed numeric count. Detect clusters {component, rule} hotspots across distinct builds (a hotspot at ≥ rubric.detect.hotspotMinBuilds); coverage is demand-driven, added “when the audit/drift signal says so, not front-loaded.” Promotion then runs one guided flow that “generates: component + spec + meta.ts + story + Code Connect stub + passing audit,” with owner approval and a version bump.",
       source:
-        "Compass_GA_Roadmap.md §S6.1–S6.3 — scaffold flow, promotion pipeline, demand-driven coverage",
+        ".claude/skills/compass-audit/SKILL.md §Detect — hotspot at ≥ rubric.detect.hotspotMinBuilds; Compass_GA_Roadmap.md:283-284 §S6.3 — demand-driven coverage",
     },
   },
 }

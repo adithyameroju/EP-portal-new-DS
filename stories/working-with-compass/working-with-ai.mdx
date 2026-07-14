@@ -14,7 +14,6 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GapCard } from "./decision-flow";
 
 export function LayerCard({ n, title, children }) {
   return (
@@ -106,16 +105,16 @@ advisory."
 
 </LayerCard>
 
-{/* source: gap — SKILL.md defines the score formula and tunable weights
-    (scripts/audit-rubric.json, default 100/−5/−1 per STATE.md) but no source states what
-    score a designer should treat as acceptable. Sits in the stack right below
-    layer 5, not nested inside it (card.md: no nested cards). */}
-
-<GapCard source="gap — SKILL.md defines the score formula and tunable weights (scripts/audit-rubric.json); no source sets an acceptance threshold">
-  What compliance score counts as "good"? The rubric defines how the score is
-  computed (start score minus weighted errors/warnings, owner-tunable), but no
-  source sets an acceptance threshold a designer can check their build against.
-</GapCard>
+{/* source: RESOLVED (advisory) — the token audit (zero errors) is the only gate; the
+    compliance score is a trend signal, not a pass/fail number. .claude/skills/compass-audit/SKILL.md
+    hard rule 4 ("token-audit stays the commit gate; the compliance audit is advisory"),
+    quoted above at layer 5. */}
+**What compliance score counts as "good"?** There is no pass/fail number — and
+that is deliberate. The token audit (zero errors) is the **only gate**; the
+compliance score is an **advisory trend signal**, not a threshold a build must
+clear. As hard rule 4 puts it: "token-audit stays the commit gate; the
+compliance audit is advisory." Read the score's *direction* over time — the
+drift loop reads trends, not any single build's number.
 
 <LayerCard n="6" title="Principles — the tiebreaker">
 

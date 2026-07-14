@@ -83,16 +83,16 @@ to all the design system rules, skills, and specs. No extra setup needed."
 - **Use the spacing scale.** "The generator rounds to the nearest step and
   flags the rounding in its assumptions list."
 
-{/* source: gap/conflict — designers.md §"Use the spacing scale" says "Compass uses an
-    8-point spacing grid. The named values are: 4px, 8px, 12px, 16px, 24px, 32px, 40px,
-    48px, 64px, 80px, 96px" but foundations/spacing.md publishes the full Tailwind scale
-    (0–384px incl. 2, 6, 10, 14, 20, 28px...) on a 4px grid. Two sources, two different
-    scales — not resolvable without the owner. */}
-> ⚠ **NEEDS OWNER DECISION:** Which spacing list do designers design to? The
-> Designer Guide says "an 8-point spacing grid" with 11 named values
-> (4–96px), while the spacing foundation spec publishes the full Tailwind
-> scale ("respect the 4px grid", including 6px, 10px, 20px, 28px...). A
-> designer following one list will be "rounded" against the other.
+{/* source: RESOLVED — .claude/specs/foundations/spacing.md:5 is the source of allowed values
+    ("If a spacing value isn't listed here, it doesn't exist in the system"); designers.md's
+    11-value 8-point grid is the everyday subset, not a competing system. */}
+**Which spacing list governs?** The spacing foundation spec is authoritative —
+it is the source of allowed values: "If a spacing value isn't listed here, it
+doesn't exist in the system" (`spacing.md`). The Designer Guide's 11 named
+8-point values (4–96px) are **the everyday subset** designers reach for most,
+**not a competing system**. A value outside that subset is still valid if it's
+on the full scale; the generator rounds to the nearest scale step and flags the
+rounding in its assumptions list.
 
 </StepCard>
 
@@ -234,29 +234,30 @@ failed to decide something."
 
 ## Open questions in this loop
 
-{/* source: gap — generate-code.md says the output is "a React component file" but no
-    source names the destination folder; CLAUDE.md repo structure describes
-    components/blocks/ as "Acko-specific compositions (Phase 3+)" without assigning
-    designer builds to it */}
-> ⚠ **NEEDS OWNER DECISION:** Where do designer-generated screens live? The
-> generate-code skill defines the file's *content* but no source says which
-> folder a new build belongs in (`components/blocks/`? an `app/` route?
-> somewhere else?). Designers need one stated destination.
+{/* source: RESOLVED — .claude/contributing.md:82-84 — components/blocks/ is "where Acko-specific
+    screen compositions live — things like login forms, dashboard cards ... assembled from
+    components/ui/ primitives and ... less strictly gated"; full-screen builds go to an app/ route. */}
+**Where do designer-generated screens live?** Both — by build type. A reusable
+composition goes in `components/blocks/`, "where Acko-specific screen
+compositions live — things like login forms, dashboard cards ... assembled from
+`components/ui/` primitives and ... less strictly gated" (`contributing.md`). A
+full-screen build goes to an `app/` route instead.
 
-{/* source: gap — contributing.md §"PR process" is addressed to engineers; designers.md
-    stops at "review the output" and never mentions commit/branch/PR; drift-log/README
-    assumes git-tracked changes for auto-detection */}
-> ⚠ **NEEDS OWNER DECISION:** Do designers commit and open PRs for their own
-> builds, or hand the reviewed output to an engineer? The contributing guide
-> defines the PR process for engineers; the Designer Guide ends at "review
-> the output." The loop needs the ownership of the commit step stated.
+{/* source: RESOLVED — designers commit their reviewed build to components/blocks/ (the
+    "less strictly gated" area, contributing.md:82-84); developers pick it up from there. */}
+**Who commits the build?** The designer commits their own reviewed build to
+`components/blocks/` (the "less strictly gated" area); developers pick it up
+from there. Handing the composition off through the repo — rather than
+person-to-person — closes the loop, and keeps the CODEOWNERS-gated
+`components/ui/` primitives out of the designer's path.
 
-{/* source: gap/staleness — designers.md §"Component status" table lists specs/Code Connect
-    for Button/Input/Card only ("Phase 4+" for the rest), while CLAUDE.md/STATE.md record
-    33 specs and the roadmap records 10 Code Connect mappings */}
-> ⚠ **NEEDS OWNER DECISION:** Which surface is the truth for component status?
-> The Designer Guide's status table still says only Button/Input/Card have
-> specs and Code Connect, while the repo now has 33 specs (and the roadmap
-> records 10 Code Connect mappings). Should the SOP point to a single live
-> status surface (e.g. the meta-driven Storybook badges) and retire the
-> hand-maintained table?
+{/* source: RESOLVED — the meta-driven surface (Storybook status badges generated from each
+    component's meta.ts) is the authoritative live status. The designers.md table was refreshed
+    2026-07-07 to 55 components / 33 specs / 10 Code Connect, so the old "only Button/Input/Card"
+    wording no longer applies. */}
+**Which surface is the truth for component status?** The **meta-driven
+surface** — the Storybook status badges generated from each component's
+`meta.ts` — is the authoritative live status of which components have specs and
+Code Connect. It cannot drift from the code, because Storybook, the compliance
+audit, and the scaffold pipeline all read that same `meta.ts` contract. Point
+designers at the badges rather than at any hand-maintained table.

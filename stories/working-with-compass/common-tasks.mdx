@@ -171,13 +171,25 @@ and themed Recharts overrides.
     Rendered as the flagged leaf the structure doc calls for (#13: "the Charts
     accordion gets a flagged leaf, not a flow"). */}
 
-<GapCard source='gap — chart has no component spec (chart.meta.ts specStatus: "none"); principles.md leaves data-visualization conventions intentionally blank'>
+<GapCard source='gap — chart has no component spec (chart.meta.ts specStatus: "none"); principles.md:81 reserves data-visualization conventions; chart states scheduled for Compass_GA_Roadmap.md:280 §S6.2'>
   Beyond the ordered chart tokens and the ChartContainer requirement, there are
   no chart rules — chart has no spec, and `principles.md` deliberately leaves
   "Data visualization conventions — which chart types, how much annotation?"
   blank until real product work decides it. Which chart types are preferred,
   how are axes/legends/tooltips configured by default, and when is a table
   better than a chart? No source answers these yet.
+
+  **Why this stays open:** `principles.md:81` intentionally reserves
+  data-visualization conventions until the first Acko product work forms the
+  opinion — inventing them now would be drift. **What will resolve it:** the
+  first Acko product that actually uses charts.
+
+  **Chart loading / error / empty states** are open too — but not from zero:
+  the KPI feature has **already built** standardized chart `Skeleton` /
+  `Error` / `Empty` states, and the roadmap lists them under S6.2 as promotion
+  candidates (`Compass_GA_Roadmap.md:280`). **What will resolve it:** S6
+  promotion, which will systematize that real, already-built source rather than
+  invent the states here.
 </GapCard>
 
 </AccordionContent>
@@ -253,6 +265,11 @@ and themed Recharts overrides.
 > forms?" Until real product work fills these in, there is no Compass answer
 > to "should this screen be compact or spacious" beyond the per-context
 > spacing patterns above.
+>
+> **Why this stays open:** `principles.md:79,82` reserve both density questions
+> as intentionally blank. **What will resolve it:** real Acko product work —
+> the roadmap's stated method of filling `principles.md` from the first
+> products designed and built on Compass.
 
 </AccordionContent>
 </AccordionItem>
