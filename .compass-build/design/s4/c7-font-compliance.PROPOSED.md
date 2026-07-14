@@ -1,9 +1,14 @@
 # C7 font compliance (paint-level) — backlog addition from Nikhil
 
-*S4 track design doc. Status: **C7a BUILT 2026-07-07** (owner grant per
-STATE.md DECISION LOG 2026-07-07 PROVISIONAL entry — "remaining steps for S4"
-read as the C7a build go). **C7b remains PROPOSED / design-only** pending the
-owner's trigger-policy decision (open decision 2 below).*
+*S4 track design doc. Status: **C7a BUILT 2026-07-07**. **C7b TRIGGER POLICY
+RULED 2026-07-07 (owner): on-demand only, NOT gated, and BUILD DEFERRED** — no
+trigger has occurred, and C7a (static, runs at commit) + Chromatic (renders
+every story, catches a visual font regression) already cover the real failure
+mode. C7b's only marginal value is the rare "@font-face exists but still
+doesn't paint" case (corrupt woff2, CSP block). If a paint bug ever slips past
+C7a + Chromatic, build C7b then as a manual `npm run audit:font` command run
+pre-release / on font changes — never in the commit gate, and nightly CI stays
+blocked until the Nexus-registry-in-CI issue is solved.*
 
 ## The failure this prevents (real, from S0)
 

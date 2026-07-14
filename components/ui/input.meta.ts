@@ -98,5 +98,6 @@ export const inputMeta: ComponentMeta = {
   specPath: ".claude/specs/components/input.md",
   codeConnectStatus: "mapped",
   primitiveSource: "base-ui",
+  primitiveElements: ["input"],
   version: "1.0.0",
 }

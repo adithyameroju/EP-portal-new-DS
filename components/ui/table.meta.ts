@@ -109,5 +109,6 @@ export const tableMeta: ComponentMeta = {
   specPath: ".claude/specs/components/table.md",
   codeConnectStatus: "mapped",
   primitiveSource: "native",
+  primitiveElements: ["table"],
   version: "1.0.0",
 }

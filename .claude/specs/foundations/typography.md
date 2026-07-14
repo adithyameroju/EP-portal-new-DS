@@ -50,15 +50,16 @@ Each size includes a paired line-height. Use via Tailwind classes (`text-sm`, `t
 
 | Token | Value | Tailwind class | Typical usage |
 |-------|-------|---------------|---------------|
-| `font-weight/thin` | 100 | `font-thin` | Decorative only |
-| `font-weight/extralight` | 200 | `font-extralight` | Decorative only |
 | `font-weight/light` | 300 | `font-light` | Large display text |
 | `font-weight/normal` | 400 | `font-normal` | Body text (default) |
 | `font-weight/medium` | 500 | `font-medium` | Labels, navigation items |
 | `font-weight/semibold` | 600 | `font-semibold` | Headings, buttons, emphasis |
 | `font-weight/bold` | 700 | `font-bold` | Strong emphasis |
-| `font-weight/extrabold` | 800 | `font-extrabold` | Rare — heavy emphasis |
-| `font-weight/black` | 900 | `font-black` | Rare — maximum weight |
+
+> Compass ships weights **300–700** (light through bold) — the range the
+> self-hosted Euclid Circular B faces (`app/fonts.css`) and the retail family
+> both cover. Lighter (thin/extralight) and heavier (extrabold/black) weights
+> are not part of the system.
 
 > **Most used weights:** `normal` (400) for body, `medium` (500) for labels,
 > `semibold` (600) for headings and buttons. Stick to these three unless the

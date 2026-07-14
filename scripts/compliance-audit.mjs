@@ -27,8 +27,11 @@
  *                            div/span carrying a primitive's signature tokens
  *                            without importing it (warning)
  *   C3  composite completeness — composite rendered with children but none of
- *                            its meta childComponents used (warning; per-
- *                            composite promotion to error = pending owner ruling)
+ *                            its meta childComponents used (kept uniform WARNING
+ *                            per owner ruling 2026-07-07: the compliance audit is
+ *                            advisory (rule #10 — token-audit is the only gate);
+ *                            required-ness varies per sub-part and is not in meta,
+ *                            so an ERROR tier would false-positive)
  *   C4  spec coverage      — ui component used whose meta has no spec
  *                            (warning; the S6.3 demand-driven backfill signal)
  *
@@ -47,8 +50,10 @@
  *                            so entry/files scores are unaffected.
  *
  * Design-only (NOT implemented): C7b paint-level font probe (Playwright) —
- * .compass-build/design/s4/c7-font-compliance.PROPOSED.md (trigger policy =
- * pending owner decision).
+ * .compass-build/design/s4/c7-font-compliance.PROPOSED.md. Trigger policy RULED
+ * 2026-07-07: on-demand only, NOT gated, and BUILD DEFERRED — C7a (static, here)
+ * + Chromatic (visual) cover the failure mode; build C7b only if a paint bug
+ * ever slips past them.
  *
  * Scoring: scripts/audit-rubric.json (owner-tunable weights).
  * By owner decision (2026-07-06): components/ui/ is EXCLUDED from compliance
@@ -480,8 +485,8 @@ function checkC6(rel, raw) {
 // The S0 failure this catches: tokens declared `"Euclid Circular B"` while no
 // @font-face registered that exact family name — audit/tsc/lint all green,
 // every screen silently painted in the system fallback. Pure file analysis;
-// C7b (rendered-DOM probe) stays design-only pending the owner's trigger-
-// policy decision.
+// C7b (rendered-DOM probe) stays design-only — trigger policy ruled 2026-07-07:
+// on-demand only, not gated, build deferred (C7a + Chromatic cover the rest).
 
 const TOKENS_CSS_REL = 'node_modules/@acko/enterprise-tokens/globals.css';
 const TYPOGRAPHY_SPEC_REL = '.claude/specs/foundations/typography.md';
@@ -690,22 +695,39 @@ const RAW_ELEMENTS = ['button', 'input', 'select', 'textarea', 'table'];
  * Baseline for button/input comes from CLAUDE.md's Component rules ("Never
  * write a raw <button>, <input>, or <div> where a Compass component exists").
  *
- * TODO(owner ruling pending): replace this derivation with a
- * `primitiveElements` field on ComponentMeta if/when Nikhil approves adding it
- * to the S1 schema (requested in .compass-build/design/s4/c2-c3-c4-checks
- * .PROPOSED.md). Until then: derived + CLAUDE.md-cited only, nothing invented.
+ * The `primitiveElements` field on ComponentMeta is now CONSUMED (owner
+ * approved 2026-07-07, requested in .compass-build/design/s4/c2-c3-c4-checks
+ * .PROPOSED.md): any meta declaring it maps each listed element → that
+ * component with source `meta:primitiveElements`, and the explicit field
+ * always wins over the runtime derivation below. The derivation + CLAUDE.md
+ * baseline remain as the backward-compatible FALLBACK for elements no meta
+ * covers explicitly — nothing invented.
  */
-function deriveElementMap() {
-  const map = new Map([
-    ['button', { primitive: 'button', source: 'claude-md' }],
-    ['input', { primitive: 'input', source: 'claude-md' }],
-  ]);
+function deriveElementMap(metaIndex) {
+  const map = new Map();
+
+  // (1) Prefer explicit meta.primitiveElements — the owner-approved field.
+  if (metaIndex) {
+    for (const meta of metaIndex.values()) {
+      if (!Array.isArray(meta.primitiveElements)) continue;
+      for (const el of meta.primitiveElements) {
+        map.set(el, { primitive: meta.name, source: 'meta:primitiveElements' });
+      }
+    }
+  }
+
+  // (2) CLAUDE.md baseline for button/input — only where no explicit field covered them.
+  if (!map.has('button')) map.set('button', { primitive: 'button', source: 'claude-md' });
+  if (!map.has('input')) map.set('input', { primitive: 'input', source: 'claude-md' });
+
+  // (3) Runtime derivation — FALLBACK only; never overrides an explicit field.
   for (const prim of UI_PRIMITIVES) {
     let src;
     try { src = fs.readFileSync(path.join(ROOT, 'components', 'ui', `${prim}.tsx`), 'utf8'); }
     catch { continue; }
     for (const el of RAW_ELEMENTS) {
       const existing = map.get(el);
+      if (existing && existing.source === 'meta:primitiveElements') continue; // explicit field wins
       if (existing && existing.primitive === el) continue; // exact-name match already won
       const renders = new RegExp(`<${el}[\\s/>]`).test(src);
       const propsOf = src.includes(`React.ComponentProps<"${el}">`);
@@ -911,7 +933,7 @@ async function run() {
 
   // Meta-driven checks: load once (skipped in parity mode, which is C1-only).
   const metaIndex = mode.parity ? null : await loadMetaIndex();
-  const elementMap = mode.parity ? null : deriveElementMap();
+  const elementMap = mode.parity ? null : deriveElementMap(metaIndex);
   const tokenOwners = buildTokenOwners(metaIndex);
 
   let scanFiles;

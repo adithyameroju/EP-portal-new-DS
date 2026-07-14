@@ -94,6 +94,12 @@ export interface ComponentMeta {
    *  "react-day-picker" | "recharts" | "native" | "composite". S5 golden-pair
    *  diffing and the Base UI watch-item read this. */
   primitiveSource: string;
+  /** Raw HTML element(s) this component is the canonical wrapper for — read
+   *  by the C2 re-implemented-primitive check (a hand-rolled <button>/<input>/
+   *  <select>/<textarea>/<table> should use the Compass wrapper instead).
+   *  Undefined for composites and Base-UI role-primitives (checkbox, switch,
+   *  slider, etc.), which do not render a raw governable element. */
+  primitiveElements?: string[]
   /** Semver-style component version, starts "1.0.0"; bumped via S6 pipeline. */
   version: string;
 }

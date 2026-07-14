@@ -161,5 +161,6 @@ export const buttonMeta: ComponentMeta = {
   specPath: ".claude/specs/components/button.md",
   codeConnectStatus: "mapped",
   primitiveSource: "base-ui",
+  primitiveElements: ["button"],
   version: "1.0.0",
 }

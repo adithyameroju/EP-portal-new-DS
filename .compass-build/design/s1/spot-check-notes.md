@@ -96,6 +96,11 @@ spec edit Nikhil signs off (S0.3 follow-through):
     Value children as a render function (`{() => "4 of 10"}`); spec's plain
     strings don't type-check. Same class as the ruled-on 14.
 
+## Table component gaps — RESOLVED 2026-07-07 (owner ruling)
+#19–21 moved to the S6 gap list (`.compass-build/design/s6/gap-list.md`) as
+demand-driven Table enhancements; #22 (header color) CLOSED as a non-issue.
+Original findings below for reference:
+
 ## Table component gaps (found 2026-07-07 while dogfooding Table for reference matrices — owner ruled "awkwardness is a finding"; candidates for S6 gap list)
 19. **No wrapping/prose-cell variant**: TableHead/TableCell hardcode
     whitespace-nowrap; long prose columns now horizontal-scroll instead of wrap.

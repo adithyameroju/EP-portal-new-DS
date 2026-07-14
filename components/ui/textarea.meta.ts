@@ -33,5 +33,6 @@ export const textareaMeta: ComponentMeta = {
   specPath: null,
   codeConnectStatus: "not-planned",
   primitiveSource: "native",
+  primitiveElements: ["textarea"],
   version: "1.0.0",
 }

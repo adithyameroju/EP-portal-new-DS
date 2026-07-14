@@ -42,5 +42,6 @@ export const nativeSelectMeta: ComponentMeta = {
   specPath: null,
   codeConnectStatus: "not-planned",
   primitiveSource: "native",
+  primitiveElements: ["select"],
   version: "1.0.0",
 }

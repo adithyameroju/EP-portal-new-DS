@@ -74,20 +74,15 @@ export function TextSizeScale() {
 }
 
 /**
- * Weight tokens from typography.md. Factual note: the self-hosted Euclid faces
- * registered in app/fonts.css cover 300–700 (+ italics); weights outside that
- * range are browser-synthesized.
+ * Weight tokens from typography.md — Compass ships 300–700 (light through bold),
+ * the range the self-hosted Euclid faces in app/fonts.css cover.
  */
 const fontWeights = [
-  { token: 'font-weight/thin', cls: 'font-thin', value: 100, usage: 'Decorative only', hosted: false },
-  { token: 'font-weight/extralight', cls: 'font-extralight', value: 200, usage: 'Decorative only', hosted: false },
-  { token: 'font-weight/light', cls: 'font-light', value: 300, usage: 'Large display text', hosted: true },
-  { token: 'font-weight/normal', cls: 'font-normal', value: 400, usage: 'Body text (default)', hosted: true },
-  { token: 'font-weight/medium', cls: 'font-medium', value: 500, usage: 'Labels, navigation items', hosted: true },
-  { token: 'font-weight/semibold', cls: 'font-semibold', value: 600, usage: 'Headings, buttons, emphasis', hosted: true },
-  { token: 'font-weight/bold', cls: 'font-bold', value: 700, usage: 'Strong emphasis', hosted: true },
-  { token: 'font-weight/extrabold', cls: 'font-extrabold', value: 800, usage: 'Rare — heavy emphasis', hosted: false },
-  { token: 'font-weight/black', cls: 'font-black', value: 900, usage: 'Rare — maximum weight', hosted: false },
+  { token: 'font-weight/light', cls: 'font-light', value: 300, usage: 'Large display text' },
+  { token: 'font-weight/normal', cls: 'font-normal', value: 400, usage: 'Body text (default)' },
+  { token: 'font-weight/medium', cls: 'font-medium', value: 500, usage: 'Labels, navigation items' },
+  { token: 'font-weight/semibold', cls: 'font-semibold', value: 600, usage: 'Headings, buttons, emphasis' },
+  { token: 'font-weight/bold', cls: 'font-bold', value: 700, usage: 'Strong emphasis' },
 ];
 
 export function FontWeightScale() {
@@ -98,10 +93,7 @@ export function FontWeightScale() {
           <code className="w-32 shrink-0 text-sm font-medium text-foreground">{w.cls}</code>
           <span className="w-10 shrink-0 text-xs text-muted-foreground">{w.value}</span>
           <span className={`${w.cls} text-xl text-foreground`}>Euclid Circular B</span>
-          <span className="text-xs text-muted-foreground">
-            {w.usage}
-            {w.hosted ? '' : ' — no hosted face; browser-synthesized'}
-          </span>
+          <span className="text-xs text-muted-foreground">{w.usage}</span>
         </div>
       ))}
     </div>
