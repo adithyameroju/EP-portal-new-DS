@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Compass-in-Loop Works</title>
+<style>
+  /* Real Compass tokens (from @acko/enterprise-tokens, light mode). Euclid via
+     font stack with graceful fallback — the licensed font is not embedded, so
+     this file is fully self-contained and safe to hand around. */
+  :root{
+    --primary:oklch(0.5242 0.2326 286.073);
+    --primary-fg:oklch(1 0 0);
+    --bg:oklch(0.9851 0.0001 271.152);
+    --fg:oklch(0 0 0 / 0.8784);
+    --card:oklch(1 0 0);
+    --border:oklch(0.9219 0.0001 271.152);
+    --muted:oklch(0.9702 0.0001 271.152);
+    --muted-fg:oklch(0 0 0 / 0.5608);
+    --destructive:oklch(0.5771 0.2152 27.312);
+    --c1:oklch(0.5242 0.2326 286.073);
+    --c2:oklch(0.7533 0.1719 55.708);
+    --c3:oklch(0.6231 0.1881 259.83);
+    --c4:oklch(0.7228 0.192 149.6);
+    --c5:oklch(0.6559 0.2118 354.287);
+    --font:"Euclid Circular B",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:oklch(0.2077 0.0001 271.152);--fg:oklch(1 0 0 / 0.92);--card:oklch(0.2686 0.0001 271.152);
+      --border:oklch(0.3407 0.0001 271.152);--muted:oklch(0.2686 0.0001 271.152);--muted-fg:oklch(1 0 0 / 0.6);
+      --primary:oklch(0.6083 0.2011 286.073);
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.55;
+       -webkit-font-smoothing:antialiased;font-size:15px}
+  .wrap{max-width:1040px;margin:0 auto;padding:48px 24px 96px}
+  header.hero{margin-bottom:8px}
+  .badge{display:inline-block;font-size:12px;font-weight:600;color:var(--primary);
+         border:1px solid var(--border);border-radius:999px;padding:3px 12px;margin-bottom:16px}
+  h1{font-size:40px;font-weight:600;letter-spacing:-0.02em;margin:0 0 8px}
+  .sub{font-size:18px;color:var(--muted-fg);margin:0 0 6px;max-width:70ch}
+  .stamp{font-size:13px;color:var(--muted-fg);margin-top:14px}
+  h2{font-size:26px;font-weight:600;letter-spacing:-0.01em;margin:56px 0 6px}
+  h2 .n{color:var(--primary)}
+  h3{font-size:17px;font-weight:600;margin:28px 0 8px}
+  p{margin:10px 0;max-width:74ch}
+  .lede{color:var(--muted-fg);max-width:74ch;margin-top:0}
+  .fig{background:var(--card);border:1px solid var(--border);border-radius:12px;
+       box-shadow:0 1px 2px rgba(0,0,0,.05);padding:20px;margin:20px 0;overflow-x:auto}
+  .fig svg{display:block;width:100%;height:auto;min-width:640px}
+  .cap{font-size:13px;color:var(--muted-fg);margin:8px 2px 0}
+  .grid{display:grid;gap:14px;margin:16px 0}
+  @media(min-width:720px){.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:1fr 1fr 1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;
+        box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .card h4{margin:0 0 6px;font-size:15px}
+  .card p{margin:4px 0;font-size:14px;color:var(--muted-fg)}
+  code{font-family:var(--font);background:var(--muted);border:1px solid var(--border);
+       border-radius:6px;padding:1px 6px;font-size:13px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{font-weight:600;color:var(--muted-fg);font-size:13px}
+  .pill{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .built{color:var(--c4);border:1px solid var(--c4)}
+  .partial{color:var(--c2);border:1px solid var(--c2)}
+  .no{color:var(--destructive);border:1px solid var(--destructive)}
+  .gate{color:var(--destructive);font-weight:600}
+  .adv{color:var(--c2);font-weight:600}
+  .note{background:var(--muted);border:1px solid var(--border);border-left:3px solid var(--primary);
+        border-radius:8px;padding:12px 16px;margin:16px 0;font-size:14px}
+  .ledger{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 20px 16px}
+  .role{border-top:3px solid var(--primary)}
+  a{color:var(--primary)}
+  /* SVG shared */
+  .box{fill:var(--card);stroke:var(--border);stroke-width:1.5}
+  .key{fill:var(--card);stroke:var(--primary);stroke-width:2.5}
+  .t{fill:var(--fg);font-family:var(--font);font-weight:600}
+  .ts{fill:var(--muted-fg);font-family:var(--font)}
+  .lbl{fill:var(--muted-fg);font-family:var(--font);font-style:italic}
+  .flow{stroke:var(--muted-fg);stroke-width:1.5;fill:none}
+  .flowk{stroke:var(--primary);stroke-width:2;fill:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="badge">Compass · Acko Enterprise Design System</span>
+  <h1>How Compass-in-Loop Works</h1>
+  <p class="sub">A design system that documents itself, enforces its own rules, and
+     gets tighter every time someone builds with it — because docs and enforcement
+     read the same contract, and the loop proposes fixes that a human approves.</p>
+  <p class="stamp">Accurate to the build at tag <code>s3-build-complete</code> (2026-07-07).
+     Anything not yet built is marked <span class="pill no">not built</span> or
+     <span class="pill partial">partial</span> — no aspirational boxes. Full honesty
+     ledger: <code>COMPASS_SYSTEM.md §9</code>.</p>
+</header>
+
+<!-- ============================ ARCHITECTURE ============================ -->
+<h2><span class="n">1.</span> The building blocks — and what reads what</h2>
+<p class="lede">The keystone idea: <strong>Storybook, the audit, and the migration
+   engine all read the same <code>meta.ts</code> contract.</strong> That's why the
+   docs a designer reads and the rules the AI is graded against can't drift apart —
+   they're the same source.</p>
+
+<div class="fig">
+<svg viewBox="0 0 920 470" role="img" aria-label="Architecture diagram">
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted-fg)"/></marker>
+    <marker id="ak" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="var(--primary)"/></marker>
+  </defs>
+
+  <!-- consumers (top) -->
+  <rect class="box" x="40"  y="26" width="240" height="74" rx="10"/>
+  <text class="t"  x="160" y="55" text-anchor="middle" font-size="15">Storybook + SOP</text>
+  <text class="ts" x="160" y="75" text-anchor="middle" font-size="11">55 docs · foundations ·</text>
+  <text class="ts" x="160" y="89" text-anchor="middle" font-size="11">interactive SOP · deployed</text>
+
+  <rect class="box" x="340" y="26" width="240" height="74" rx="10"/>
+  <text class="t"  x="460" y="55" text-anchor="middle" font-size="15">Audit machinery</text>
+  <text class="ts" x="460" y="75" text-anchor="middle" font-size="11">token gate · compliance C1–C7a</text>
+  <text class="ts" x="460" y="89" text-anchor="middle" font-size="11">detect · prescribe · dashboard</text>
+
+  <rect class="box" x="640" y="26" width="240" height="74" rx="10"/>
+  <text class="t"  x="760" y="52" text-anchor="middle" font-size="15">Migration engine</text>
+  <text class="ts" x="760" y="72" text-anchor="middle" font-size="11">foreign code → Compass-native</text>
+  <text class="ts" x="760" y="89" text-anchor="middle" font-size="11" font-style="italic">validation pending</text>
+
+  <!-- keystone: reads arrows up to consumers -->
+  <path class="flowk" marker-end="url(#ak)" d="M430,196 C400,150 235,138 165,104"/>
+  <path class="flowk" marker-end="url(#ak)" d="M460,196 L460,104"/>
+  <path class="flowk" marker-end="url(#ak)" d="M490,196 C520,150 685,138 755,104"/>
+  <text class="lbl" x="268" y="150" font-size="12" fill="var(--primary)">reads</text>
+  <text class="lbl" x="470" y="152" font-size="12" fill="var(--primary)">reads</text>
+  <text class="lbl" x="628" y="150" font-size="12" fill="var(--primary)">reads</text>
+
+  <!-- keystone box -->
+  <rect class="key" x="270" y="198" width="380" height="86" rx="12"/>
+  <text class="t"  x="460" y="228" text-anchor="middle" font-size="16" fill="var(--primary)">meta.ts — the machine-readable contract</text>
+  <text class="ts" x="460" y="250" text-anchor="middle" font-size="12">55 × &lt;name&gt;.meta.ts + _meta-index.ts</text>
+  <text class="ts" x="460" y="268" text-anchor="middle" font-size="12">every entry cited to a spec — or omitted, never invented</text>
+
+  <!-- generate arrow up from foundations to keystone -->
+  <path class="flow" marker-end="url(#a)" d="M460,326 L460,286"/>
+  <text class="lbl" x="470" y="310" font-size="12">generate (cited)</text>
+
+  <!-- foundations row -->
+  <rect class="box" x="250" y="326" width="200" height="62" rx="10"/>
+  <text class="t"  x="350" y="352" text-anchor="middle" font-size="14">55 components</text>
+  <text class="ts" x="350" y="371" text-anchor="middle" font-size="11">components/ui · Base UI</text>
+
+  <rect class="box" x="470" y="326" width="200" height="62" rx="10"/>
+  <text class="t"  x="570" y="352" text-anchor="middle" font-size="13.5">specs + skills + CLAUDE.md</text>
+  <text class="ts" x="570" y="371" text-anchor="middle" font-size="11">.claude/ · binding rules</text>
+
+  <!-- tokens feed components -->
+  <rect class="box" x="34" y="330" width="122" height="54" rx="10"/>
+  <text class="t"  x="95" y="352" text-anchor="middle" font-size="12">@acko/tokens</text>
+  <text class="ts" x="95" y="369" text-anchor="middle" font-size="10">3-layer · Euclid</text>
+  <path class="flow" marker-end="url(#a)" d="M158,357 L248,357"/>
+  <text class="lbl" x="202" y="349" font-size="11" text-anchor="middle">style</text>
+
+  <!-- CLI / package distributes -->
+  <rect class="box" x="700" y="330" width="186" height="54" rx="10"/>
+  <text class="t"  x="793" y="352" text-anchor="middle" font-size="13">CLI + package</text>
+  <text class="ts" x="793" y="369" text-anchor="middle" font-size="10">init/component/docs/migrate</text>
+  <path class="flow" marker-end="url(#a)" d="M700,352 C660,344 652,320 652,286"/>
+  <text class="lbl" x="690" y="322" font-size="11" text-anchor="end">distributes</text>
+
+  <text class="ts" x="460" y="428" text-anchor="middle" font-size="12" font-style="italic">
+    Reads bottom-up: tokens → components (+ specs) → the meta contract → the three consumers that all read it.</text>
+</svg>
+</div>
+<p class="cap">Everything shown here is <span class="pill built">built</span>. The
+   package is built and tarball-verified but <strong>not published to a registry</strong>
+   (owner ruling); the migration engine is built but <strong>not yet validated on a
+   real repo</strong>.</p>
+
+<!-- ============================ THE LOOP ============================ -->
+<h2><span class="n">2.</span> The self-correcting loop</h2>
+<p class="lede">Every build makes the system a little tighter. A designer builds, the
+   assumptions are captured, the output is scored, drift is detected and clustered,
+   a fix is <em>proposed</em> — and only after the owner approves does a spec tighten,
+   so the next build drifts less.</p>
+
+<div class="fig">
+<svg viewBox="0 0 900 620" role="img" aria-label="The self-correcting loop">
+  <defs>
+    <marker id="b" markerWidth="10" markerHeight="10" refX="7.5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--primary)"/></marker>
+    <marker id="bm" markerWidth="10" markerHeight="10" refX="7.5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--muted-fg)"/></marker>
+  </defs>
+
+  <!-- hexagon loop arrows (clockwise), center 450,300 -->
+  <path class="flowk" marker-end="url(#b)" d="M540,120 C610,140 650,175 672,215"/>
+  <path class="flowk" marker-end="url(#b)" d="M700,290 C705,340 690,380 665,415"/>
+  <path class="flowk" marker-end="url(#b)" d="M600,470 C560,495 510,505 470,508"/>
+  <path class="flowk" marker-end="url(#b)" d="M360,505 C310,498 270,478 240,450"/>
+  <path class="flowk" marker-end="url(#b)" d="M198,390 C185,340 190,300 205,262"/>
+  <path class="flowk" marker-end="url(#b)" d="M250,190 C285,150 320,130 360,118"/>
+
+  <!-- center -->
+  <text class="t"  x="450" y="298" text-anchor="middle" font-size="14" fill="var(--primary)">the loop tightens</text>
+  <text class="t"  x="450" y="318" text-anchor="middle" font-size="14" fill="var(--primary)">the system over time</text>
+
+  <!-- nodes -->
+  <!-- Build (top) -->
+  <rect class="box" x="360" y="40" width="180" height="70" rx="10"/>
+  <text class="t"  x="450" y="66" text-anchor="middle" font-size="14">1 · Build</text>
+  <text class="ts" x="450" y="85" text-anchor="middle" font-size="10.5">designer prompts → AI</text>
+  <text class="ts" x="450" y="99" text-anchor="middle" font-size="10.5">constrained by specs/skills/meta</text>
+
+  <!-- Capture (top-right) -->
+  <rect class="box" x="620" y="150" width="180" height="66" rx="10"/>
+  <text class="t"  x="710" y="176" text-anchor="middle" font-size="14">2 · Capture</text>
+  <text class="ts" x="710" y="195" text-anchor="middle" font-size="10.5">compass log →</text>
+  <text class="ts" x="710" y="209" text-anchor="middle" font-size="10.5">drift ledger</text>
+
+  <!-- Score (bottom-right) -->
+  <rect class="box" x="620" y="410" width="190" height="80" rx="10"/>
+  <text class="t"  x="715" y="434" text-anchor="middle" font-size="14">3 · Score</text>
+  <text x="715" y="453" text-anchor="middle" font-size="10.5"><tspan class="gate">token audit = HARD GATE</tspan></text>
+  <text class="ts" x="715" y="466" text-anchor="middle" font-size="10">0 errors required to commit</text>
+  <text x="715" y="481" text-anchor="middle" font-size="10.5"><tspan class="adv">compliance C1–C7a = advisory</tspan></text>
+
+  <!-- Detect (bottom) -->
+  <rect class="box" x="360" y="500" width="180" height="66" rx="10"/>
+  <text class="t"  x="450" y="526" text-anchor="middle" font-size="14">4 · Detect</text>
+  <text class="ts" x="450" y="545" text-anchor="middle" font-size="10.5">drift clustering →</text>
+  <text class="ts" x="450" y="559" text-anchor="middle" font-size="10.5">component / rule hotspots</text>
+
+  <!-- Prescribe (bottom-left) -->
+  <rect class="box" x="90" y="410" width="190" height="80" rx="10"/>
+  <text class="t"  x="185" y="434" text-anchor="middle" font-size="14">5 · Prescribe</text>
+  <text class="ts" x="185" y="453" text-anchor="middle" font-size="10.5">PROPOSED spec tightening</text>
+  <text x="185" y="469" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--primary)">owner approves</text>
+  <text class="ts" x="185" y="483" text-anchor="middle" font-size="10">never auto-writes a rule</text>
+
+  <!-- Tighten (top-left) -->
+  <rect class="box" x="100" y="150" width="180" height="66" rx="10"/>
+  <text class="t"  x="190" y="176" text-anchor="middle" font-size="14">6 · Tighten</text>
+  <text class="ts" x="190" y="195" text-anchor="middle" font-size="10.5">specs update →</text>
+  <text class="ts" x="190" y="209" text-anchor="middle" font-size="10.5">less drift next build</text>
+
+  <!-- side entry: migration → Score -->
+  <rect class="box" x="640" y="300" width="230" height="66" rx="10" stroke-dasharray="5 4"/>
+  <text class="t"  x="755" y="324" text-anchor="middle" font-size="12.5">↳ Migration (side-entry)</text>
+  <text class="ts" x="755" y="342" text-anchor="middle" font-size="10.5">existing codebase → Compass-native</text>
+  <text class="ts" x="755" y="356" text-anchor="middle" font-size="10.5">→ enters the SAME audit</text>
+  <path class="flow" marker-end="url(#bm)" d="M715,366 L715,408"/>
+
+  <!-- side exit: Detect → S6 promotion -->
+  <rect class="box" x="30" y="500" width="230" height="66" rx="10" stroke-dasharray="5 4"/>
+  <text class="t"  x="145" y="524" text-anchor="middle" font-size="12.5">↳ S6 Promotion (side-exit)</text>
+  <text class="ts" x="145" y="542" text-anchor="middle" font-size="10.5">gap lists + drift data →</text>
+  <text class="ts" x="145" y="556" text-anchor="middle" font-size="10.5" font-style="italic">new components (S6 — not started)</text>
+  <path class="flow" marker-end="url(#bm)" d="M358,540 L262,536"/>
+</svg>
+</div>
+<p class="cap">The loop is <span class="pill built">built and working</span> — it has
+   already scored and flagged drift in Compass's own construction. Two side-entries:
+   <strong>Migration</strong> feeds foreign code into the same audit;
+   <strong>S6 Promotion</strong> turns gap-lists + drift into new components —
+   <span class="pill no">S6 not started</span> (seeded backlog only).</p>
+
+<!-- ============================ REFERENCE: ENDPOINTS ============================ -->
+<h2><span class="n">3.</span> What each command is — and when to use it</h2>
+<table>
+  <thead><tr><th style="width:190px">Command</th><th>What it is</th><th style="width:150px">When</th></tr></thead>
+  <tbody>
+    <tr><td><code>npm run audit</code></td><td>Token audit — the <span class="gate">hard commit gate</span>. Blocks hardcoded hex, raw Tailwind colors, arbitrary values. <strong>0 errors required.</strong></td><td>Every commit (automatic bar).</td></tr>
+    <tr><td><code>npm run audit:compliance</code></td><td>Behavioral audit (C1–C7a): are the right components used, composites complete, specs covered, fonts wired? <span class="adv">Advisory</span> — a score &amp; trend, <strong>no pass/fail threshold</strong>.</td><td>After a build, to see how on-system it is.</td></tr>
+    <tr><td><code>npm run log</code></td><td>Appends a build's "What I assumed" block + changed files to the drift ledger.</td><td>After each AI build (zero-friction).</td></tr>
+    <tr><td><code>npm run detect</code></td><td>Clusters the ledger into component &amp; rule hotspots ("Card drifted 4×").</td><td>Weekly → monthly, as the system stabilizes.</td></tr>
+    <tr><td><code>npm run prescribe</code></td><td>Emits a <strong>proposed</strong> spec tightening with evidence — or a "needs owner decision" flag. <strong>Applies nothing.</strong></td><td>When detect surfaces a hotspot.</td></tr>
+    <tr><td><code>npm run dashboard</code></td><td>Regenerates the HTML health dashboard (radar, priority matrix, trend line).</td><td>Anytime you want to <em>see</em> system health.</td></tr>
+    <tr><td><code>compass init</code> / <code>component</code> / <code>docs</code> / <code>migrate</code></td><td>CLI: scaffold Compass governance into a project · print a component's meta/spec · print the token reference · point at the migration skill. <span class="pill partial">init scaffolds audit + audit:compliance today; the full drift loop in init is next</span>.</td><td>Setting up or working in a consumer project.</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================ REFERENCE: GATES ============================ -->
+<h2><span class="n">4.</span> Where the human decides — and why</h2>
+<p class="lede">The single rule that governs everything: <strong>the system proposes,
+   the owner approves — it never invents an opinion.</strong> An honestly flagged gap
+   ("no source decides this") beats a fabricated rule, because a fabricated rule is
+   one Cursor would then follow literally.</p>
+<div class="grid two">
+  <div class="card"><h4>The owner approves…</h4>
+    <p>· every spec tightening the loop proposes<br>
+       · every new/edited spec, meta anti-pattern, SOP wording<br>
+       · migration component/token mappings below confidence<br>
+       · any consumer repointing or deletion during migration<br>
+       · the semver policy, and any registry publish</p></div>
+  <div class="card"><h4>…and why it's built this way</h4>
+    <p>Compass has no legacy voice to draw opinions from yet — they form through real
+       product work, never invention. So every meta entry cites a spec or is omitted;
+       every decision the specs don't resolve renders as a visible
+       <strong>"needs owner decision"</strong> flag, not a guess. The prescribe step
+       enforces this in code: it quotes existing rules, and refuses to draft new ones.</p></div>
+</div>
+
+<!-- ============================ REFERENCE: ROLES ============================ -->
+<h2><span class="n">5.</span> What to do next — by role</h2>
+<div class="grid three">
+  <div class="card role"><h4>Designer</h4>
+    <p>Open the Storybook, read <strong>Working with Compass</strong> (the interactive
+       SOP) to pick components. Build screens by prompting Cursor/Claude — it's
+       constrained by the specs, skills, and meta. Run <code>audit</code> +
+       <code>audit:compliance</code>, then <code>log</code> your assumptions.</p></div>
+  <div class="card role"><h4>Developer</h4>
+    <p>Install the package (from the tarball today — not yet on a registry). Import
+       from the barrel; components carry their meta. Keep <code>audit</code> at 0
+       errors. Pick up designer builds from <code>components/blocks/</code>. Read
+       <code>lib/PACKAGING.md</code> for the one bundle caveat.</p></div>
+  <div class="card role"><h4>System owner</h4>
+    <p>Watch the dashboard's <strong>trend line</strong> — is drift falling? Run the
+       monthly detect → prescribe pass and approve (or override) each proposed
+       tightening. Rule the open "needs owner decision" items as real product work
+       surfaces them.</p></div>
+</div>
+
+<!-- ============================ HONESTY LEDGER ============================ -->
+<h2><span class="n">6.</span> Built vs not — the honesty ledger</h2>
+<p class="lede">Source of truth: <code>COMPASS_SYSTEM.md §9</code> and
+   <code>.compass-build/STATE.md</code>. Nothing above is aspirational; here's the
+   exact line.</p>
+<div class="ledger">
+<table>
+  <tbody>
+    <tr><td>55 components on Base UI, all with <code>meta.ts</code> (33 full specs; rest lightweight/types-only)</td><td><span class="pill built">built</span></td></tr>
+    <tr><td>Storybook — 55 docs + foundations + interactive SOP, deployed (Chromatic + GitHub Pages)</td><td><span class="pill built">built</span></td></tr>
+    <tr><td>Audit loop — token gate, compliance C1–C6 + <strong>C7a</strong>, log, detect, prescribe, dashboard</td><td><span class="pill built">built</span></td></tr>
+    <tr><td>Package <code>@acko/compass</code> + CLI — built &amp; tarball-verified on a fresh Next app</td><td><span class="pill built">built</span></td></tr>
+    <tr><td>Registry publish (to Acko Nexus)</td><td><span class="pill no">not done</span> — owner ruling; consume via tarball</td></tr>
+    <tr><td>Migration engine (<code>compass-migrate</code> skill + resolution)</td><td><span class="pill partial">built, unvalidated</span> — needs one real repo per library</td></tr>
+    <tr><td><code>compass init</code> full drift loop (log/detect/prescribe/dashboard)</td><td><span class="pill partial">partial</span> — init scaffolds audit only today</td></tr>
+    <tr><td><strong>C7b</strong> paint-level font probe (Playwright)</td><td><span class="pill no">deferred</span> — on-demand only; C7a + Chromatic cover it</td></tr>
+    <tr><td><strong>S6</strong> — scaffold (<code>compass add</code>) + promotion pipeline</td><td><span class="pill no">not started</span> — gap-list seeded</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p class="stamp">Compass — Acko Enterprise Design System · owner: Nikhil Thakkar ·
+   this explainer reflects the local post-ruling state, which may be ahead of the
+   deployed Storybook until the next push.</p>
+
+</div>
+</body>
+</html>

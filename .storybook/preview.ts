@@ -18,7 +18,7 @@ const preview: Preview = {
       storySort: {
         order: [
           'Introduction',
-          ['Welcome', 'Getting Started', 'Design Principles', 'Working with Compass',
+          ['How It Works', 'Welcome', 'Getting Started', 'Design Principles', 'Working with Compass',
             ['Overview', 'Choosing a Component', 'Common Tasks', 'The Figma → Code Loop', 'Working with AI'],
             'Changelog'],
           'Foundations',
