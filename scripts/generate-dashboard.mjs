@@ -60,6 +60,11 @@ function loadReports() {
       catch { return null; }
     })
     .filter(Boolean)
+    // Per-project dashboard aggregates DESIGNER builds only. Whole-repo scans
+    // (mode === 'repo') are design-system internals (score ~39, dozens of
+    // warnings) that drown out per-project signal — exclude them from every
+    // section. Keep 'files' (scoped designer builds) and 'entry' (ledger builds).
+    .filter((r) => r.mode !== 'repo')
     .sort((a, b) => String(a.generatedAt).localeCompare(String(b.generatedAt)));
 }
 

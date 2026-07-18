@@ -106,27 +106,16 @@ export async function GET() {
 
   // Nothing built yet → friendly empty state, no score.
   if (files.length === 0) {
-    return NextResponse.json({ ranAt, empty: true, scope: { files: [], count: 0 }, repoGate, dashboardUrl: null })
+    return NextResponse.json({ ranAt, empty: true, scope: { files: [], count: 0 }, repoGate })
   }
 
   // Scoped compliance over YOUR files (C1 token discipline + C2–C6; C7a is repo-level, skipped).
   runScript(cwd, ['scripts/compliance-audit.mjs', '--files', ...files])
   const report = newestReport(cwd)
 
-  // Dashboard (repo-wide trend) — regenerate and expose under /public.
-  let dashboardUrl: string | null = null
-  const dash = runScript(cwd, ['scripts/generate-dashboard.mjs'])
-  const dashSrc = path.join(cwd, 'drift-log', 'dashboard.html')
-  if (dash.ok && fs.existsSync(dashSrc)) {
-    try {
-      const pub = path.join(cwd, 'public')
-      fs.mkdirSync(pub, { recursive: true })
-      fs.copyFileSync(dashSrc, path.join(pub, 'compass-dashboard.html'))
-      dashboardUrl = '/compass-dashboard.html'
-    } catch {
-      dashboardUrl = null
-    }
-  }
+  // The rich trend dashboard is an OWNER/admin artifact (scripts/owner-dashboard.mjs),
+  // not part of this build-only designer view. We deliberately do NOT generate or
+  // expose it here.
 
   const r = report as
     | {
@@ -161,6 +150,5 @@ export async function GET() {
       skipped: r?.checks?.skipped ?? [],
       findings: findings.slice(0, 200),
     },
-    dashboardUrl,
   })
 }

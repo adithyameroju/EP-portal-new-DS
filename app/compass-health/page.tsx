@@ -16,6 +16,7 @@ type Finding = {
   line?: number
   message?: string
   suggestion?: string
+  component?: string
 }
 
 type Health = {
@@ -35,16 +36,43 @@ type Health = {
     skipped: string[]
     findings: Finding[]
   }
-  dashboardUrl: string | null
 }
 
 const RULE_PLAIN: Record<string, string> = {
   C1: 'Tokens — hard-coded colors / sizes instead of Compass tokens',
   C2: 'Provenance — a raw HTML element where a Compass component exists',
   C3: 'Composites — a component used without its proper sub-parts',
-  C4: 'Spec coverage — a component with no written spec yet',
+  C4: 'Spec coverage — a component with no written spec yet (design-system signal, not your defect)',
   C5: 'Naming — a file or folder that is not kebab-case',
   C6: 'Imports — a Compass primitive not imported from @/components/ui',
+  C8: 'Motion — a bespoke animation / CSS outside the Compass motion system',
+}
+
+// Plain-English, ready-to-paste instruction keyed off the finding's rule code.
+// Wording adapts to the finding's own file / line / component.
+function fixPrompt(f: Finding): string {
+  const file = f.file ?? 'the file'
+  const loc = f.line ? `${file}:${f.line}` : file
+  const comp = f.component ?? 'the Compass component'
+  const base = (f.ruleId ?? '').split('-')[0]
+  switch (base) {
+    case 'C1':
+      return `On ${loc}, replace the hard-coded color/size with the Compass token it suggests, then re-run.`
+    case 'C2':
+      return `On ${loc}, use the Compass ${comp} component instead of the raw element / hand-rolled markup.`
+    case 'C3':
+      return `Rebuild ${comp} on ${loc} using its proper sub-parts (e.g. CardHeader / CardContent / CardFooter).`
+    case 'C4':
+      return `No action needed — ${comp} has no spec yet; this is a signal for the design-system team, not a defect in your screen.`
+    case 'C5':
+      return `Rename ${file} to kebab-case.`
+    case 'C6':
+      return `Import ${comp} from @/components/ui/… instead of a relative or copied path on ${loc}.`
+    case 'C8':
+      return `On ${loc} you've used a custom animation/CSS outside the motion system. Replace it with a Compass motion utility — or if the system has no equivalent, tell the design-system team (it's a gap), don't ship bespoke motion.`
+    default:
+      return `On ${loc}, follow the suggestion above, then re-run the checks.`
+  }
 }
 
 function Card(props: { children: React.ReactNode; className?: string }) {
@@ -204,8 +232,24 @@ export default function CompassHealthPage() {
             <Card>
               <h2 className="text-lg font-semibold text-foreground">What to look at</h2>
               <p className="mt-1 mb-4 text-sm text-muted-foreground">
-                Each row is one thing the audit noticed in your files, with a plain suggestion.
+                Each row is one thing the audit noticed in your files — with the exact instruction to
+                paste into Cursor to fix it.
               </p>
+
+              {/* Rule-code legend */}
+              <details className="mb-4 rounded-md border border-border bg-muted p-3">
+                <summary className="cursor-pointer text-sm font-medium text-foreground">
+                  What the rule codes mean
+                </summary>
+                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                  {Object.entries(RULE_PLAIN).map(([code, desc]) => (
+                    <li key={code}>
+                      <span className="font-medium text-foreground">{code}</span> — {desc}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+
               <div className="space-y-3">
                 {data.compliance.findings.map((f, i) => (
                   <div key={i} className="rounded-md border border-border p-3">
@@ -217,31 +261,42 @@ export default function CompassHealthPage() {
                       >
                         {(f.level ?? '').toUpperCase()}
                       </span>
-                      <span className="font-medium text-foreground">{f.ruleId}</span>
+                      <span
+                        className="font-medium text-foreground"
+                        title={RULE_PLAIN[(f.ruleId ?? '').split('-')[0]] ?? f.ruleId}
+                      >
+                        {f.ruleId}
+                      </span>
                       <span className="text-muted-foreground">
                         {f.file}
                         {f.line ? `:${f.line}` : ''}
                       </span>
+                      {f.component && (
+                        <span className="rounded border border-border bg-muted px-1.5 py-0.5 text-muted-foreground">
+                          {f.component}
+                        </span>
+                      )}
                     </div>
                     {f.message && <p className="mt-1 text-sm text-foreground">{f.message}</p>}
                     {f.suggestion && <p className="mt-1 text-sm text-muted-foreground">{f.suggestion}</p>}
+
+                    {/* Plain-English, ready-to-paste fix instruction */}
+                    <div className="mt-2 rounded-md border border-border bg-muted p-2">
+                      <p className="text-xs font-medium text-foreground">To fix, prompt Cursor:</p>
+                      <p className="mt-1 text-sm text-foreground">{fixPrompt(f)}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </Card>
           )}
 
-          {/* Footer: repo gate + dashboard + timestamp */}
+          {/* Footer: repo gate + timestamp */}
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="space-y-1">
               <span>Last run: {new Date(data.ranAt).toLocaleString()}</span>
               {gateLine}
             </div>
-            {data.dashboardUrl && (
-              <a className="text-primary underline" href={data.dashboardUrl} target="_blank" rel="noreferrer">
-                Open full dashboard →
-              </a>
-            )}
           </div>
         </div>
       )}
