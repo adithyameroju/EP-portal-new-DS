@@ -26,6 +26,28 @@ npm install
 > network this just works. Euclid Circular B is bundled (`app/fonts/`), so text
 > renders in the brand font out of the box.
 
+## ⚠️ Branch workflow — you push BRANCHES, never `main` (read first)
+
+`main` is **protected**: you can't push to it or merge without the owner's review.
+You work on your own branch and push THAT. Four steps:
+
+1. **Before you build, create a branch:**
+   ```bash
+   git checkout -b <your-name>/<feature>     # e.g. git checkout -b asha/claim-status
+   ```
+2. **Build.** The loop auto-commits your raw output and writes a `drift-log/entries/`
+   record for each build — you don't do anything for that to happen.
+3. **⭐ END OF DAY — PUSH YOUR BRANCH. This is the ONE manual step, and the owner's
+   whole improvement pipeline depends on it.** Your captured drift only reaches the
+   owner when you push:
+   ```bash
+   git push -u origin <your-name>/<feature>
+   ```
+   Do this **every day you build**, even if the feature isn't finished. Forget, and
+   your ledger never arrives — the team's data has a hole.
+4. **Never `git push origin main`, never merge to `main`.** When a feature is ready,
+   open a Pull Request; the owner reviews and the audit CI must pass before it merges.
+
 ## 2 · Run it
 
 ```bash

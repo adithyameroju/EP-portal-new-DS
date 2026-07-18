@@ -211,6 +211,12 @@ UI in this repo, do these in order — automatically, without being asked:
 4. SHOW THE DESIGNER your "What I assumed" list (the same items you just captured) so
    they can confirm or correct. Never silently substitute — anything Figma/spec/token
    didn't cleanly resolve is a question, not a guess.
+5. NUDGE THE BRANCH PUSH — the one manual step the owner's data pipeline depends on.
+   End with ONE short line (don't nag), e.g.: "Captured ✓ — remember to
+   `git push -u origin <your-branch>` at end of day so your work + ledger reach the
+   team (`main` is protected, so pushing your branch is the only way it arrives)."
+   If the designer is on `main` (no feature branch), tell them to create one first:
+   `git checkout -b <your-name>/<feature>`.
 
 > This build loop is the source of truth and is auto-loaded here — it does NOT depend
 > on any Cursor Settings paste. The Settings rule only bootstraps a fresh clone.

@@ -1,9 +1,22 @@
 # Compass Design System ownership
-# Changes to these paths require owner review
+# Changes to these paths require owner review. This only ENFORCES once branch
+# protection on `main` sets require_code_owner_reviews: true (see runbooks).
+# Reviewer @nikhilpthakkar must have write access to the repo.
 
-/components/ui/    @nikhilpthakkar
-/specs/            @nikhilpthakkar
-/skills/           @nikhilpthakkar
-/app/globals.css   @nikhilpthakkar
-/CLAUDE.md         @nikhilpthakkar
-/PRINCIPLES.md     @nikhilpthakkar
+# The component library itself
+/components/ui/                 @nikhilpthakkar
+
+# Governance: specs, skills, agent instructions, principles, Cursor rules
+/.claude/specs/                 @nikhilpthakkar
+/.claude/skills/                @nikhilpthakkar
+/.claude/principles.md          @nikhilpthakkar
+/CLAUDE.md                      @nikhilpthakkar
+/.cursorrules                   @nikhilpthakkar
+
+# The audit engine + rubric — the guardrails themselves (must not be weakened)
+/scripts/token-audit.mjs        @nikhilpthakkar
+/scripts/compliance-audit.mjs   @nikhilpthakkar
+/scripts/audit-rubric.json      @nikhilpthakkar
+
+# Token entry point
+/app/globals.css                @nikhilpthakkar
