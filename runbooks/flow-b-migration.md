@@ -21,7 +21,10 @@
 >   originals need *your* explicit confirmation. An unattended run ends with
 >   `-compass` variants sitting safely beside the originals.
 
-Stamped against the build at `s3-build-complete`. Scope of v1: **React + Tailwind**
+Stamped against the build at `s3-build-complete`, updated through 2026-07-18 to
+fold in the post-build rulings (Card composition ruling, the 12 SOP rulings, the
+standing decision queue, and the Storybook story fixes; see
+`.compass-build/STATE.md`). Scope of v1: **React + Tailwind**
 targets. Lovable output is a first-class golden-pair target (it's the PM-handoff
 path, so it was characterized deepest).
 
@@ -41,7 +44,7 @@ cd lovable-prototype
 git status                      # must be clean
 git checkout -b compass-migration
 npm install /path/to/acko-compass-0.1.0.tgz     # so -compass variants can import real components
-npx compass init                # drops the specs, skills (incl. compass-migrate), audit + loop
+npx compass init                # drops the specs, skills (incl. compass-migrate), and the two audit scripts
 ```
 > `init` refuses to overwrite anything you've already got (it reports CONFLICT and
 > exits). If the Lovable repo has its own `CLAUDE.md`, decide which wins — that's
@@ -109,8 +112,14 @@ Everything lands in `.migration/` **in the target repo**:
 ```bash
 npm run audit              # 0 errors = the token remap actually succeeded
 npm run audit:compliance   # behavioral score on the -compass variants
-npm run dashboard          # see it
 ```
+
+> `npm run dashboard` (and the rest of the drift ledger) is **not** wired by
+> `compass init` yet — it's parked on `init-hardening-wip`, so it will fail with
+> "missing script" in a migration target project. The two audits above are the
+> acceptance test for a migration; the dashboard lives on the clone path (the
+> full Compass repo — see the [Designer Quickstart](./designer-quickstart.md))
+> until init-hardening merges.
 **`npm run audit` returning 0 errors is the migration's definition of done** for
 the token layer. Errors remaining = values that never clustered onto Compass
 tokens — go look at `_snap-log.md` and `_needs-decision.md`.

@@ -2,7 +2,10 @@
 
 **What this is.** The everyday loop: you start a fresh project, prompt an AI to
 build a screen, and the system tells you honestly how on-Compass the output is.
-Stamped against the build at `s3-build-complete` (2026-07-07).
+Stamped against the build at `s3-build-complete` (2026-07-07), updated through
+2026-07-18 to fold in the post-build rulings — the Card composition ruling, the
+12 SOP rulings, the standing decision queue, and the Storybook story fixes. See
+`.compass-build/STATE.md` (the decision log) for the authoritative record.
 
 **Read this first:** the compliance score is *advisory*. The only hard gate is
 `npm run audit` (0 errors). Everything else is a signal, not a verdict.
@@ -55,9 +58,19 @@ Follow it exactly; it gives you the `@import` lines for your `globals.css`
 ```bash
 npx compass init          # add --dry-run first to see the plan
 ```
-This drops the specs, the skills, `CLAUDE.md`, the audit + loop scripts, and the
-`drift-log/` scaffold, and wires the npm scripts. Re-running is safe (it reports
-"already present, skipped"); it refuses to overwrite anything you've changed.
+This drops the specs (`.claude/specs`), the skills (`.claude/skills`),
+`CLAUDE.md`, and the two audit scripts (`token-audit.mjs`,
+`compliance-audit.mjs` + `audit-rubric.json`), and wires the `audit` and
+`audit:compliance` npm scripts. Re-running is safe (it reports "already present,
+skipped"); it refuses to overwrite anything you've changed.
+
+> **What `init` does *not* scaffold yet:** the full drift-loop tooling
+> (`compass-log.mjs`, `detect-drift.mjs`, `prescribe.mjs`, the dashboard, the
+> `drift-log/` ledger) is **not** wired by `compass init` today — that hardening
+> is parked on a branch. If you want the complete loop right now, use the
+> clone-based [Designer Quickstart](./designer-quickstart.md) (the Compass repo
+> has everything wired). `compass init` gives you the guardrails — token audit +
+> compliance audit — which is what Flow A needs to keep a *new* project on-spec.
 
 ## 5 · Build by prompting
 
@@ -70,17 +83,24 @@ and tokens.
 
 ## 6 · Run the loop
 
+`compass init` wires the two guardrail scripts, so in a Flow-A target project
+these are the loop:
+
 ```bash
 npm run audit              # 1. HARD GATE — must be 0 errors
 npm run audit:compliance   # 2. advisory score + which rules fired
-npm run log                # 3. capture: paste the AI's "What I assumed" block
-npm run dashboard          # 4. see health (drift-log/dashboard.html)
 ```
-Periodically (weekly → monthly as it settles):
-```bash
-npm run detect             # cluster the ledger into hotspots
-npm run prescribe          # PROPOSED spec tightenings — applies nothing
-```
+
+> **Not available in a `compass init` project yet.** The drift-ledger half of
+> the loop — `npm run log`, `npm run dashboard`, and the periodic
+> `npm run detect` / `npm run prescribe` — is **not** wired by `init` today
+> (that hardening is parked on `init-hardening-wip`). Running them in a Flow-A
+> project will fail with "missing script". They work today only on the
+> **clone path** — the full Compass repo (see the
+> [Designer Quickstart](./designer-quickstart.md)), where the ledger, dashboard,
+> and prescribe pipeline are all wired. Once init-hardening merges, this section
+> gains `log` → `dashboard` (every session) and `detect` → `prescribe`
+> (weekly → monthly) with no other change.
 
 ---
 
@@ -136,9 +156,10 @@ rounding:
 
 1. **Every "What I assumed" item** — confirm, correct, or escalate. This is the
    drift-prevention mechanism; skipping it defeats the loop.
-2. **Each `prescribe` proposal** — it will hand you a *proposed* spec edit with
-   evidence, or a **"NEEDS OWNER DECISION"** flag. It never writes a rule itself.
-   You approve, amend, or reject.
+2. **Each `prescribe` proposal** (clone path today; Flow-A projects once
+   init-hardening merges — see step 6) — it will hand you a *proposed* spec edit
+   with evidence, or a **"NEEDS OWNER DECISION"** flag. It never writes a rule
+   itself. You approve, amend, or reject.
 3. **Anything the specs don't decide** — it surfaces as a flag, not a guess.
    Rule it when real work makes the answer obvious; leaving it open is legitimate.
 

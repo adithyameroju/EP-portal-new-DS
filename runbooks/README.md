@@ -1,7 +1,10 @@
 # Compass runbooks
 
 Practical, step-by-step procedures for actually using Compass. Stamped against
-the build at `s3-build-complete` (2026-07-07). For *how the system works*, read
+the build at `s3-build-complete` (2026-07-07), updated through 2026-07-18 to fold
+in the post-build rulings (Card composition ruling, the 12 SOP rulings, the
+standing decision queue, and the Storybook story fixes; see
+`.compass-build/STATE.md`). For *how the system works*, read
 [COMPASS_SYSTEM.md](../COMPASS_SYSTEM.md) or the Storybook's
 **Introduction → How It Works**.
 

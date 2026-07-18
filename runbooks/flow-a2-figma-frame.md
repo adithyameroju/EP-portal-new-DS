@@ -70,9 +70,12 @@ not get buried in the code.
 ```bash
 npm run audit              # HARD GATE — 0 errors
 npm run audit:compliance   # score
-npm run log                # capture the (longer) assumption list
-npm run dashboard
 ```
+> Same caveat as [Flow A step 6](./flow-a-new-project.md): in a `compass init`
+> project, `npm run log` / `npm run dashboard` aren't wired yet (parked on
+> `init-hardening-wip`) and will fail with "missing script". Capture-and-dashboard
+> works today only on the clone path (the full Compass repo — see the
+> [Designer Quickstart](./designer-quickstart.md)).
 
 ### 5 · Optional — write back to Figma
 If you want the built screen represented in Figma, the `write-to-figma` skill

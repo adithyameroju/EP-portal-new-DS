@@ -11,8 +11,8 @@ path; if you later need Compass *in your own project*, use
 ## 1 · Clone & install
 
 ```bash
-git clone https://github.com/nikhilpthakkar/compass-in-loop.git
-cd compass-in-loop
+git clone https://github.com/ackotech/enterprise-compass-in-loop.git
+cd enterprise-compass-in-loop
 npm install
 ```
 > `npm install` pulls `@acko/enterprise-tokens` from Acko's Nexus — you need the
