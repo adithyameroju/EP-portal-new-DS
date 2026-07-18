@@ -167,3 +167,50 @@ npm run audit      # runs scripts/token-audit.mjs
 Zero errors required before committing. If audit fails, fix before proceeding.
 The audit catches: hardcoded hex colors, arbitrary pixel values, raw Tailwind
 color utilities used instead of semantic token classes.
+
+---
+
+## First run in a fresh clone — verify setup before building
+
+If this is a fresh clone (you just ran `npm install`, or the dev server hasn't
+started this session), sanity-check the setup and STOP with a plain-English reason
+if any step fails — never build on a broken setup:
+
+1. `npm run audit` — it must EXECUTE (exit 0 = clean, exit 1 = violations are both
+   fine; "Missing script: audit" means setup is broken → STOP).
+2. `npm run audit:compliance` — confirm there is NO `C7a` error. A C7a error means
+   the Euclid Circular B brand font isn't wired → STOP and say so.
+3. `npm run dev` — confirm it reaches "Ready", then tell the designer: "Open
+   http://localhost:3000/compass-health to see your live Compass score." (Port busy?
+   use the port Next prints.)
+
+---
+
+## The build loop — run these on EVERY build (never skipped)
+
+This is what lets Compass learn from what it got wrong. After you generate or change
+UI in this repo, do these in order — automatically, without being asked:
+
+1. Run `npm run audit` and fix every error before you finish.
+2. SNAPSHOT THE RAW OUTPUT as its own commit, BEFORE the designer edits anything:
+     git add -A
+     git commit -m "compass: raw AI output — <short task description>"
+   Any spacing/copy tweak the designer makes afterward is then a clean git diff on
+   top of this baseline — the drift the system should have gotten right.
+3. CAPTURE THE ASSUMPTIONS — non-interactive, never prompt, never block the designer.
+   Run ONE command with a repeatable `--assume "<category>: <text>"` for EACH item in
+   your "What I assumed" list (categories: styling, spacing, component-choice,
+   content, behavior, token), plus the files you built:
+     npm run log -- --no-input \
+       --assume "component-choice: <text>" \
+       --assume "token: <text>" \
+       --files <comma,separated,build,files>
+   This writes a committed `drift-log/entries/` record anchored to the raw-output
+   commit. Do NOT pass `--demo`. If git or `npm run log` is unavailable, say so in one
+   line and continue — capture is best-effort and must NEVER block the build.
+4. SHOW THE DESIGNER your "What I assumed" list (the same items you just captured) so
+   they can confirm or correct. Never silently substitute — anything Figma/spec/token
+   didn't cleanly resolve is a question, not a guess.
+
+> This build loop is the source of truth and is auto-loaded here — it does NOT depend
+> on any Cursor Settings paste. The Settings rule only bootstraps a fresh clone.
