@@ -141,3 +141,22 @@ overlay click", etc. Anything a typecheck cannot prove.>
 - Baseline deltas: <"none — pre-existing failures unchanged" or list>
 - Compass token audit over migrated files: <0 errors required>
 ```
+
+## `_inventory.json` — machine-readable inventory (written in B1, one record per foreign component)
+
+Written during the inventory pass (see resolution.md B1 Step 4), before any
+per-unit report. One JSON record is appended per foreign component; `route` and
+`configUsed` come from the thresholds in `resolution-config.json`:
+
+```json
+{
+  "source": "src/components/StatCard.tsx",
+  "role": "content card",
+  "compassTarget": "card",
+  "confidence": 0.87,
+  "route": "map | provisional | needs-decision | gap",
+  "candidates": [{ "name": "card", "score": 0.87 }, { "name": "item", "score": 0.55 }],
+  "evidence": ["props: title/children surface", "anatomy fits card-header/content", "confusedWith(item): resolved — not a list row"],
+  "configUsed": { "map": 0.85, "provisional": 0.6, "gapList": 0.3 }
+}
+```

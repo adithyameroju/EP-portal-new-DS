@@ -70,7 +70,7 @@ Collect evidence per signal (weights from config, strongest first):
    - `childComponents`: composite anatomy compatibility (foreign header/body/
      footer maps to the Compass sub-part set).
    - **Lightweight-meta cap:** if the top candidate's `aiHints.source` is
-     `"types-only"` (the 22 unspecced components), there is no spec-backed
+     `"types-only"` (the 21 types-only-meta components), there is no spec-backed
      confirmation possible -> cap at `caps.lightweightMeta` (provisional at
      best, never auto-map). Record "lightweight meta" in the evidence.
    - Conflicting signals (e.g. name says card, ARIA says button) ->
