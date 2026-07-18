@@ -1,13 +1,20 @@
-# `.migration/` Report Templates
+# `drift-log/migrations/<project>/` Report Templates
 
-> Used by `compass-migrate` (see [SKILL.md](SKILL.md)). The `.migration/`
-> directory is created **inside the target repo** at migration time — never in
-> the Compass repo itself. Copy these templates verbatim; the fixed structure is
-> what makes reports comparable across units and migrations.
+> Used by `compass-migrate` (see [SKILL.md](SKILL.md)). The report set lives in
+> the **Compass repo's** `drift-log/migrations/<project>/` — NOT inside the
+> target repo (it used to be written to the target's `.migration/`). `<project>`
+> is the target repo/flow name (kebab-case). This keeps capture, compliance,
+> detect, and migration evidence in one handoverable drift folder; see
+> [`drift-log/README.md`](../../../drift-log/README.md) and SKILL.md
+> "Where the reports live". The **target** repo receives only the migrated code
+> branch. Copy these templates verbatim; the fixed structure is what makes
+> reports comparable across units and migrations.
 >
 > **Honesty rules apply to every file here:** skipped != migrated; flagged is
 > listed as flagged; pre-existing failures are named as pre-existing. Status is
-> always derived from disk (import scans), never hand-maintained.
+> always derived from disk (import scans), never hand-maintained. A file with any
+> changed line is `Changed`, never `Left alone` (see the ledger-honesty rule
+> under the unit template below).
 
 ---
 
@@ -55,12 +62,16 @@ The four sections are mandatory, in this order, even when empty (write "None").
 ## Changed
 
 <Exactly what was rewritten: files, foreign component -> Compass component,
-token remaps applied, customizations re-expressed. One line each.>
+token remaps applied, customizations re-expressed. One line each. ANY file with
+even one changed line belongs here — including files touched only by a forced
+edit (e.g. an API rename from a dependency bump); note the diff/reason.>
 
 ## Left alone
 
-<What was deliberately not touched and why: logic, hooks, data fetching,
-routing, state, copy; plus any presentation left as-is with reason.>
+<Files that are BYTE-FOR-BYTE IDENTICAL to the original only. Plus the classes
+of concern deliberately not touched and why: logic, hooks, data fetching,
+routing, state, copy. If a "left alone" file has even one changed line, it is
+misfiled — move it to Changed.>
 
 ## Behavior changes
 
@@ -73,6 +84,16 @@ controlled/uncontrolled). These go to QA. NEVER patched to force parity.>
 <Concrete human checks: "open Settings -> Billing, confirm the dialog closes on
 overlay click", etc. Anything a typecheck cannot prove.>
 ```
+
+> **Ledger-honesty rule — `Changed` vs `Left alone` (non-negotiable).**
+> A file that had **any** line changed CANNOT be listed under `Left alone` —
+> not even if the change was a single forced edit (e.g. an API-rename edit a
+> dependency bump required). If even one line changed, the file goes under
+> `Changed`, with the diff/reason noted. `Left alone` is reserved strictly for
+> files that are **byte-for-byte identical** to the original. This closes the
+> over-claim where a `validations.ts` with a one-line edit was reported as an
+> untouched "copy": a one-line edit is a change, and the ledger must say so.
+> When unsure, `git diff --stat` the file — any non-zero line delta ⇒ `Changed`.
 
 ---
 

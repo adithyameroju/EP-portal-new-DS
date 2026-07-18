@@ -7,7 +7,8 @@
 > **Tools:** Claude Code (this skill runs *against a target repo*, with the
 > Compass repo/package available as the source of truth)
 > **Output:** Compass-native presentation code in the target repo + a
-> `.migration/` report directory + a gap list
+> migration report set written into the **Compass repo's**
+> `drift-log/migrations/<project>/` (one handoverable drift folder) + a gap list
 > **Status:** Part A (skeleton) ACTIVE · Part B (resolution) ACTIVE as of S1
 > exit (2026-07-07) — see [`resolution.md`](resolution.md) +
 > [`resolution-config.json`](resolution-config.json)
@@ -33,14 +34,33 @@
   Lovable/Replit/Cursor, runs this once, and hands the dev a governed
   Compass-native starting point.
 
+## Where the reports live (consolidation ruling)
+
+All migration reports — `_baseline.md`, each `<unit>.md`, `_needs-decision.md`,
+`_gap-list.md`, `_snap-log.md`, `_summary.md`, `_inventory.json` — are written
+into the **Compass repo's** `drift-log/migrations/<project>/`, NOT into the
+target repo (they used to land in the target's `.migration/` /
+`_incoming/.../.migration/`). `<project>` is the target repo/flow name
+(kebab-case, e.g. `acme-settings-flow`).
+
+Why: the Compass repo (present during every run as the source of truth) already
+holds the drift ledger — capture entries (`drift-log/entries/`), compliance
+reports (`drift-log/reports/`), detect output, and proposals. Putting migration
+reports there too makes **one folder the whole drift picture**, handoverable to
+the owner in a single hand. The **target** repo receives only the migrated CODE
+(the `compass-migration` branch — the deliverable); the **Compass** drift-log
+receives the REPORTS. See [`drift-log/README.md`](../../../drift-log/README.md)
+for the unified layout.
+
 ## Hard rules (non-negotiable, in priority order)
 
 1. **Presentation layer only** (see scope above). If a migration seems to
    require a logic change, flag it in the report and skip the unit.
 2. **Never guess a mapping.** Low-confidence component mappings and tokens that
    don't cluster cleanly go to the owner (Nikhil) via
-   `.migration/_needs-decision.md`. Never silently pick a candidate.
-3. **No Compass equivalent = gap list item** (`.migration/_gap-list.md`, feeds
+   `drift-log/migrations/<project>/_needs-decision.md`. Never silently pick a candidate.
+3. **No Compass equivalent = gap list item**
+   (`drift-log/migrations/<project>/_gap-list.md`, feeds
    S6 extensibility). Never invent a component, never approximate with a
    lookalike above the confidence bar. The gap list is a feature, not a failure.
 4. **Flag behavior deltas, never silently patch.** If the Compass component
@@ -74,7 +94,8 @@
    and use it for every install/run in the target. Never mix.
 4. **Record the baseline BEFORE any change.** Run the target's own typecheck,
    build, and lint (whatever scripts it has). Write results to
-   `.migration/_baseline.md` (template: [`report-templates.md`](report-templates.md)).
+   `drift-log/migrations/<project>/_baseline.md` (in the Compass repo;
+   template: [`report-templates.md`](report-templates.md)).
    Pre-existing failures are never attributed to the migration — and the
    migration must never make them worse.
 5. **Identify the stack + source library** (for golden-pair diffing): check
@@ -113,10 +134,11 @@ Never big-bang. For each unit (component/flow) in the approved batch:
    MAY also be pre-written this way (owner ruling 2026-07-07) — they never
    replace the original and their batch cannot be approved until each is
    confirmed via `_needs-decision.md`.
-3. **Write the unit report** to `.migration/<unit>.md` with the fixed
-   structure: `Changed / Left alone / Behavior changes / Verify by hand`
+3. **Write the unit report** to `drift-log/migrations/<project>/<unit>.md` with
+   the fixed structure: `Changed / Left alone / Behavior changes / Verify by hand`
    (template: [`report-templates.md`](report-templates.md)). Every snapped
-   value also goes to `.migration/_snap-log.md` — never snap silently.
+   value also goes to `drift-log/migrations/<project>/_snap-log.md` — never snap
+   silently.
 4. **STOP — owner-confirmation boundary (ruling 2026-07-07).** Writing
    `-compass` variants and reports is as far as a run goes on its own.
    **Do NOT repoint any consumer and do NOT delete or rename any original
@@ -146,7 +168,7 @@ Never big-bang. For each unit (component/flow) in the approved batch:
 1. Migration status is **derived from disk** — scan the target for remaining
    foreign-library imports and un-migrated units. Never maintain a
    hand-edited status index that can rot.
-2. Write `.migration/_summary.md`: units migrated / flagged / skipped (counted
+2. Write `drift-log/migrations/<project>/_summary.md`: units migrated / flagged / skipped (counted
    from disk), gap list, open decisions, baseline deltas.
 3. Hand off: the branch is the deliverable (publish to their repo/branch, or
    zip). The gap list goes back to the Compass owner as S6 candidates.
@@ -157,7 +179,7 @@ Never big-bang. For each unit (component/flow) in the approved batch:
 
 | File | Purpose | Status |
 |------|---------|--------|
-| [`report-templates.md`](report-templates.md) | The `.migration/` directory: every report template, verbatim | ACTIVE |
+| [`report-templates.md`](report-templates.md) | The `drift-log/migrations/<project>/` report set: every template, verbatim | ACTIVE |
 | [`golden-pairs.md`](golden-pairs.md) | v1 source-library identification + diffing notes (stock shadcn, MUI, Chakra, Ant, Lovable/Replit output) | ACTIVE |
 | [`resolution.md`](resolution.md) | Part B: role detection → meta-index matching, confidence rubric, token remap, gap list | ACTIVE (S1 exit 2026-07-07) |
 | [`resolution-config.json`](resolution-config.json) | Owner-tunable weights/caps/thresholds/snap policy (mirrors `scripts/audit-rubric.json`); `guardrails` block is NOT tunable | ACTIVE |

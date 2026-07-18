@@ -89,7 +89,9 @@ Collect evidence per signal (weights from config, strongest first):
 
 ### Step 4 — Record the inventory
 
-Append one record per foreign component to `.migration/_inventory.json`:
+Append one record per foreign component to
+`drift-log/migrations/<project>/_inventory.json` (in the Compass repo — see
+SKILL.md "Where the reports live"):
 
 ```json
 {
@@ -121,7 +123,7 @@ Append one record per foreign component to `.migration/_inventory.json`:
 4. **Snapping (`tokenRemap.snapPolicy`):** near-scale values may snap to the
    nearest step ONLY within the same tier. **LOG EVERY SNAP — token or
    spacing, never silently** (owner ruling): each snap goes in the unit
-   report's `Changed` section AND `.migration/_snap-log.md`
+   report's `Changed` section AND `drift-log/migrations/<project>/_snap-log.md`
    (template in [`report-templates.md`](report-templates.md)).
 5. **Unclustered = `_needs-decision.md`** (config `tokenRemap.unclusteredRoute`).
    A value serving conflicting buckets is never guessed.

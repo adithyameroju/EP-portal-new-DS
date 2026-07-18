@@ -46,6 +46,7 @@
     "audit:compliance": "node scripts/compliance-audit.mjs",
     "log": "node scripts/compass-log.mjs",
     "dashboard": "node scripts/generate-dashboard.mjs",
+    "owner:dashboard": "node scripts/owner-dashboard.mjs",
     "detect": "node scripts/detect-drift.mjs",
     "prescribe": "node scripts/prescribe.mjs",
     "figma-publish": "figma connect publish --skip-validation",
