@@ -2,9 +2,9 @@
 
 // Compass Health — designer-facing, no terminal needed.
 //
-// Shows your live Compass score by calling /api/compass-health (which runs the
-// audits server-side). Dev-only. Scaffolded by the "Using Compass in Loop"
-// setup — safe to delete.
+// Shows YOUR live Compass score — scoped to the files you've added or changed —
+// by calling /api/compass-health (which runs the audits server-side). Dev-only.
+// Scaffolded by the "Using Compass in Loop" setup — safe to delete.
 
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -20,8 +20,11 @@ type Finding = {
 
 type Health = {
   ranAt: string
-  token: { pass: boolean; errors: number; warnings: number; raw: string }
-  compliance: {
+  empty?: boolean
+  scope: { files: string[]; count: number }
+  repoGate: { pass: boolean }
+  token?: { pass: boolean; errors: number; warnings: number }
+  compliance?: {
     ran: boolean
     score: number | null
     startScore: number | null
@@ -31,7 +34,6 @@ type Health = {
     implemented: string[]
     skipped: string[]
     findings: Finding[]
-    note: string | null
   }
   dashboardUrl: string | null
 }
@@ -43,7 +45,6 @@ const RULE_PLAIN: Record<string, string> = {
   C4: 'Spec coverage — a component with no written spec yet',
   C5: 'Naming — a file or folder that is not kebab-case',
   C6: 'Imports — a Compass primitive not imported from @/components/ui',
-  C7a: 'Fonts — a declared font family with no matching @font-face',
 }
 
 function Card(props: { children: React.ReactNode; className?: string }) {
@@ -82,15 +83,24 @@ export default function CompassHealthPage() {
     run()
   }, [run])
 
+  const gateLine = data && (
+    <p className="text-xs text-muted-foreground">
+      Repo commit gate (whole project):{' '}
+      <span className={data.repoGate.pass ? 'text-foreground' : 'text-destructive'}>
+        {data.repoGate.pass ? 'passing' : 'failing'}
+      </span>
+    </p>
+  )
+
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
       <header className="mb-8 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Compass Health</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Your project&rsquo;s live Compass score — no terminal required. This runs the same
-            checks the design system uses: the token gate (blocks bad colors and sizes) and the
-            advisory compliance audit (grades how on-Compass your components are).
+            Your live Compass score — no terminal required. It&rsquo;s scoped to{' '}
+            <strong>your work</strong>: the files you&rsquo;ve added or changed, so the number reflects your
+            feature, not the whole design system.
           </p>
         </div>
         <Button variant="default" onClick={run} disabled={loading}>
@@ -109,42 +119,55 @@ export default function CompassHealthPage() {
         <p className="text-sm text-muted-foreground">Running the audits… this takes a few seconds.</p>
       )}
 
-      {data && (
+      {data?.empty && (
+        <Card>
+          <h2 className="text-lg font-semibold text-foreground">Nothing to score yet</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            You haven&rsquo;t added or changed any files yet. Ask Cursor to build a screen (start your message with
+            &ldquo;Using Compass in Loop&rdquo;), then press <strong>Re-run checks</strong> to see your score.
+          </p>
+          <div className="mt-4">{gateLine}</div>
+        </Card>
+      )}
+
+      {data && !data.empty && data.token && data.compliance && (
         <div className="space-y-6">
-          {/* Token audit — the hard gate */}
+          <p className="text-sm text-muted-foreground">
+            Scoped to <strong>{data.scope.count}</strong> of your files:{' '}
+            <span className="text-foreground">{data.scope.files.join(', ')}</span>
+          </p>
+
+          {/* Token discipline — your files */}
           <Card>
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground">Token audit</h2>
+              <h2 className="text-lg font-semibold text-foreground">Token discipline (your files)</h2>
               <span
                 className={`rounded-md border px-3 py-1 text-sm font-medium ${
                   data.token.pass ? 'border-border text-foreground' : 'border-destructive text-destructive'
                 }`}
               >
-                {data.token.pass ? 'PASS' : 'FAILING'}
+                {data.token.pass ? 'CLEAN' : 'ERRORS'}
               </span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              This is the <strong>hard gate</strong>. Errors block a commit — they mean a hard-coded
-              color or size slipped in where a Compass token belongs. Warnings are informational.
+              Errors are hard-coded colors or sizes where a Compass token belongs — these block a commit. Warnings
+              are informational.
             </p>
             <div className="mt-4 flex gap-6 text-sm">
               <span className="text-foreground">
-                Errors: <strong className={data.token.errors > 0 ? 'text-destructive' : 'text-foreground'}>{data.token.errors}</strong>
+                Errors:{' '}
+                <strong className={data.token.errors > 0 ? 'text-destructive' : 'text-foreground'}>
+                  {data.token.errors}
+                </strong>
               </span>
               <span className="text-muted-foreground">Warnings: {data.token.warnings}</span>
             </div>
-            {!data.token.pass && (
-              <p className="mt-3 text-sm text-muted-foreground">
-                What to do: open the files listed below, replace the flagged hard-coded value with the
-                Compass token it suggests, then press <strong>Re-run checks</strong>.
-              </p>
-            )}
           </Card>
 
-          {/* Compliance — advisory */}
+          {/* Compliance — advisory, scoped */}
           <Card>
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground">Compliance score</h2>
+              <h2 className="text-lg font-semibold text-foreground">Compliance score (your files)</h2>
               {data.compliance.score != null && (
                 <span className="rounded-md border border-border px-3 py-1 text-sm font-medium text-foreground">
                   {data.compliance.score} / {data.compliance.startScore ?? 100}
@@ -152,18 +175,18 @@ export default function CompassHealthPage() {
               )}
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              This is <strong>advisory</strong> — a health signal, not a blocker. It grades how well
-              your components follow the system (right components, right tokens, right structure).
+              This is <strong>advisory</strong> — a health signal, not a blocker. It grades how well your
+              components follow the system (right components, right tokens, right structure).
             </p>
 
-            {Object.keys(data.compliance.byRule).length > 0 && (
+            {Object.keys(data.compliance.byRule).length > 0 ? (
               <div className="mt-4">
                 <p className="mb-2 text-sm font-medium text-foreground">Which checks fired</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(data.compliance.byRule).map(([rule, n]) => (
                     <span
                       key={rule}
-                      title={RULE_PLAIN[rule] ?? rule}
+                      title={RULE_PLAIN[rule.split('-')[0]] ?? rule}
                       className="rounded-md border border-border bg-muted px-2 py-1 text-xs text-foreground"
                     >
                       {rule} × {n}
@@ -171,17 +194,8 @@ export default function CompassHealthPage() {
                   ))}
                 </div>
               </div>
-            )}
-
-            {data.compliance.skipped.length > 0 && (
-              <p className="mt-4 text-xs text-muted-foreground">
-                Not checked in this project: {data.compliance.skipped.join(', ')} (these need the
-                design system&rsquo;s component metadata, which only runs inside the Compass repo).
-              </p>
-            )}
-
-            {data.compliance.note && (
-              <p className="mt-3 text-xs text-muted-foreground">Audit note: {data.compliance.note}</p>
+            ) : (
+              <p className="mt-4 text-sm text-foreground">No issues in your files — nice.</p>
             )}
           </Card>
 
@@ -190,7 +204,7 @@ export default function CompassHealthPage() {
             <Card>
               <h2 className="text-lg font-semibold text-foreground">What to look at</h2>
               <p className="mt-1 mb-4 text-sm text-muted-foreground">
-                Each row is one thing the audit noticed, with the file and a plain suggestion.
+                Each row is one thing the audit noticed in your files, with a plain suggestion.
               </p>
               <div className="space-y-3">
                 {data.compliance.findings.map((f, i) => (
@@ -217,9 +231,12 @@ export default function CompassHealthPage() {
             </Card>
           )}
 
-          {/* Dashboard link + timestamp */}
+          {/* Footer: repo gate + dashboard + timestamp */}
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>Last run: {new Date(data.ranAt).toLocaleString()}</span>
+            <div className="space-y-1">
+              <span>Last run: {new Date(data.ranAt).toLocaleString()}</span>
+              {gateLine}
+            </div>
             {data.dashboardUrl && (
               <a className="text-primary underline" href={data.dashboardUrl} target="_blank" rel="noreferrer">
                 Open full dashboard →
