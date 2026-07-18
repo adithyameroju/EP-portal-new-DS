@@ -24,7 +24,14 @@
 Stamped against the build at `s3-build-complete`, updated through 2026-07-18 to
 fold in the post-build rulings (Card composition ruling, the 12 SOP rulings, the
 standing decision queue, and the Storybook story fixes; see
-`.compass-build/STATE.md`). Scope of v1: **React + Tailwind**
+`.compass-build/STATE.md`).
+
+> **Not the "Using Compass in Loop" Cursor rule.** That rule sets up Compass and
+> builds *new* screens. Migration is a different, deliberately human-gated skill
+> (`compass-migrate`) run inside the target repo — the rule does not cover it and
+> nothing here changes because of it. Follow the steps below.
+
+Scope of v1: **React + Tailwind**
 targets. Lovable output is a first-class golden-pair target (it's the PM-handoff
 path, so it was characterized deepest).
 

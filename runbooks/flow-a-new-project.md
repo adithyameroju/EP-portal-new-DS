@@ -10,6 +10,15 @@ Stamped against the build at `s3-build-complete` (2026-07-07), updated through
 **Read this first:** the compliance score is *advisory*. The only hard gate is
 `npm run audit` (0 errors). Everything else is a signal, not a verdict.
 
+> **Designer shortcut (Cursor).** Flow A is the *package* path — Compass dropped
+> into your own separate project via the tarball (the `.npmrc` @acko scope +
+> Acko-network/VPN for Nexus are required, or `npm install` fails with
+> `E404 @acko/enterprise-tokens`). If you're a designer starting fresh, the
+> faster, more reliable path is the **clone** path driven by the "Using Compass in
+> Loop" Cursor rule — see the [Designer Quickstart](./designer-quickstart.md).
+> Use Flow A only when you specifically need Compass inside an existing project of
+> your own.
+
 ---
 
 ## 0 · One-time setup

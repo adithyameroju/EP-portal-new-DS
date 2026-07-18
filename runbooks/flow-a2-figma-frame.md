@@ -10,6 +10,11 @@ so the AI must **map** dozens of concrete values onto the system — and every
 mapping is a chance to silently substitute. That's why this flow's "What I
 assumed" list is the long one, and why it matters most here.
 
+> **Cursor shortcut.** With the "Using Compass in Loop" rule installed, say
+> **"Using Compass in Loop, build this Figma frame …"** — it runs the same
+> clone-path setup + verify, then the frame build. The mapping discipline below
+> still applies in full.
+
 ---
 
 ## What you need beyond Flow A

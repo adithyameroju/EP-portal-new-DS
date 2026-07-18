@@ -6,6 +6,12 @@ governance, the audit loop) is already wired in this repo. This is the soft-laun
 path; if you later need Compass *in your own project*, use
 [Flow A](./flow-a-new-project.md) instead.
 
+> **In Cursor, this is now one step.** With the "Using Compass in Loop" rule
+> installed (Cursor → Settings → Rules), start a message with **"Using Compass in
+> Loop, build …"** — it clones, installs, verifies the setup, then builds. The
+> steps below are exactly what it runs for you. Afterwards open **`/compass-health`**
+> to see your score (scoped to your files) with no terminal.
+
 ---
 
 ## 1 · Clone & install
