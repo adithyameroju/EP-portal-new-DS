@@ -283,7 +283,7 @@ function scoreTrendSvg(scores) {
 
 // ─── page assembly ───────────────────────────────────────────────────────────
 
-function render({ agg, entryCount, demoSkipped, includeDemo, weights }) {
+function render({ agg, entryCount, demoSkipped, includeDemo }) {
   const generated = new Date().toISOString();
   const demoBanner = includeDemo
     ? '<div class="banner demo">DEMO MODE — includes demo entries; NOT real cross-team evidence.</div>'

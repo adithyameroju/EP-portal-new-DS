@@ -108,6 +108,8 @@ export default function CompassHealthPage() {
   }, [])
 
   useEffect(() => {
+    // Deliberate fetch-on-mount: auto-run the audit when the page opens.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     run()
   }, [run])
 
