@@ -17,6 +17,7 @@ import {
   Menubar,
   MenubarCheckboxItem,
   MenubarContent,
+  MenubarGroup,
   MenubarItem,
   MenubarLabel,
   MenubarMenu,
@@ -115,12 +116,14 @@ export const StandardAppMenubar: Story = {
           <MenubarCheckboxItem defaultChecked>Sidebar</MenubarCheckboxItem>
           <MenubarCheckboxItem>Preview</MenubarCheckboxItem>
           <MenubarSeparator />
-          <MenubarLabel>Sort by</MenubarLabel>
-          <MenubarRadioGroup defaultValue="name">
-            <MenubarRadioItem value="name">Name</MenubarRadioItem>
-            <MenubarRadioItem value="date">Date</MenubarRadioItem>
-            <MenubarRadioItem value="premium">Premium</MenubarRadioItem>
-          </MenubarRadioGroup>
+          <MenubarGroup>
+            <MenubarLabel>Sort by</MenubarLabel>
+            <MenubarRadioGroup defaultValue="name">
+              <MenubarRadioItem value="name">Name</MenubarRadioItem>
+              <MenubarRadioItem value="date">Date</MenubarRadioItem>
+              <MenubarRadioItem value="premium">Premium</MenubarRadioItem>
+            </MenubarRadioGroup>
+          </MenubarGroup>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

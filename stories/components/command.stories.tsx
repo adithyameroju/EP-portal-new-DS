@@ -69,8 +69,10 @@ export const SearchWithFilteredResults: Story = {
 
 /**
  * Verbatim: spec:.claude/specs/components/command.md
- * "⌘K command palette (most common)" — the CommandDialog children are
- * unchanged. Simplification (flagged): the spec's document-level ⌘K keydown
+ * "⌘K command palette (most common)". Simplifications (flagged): the
+ * cmdk-based children are wrapped in a <Command> root so they receive the
+ * cmdk store context in Storybook (the spec anatomy treats CommandDialog as
+ * a "Command + Dialog wrapper"); the spec's document-level ⌘K keydown
  * useEffect listener is replaced by a visible Button toggling the same
  * controlled open state, so the story is self-contained in Storybook
  * (CommandDialog is controlled-only — spec rule 5: "Add keyboard shortcut
@@ -86,33 +88,35 @@ function CommandPaletteExample() {
         Command Palette
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search policies, claims, documents..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Policies">
-            <CommandItem>
-              <FileText className="size-4" />
-              Motor Insurance 2024
-              <CommandShortcut>↵</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <FileText className="size-4" />
-              Health Insurance - Family
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Actions">
-            <CommandItem>
-              <PlusIcon className="size-4" />
-              New Claim
-              <CommandShortcut>⌘N</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <DownloadIcon className="size-4" />
-              Download Policy Document
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
+        <Command>
+          <CommandInput placeholder="Search policies, claims, documents..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Policies">
+              <CommandItem>
+                <FileText className="size-4" />
+                Motor Insurance 2024
+                <CommandShortcut>↵</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <FileText className="size-4" />
+                Health Insurance - Family
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Actions">
+              <CommandItem>
+                <PlusIcon className="size-4" />
+                New Claim
+                <CommandShortcut>⌘N</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <DownloadIcon className="size-4" />
+                Download Policy Document
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </CommandDialog>
     </>
   )

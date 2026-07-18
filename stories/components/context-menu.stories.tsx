@@ -22,6 +22,7 @@ import {
   ContextMenu,
   ContextMenuCheckboxItem,
   ContextMenuContent,
+  ContextMenuGroup,
   ContextMenuItem,
   ContextMenuLabel,
   ContextMenuRadioGroup,
@@ -189,17 +190,21 @@ export const CheckboxAndRadioItems: Story = {
         </CardContent>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuLabel>View</ContextMenuLabel>
-        <ContextMenuCheckboxItem defaultChecked>
-          Show thumbnails
-        </ContextMenuCheckboxItem>
+        <ContextMenuGroup>
+          <ContextMenuLabel>View</ContextMenuLabel>
+          <ContextMenuCheckboxItem defaultChecked>
+            Show thumbnails
+          </ContextMenuCheckboxItem>
+        </ContextMenuGroup>
         <ContextMenuSeparator />
-        <ContextMenuLabel>Sort by</ContextMenuLabel>
-        <ContextMenuRadioGroup defaultValue="name">
-          <ContextMenuRadioItem value="name">Name</ContextMenuRadioItem>
-          <ContextMenuRadioItem value="date">Date</ContextMenuRadioItem>
-          <ContextMenuRadioItem value="size">Size</ContextMenuRadioItem>
-        </ContextMenuRadioGroup>
+        <ContextMenuGroup>
+          <ContextMenuLabel>Sort by</ContextMenuLabel>
+          <ContextMenuRadioGroup defaultValue="name">
+            <ContextMenuRadioItem value="name">Name</ContextMenuRadioItem>
+            <ContextMenuRadioItem value="date">Date</ContextMenuRadioItem>
+            <ContextMenuRadioItem value="size">Size</ContextMenuRadioItem>
+          </ContextMenuRadioGroup>
+        </ContextMenuGroup>
       </ContextMenuContent>
     </ContextMenu>
   ),

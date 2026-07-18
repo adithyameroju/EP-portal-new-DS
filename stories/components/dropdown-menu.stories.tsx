@@ -142,8 +142,8 @@ export const GroupedSections: Story = {
         Actions
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Policy</DropdownMenuLabel>
         <DropdownMenuGroup>
+          <DropdownMenuLabel>Policy</DropdownMenuLabel>
           <DropdownMenuItem>
             <FileText />
             View document
@@ -154,8 +154,8 @@ export const GroupedSections: Story = {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuLabel>Support</DropdownMenuLabel>
         <DropdownMenuGroup>
+          <DropdownMenuLabel>Support</DropdownMenuLabel>
           <DropdownMenuItem>
             <Phone />
             Contact agent
@@ -212,11 +212,13 @@ export const CheckboxItems: Story = {
         Actions
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>View options</DropdownMenuLabel>
-        <DropdownMenuCheckboxItem defaultChecked>
-          Show premium amount
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem>Show expiry date</DropdownMenuCheckboxItem>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>View options</DropdownMenuLabel>
+          <DropdownMenuCheckboxItem defaultChecked>
+            Show premium amount
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem>Show expiry date</DropdownMenuCheckboxItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   ),
@@ -235,14 +237,18 @@ export const RadioItems: Story = {
         Actions
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-        <DropdownMenuRadioGroup defaultValue="name">
-          <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="date">Date issued</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="premium">
-            Premium amount
-          </DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+          <DropdownMenuRadioGroup defaultValue="name">
+            <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="date">
+              Date issued
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="premium">
+              Premium amount
+            </DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   ),
