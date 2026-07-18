@@ -123,24 +123,21 @@ or invented — names only):
   → **Confirmed: the source-of-truth Compass library has no status/semantic colour family.**
   The code-side gap matches the Figma-side gap.
 
-- **Prior art exists in *other* libraries (NOT the Compass source of truth):**
-  - **"Umbrella DS 2.0"** — a complete status system already modelled:
-    `status/{success,warning,info}/{base, subtle, text, border, hover, badgeBg}` (collection
-    "Semantics") plus component-level `alert/{success,warning,info}/{text,icon,surface,border}`
-    (collection "Components"). This is the closest existing naming reference the owner + FE
-    dev may want to reconcile against — but it is a **separate library**, not shipped in
-    `@acko/enterprise-tokens`, so it is **not** authoritative for Compass.
-  - **"DO NOT REFER Acko DS for Enterprise"** — `Feedback/{Success,Warning}/{50…400}` scales.
-    Name-flagged **do not refer**.
-  - **"Base - do not use"** — `Surface|Border|Content/feedback/{success,warning,info}`.
-    Name-flagged **do not use**.
+- **Other libraries visible to the account are NOT sources.** The read-only
+  `search_design_system` results also surfaced status-token structures in unrelated libraries
+  (e.g. an "Umbrella DS 2.0" library models `status/{success,warning,info}/…`). **Per owner
+  ruling 2026-07-19, these carry NO authority for Compass** — different system, different
+  product context, different visual language. Noted here only as unrelated prior art that
+  happens to exist; it must **not** be cited as justification for any Compass value.
 
-**Conclusion of the Figma check:** Status colours are **not defined in the Compass library**
-that `@acko/enterprise-tokens` mirrors. Prior-art naming exists in Umbrella DS 2.0 (useful
-as a reference), but the actual values Compass ships remain a **brand decision for the owner
-+ FE dev**. This batch therefore does **not** pick colours; it only proposes the shape and
-flags the reconciliation question: *"should Compass status tokens adopt Umbrella DS 2.0's
-values/naming, or define its own?"* — owner call.
+**Conclusion of the Figma check:** The gap is **real and unfilled** — the source-of-truth
+Compass library (`zgzPlhKxDXc3E9OmfxmF9y`) defines `destructive` but **no** status/semantic
+colour family, and neither does `@acko/enterprise-tokens`. **The ONLY valid sources for
+Compass token values are this Figma library and `@acko/enterprise-tokens` (owner ruling
+2026-07-19).** The values are a brand decision for the **owner + FE dev**, to be **added to
+the ACKO Enterprise Figma library FIRST, then mirrored into `@acko/enterprise-tokens`** so
+Figma and code agree from day one. This batch picks no colours and proposes no values from
+any other source.
 
 ---
 
@@ -150,8 +147,10 @@ values/naming, or define its own?"* — owner call.
    `--warning`/`--warning-foreground`, `--info`/`--info-foreground`) in the exact
    four-place `--destructive` wiring. **Top tightening candidate.**
 2. **Adopt the rule** — `verify` is not a token; it maps to `primary`.
-3. **Owner + FE dev pick values** and ship them in `@acko/enterprise-tokens`; reconcile
-   against Umbrella DS 2.0 prior art if desired.
+3. **Owner + FE dev pick values** — add them to the ACKO Enterprise Figma library
+   (`zgzPlhKxDXc3E9OmfxmF9y`) FIRST, then mirror into `@acko/enterprise-tokens` (Figma-first,
+   so design + code agree from day one). Values come ONLY from these two sources — no other
+   library (owner ruling 2026-07-19).
 4. Then, and only then, add the "### Status / feedback" table to
    `.claude/specs/foundations/color.md` and the row block to
    `.claude/specs/tokens/token-reference.md`, and re-run `npm run audit`.

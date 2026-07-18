@@ -200,3 +200,36 @@ pending files) · semver/CHANGELOG · publish go.
 Read roadmap + this file first. Log to `.compass-build/log/<track>.md`
 (append-only, timestamped). Design outputs → `.compass-build/design/<track>/`,
 marked PROPOSED. Nothing implements past its gate (see PLAN.md §2).
+
+## Ruling 2026-07-19 — status-token source of truth (do not resurface)
+
+The status-token gap (`success` / `warning` / `info`) is **real and unfilled**: the
+ACKO Enterprise Figma library (`zgzPlhKxDXc3E9OmfxmF9y`) defines `destructive` but
+no status/semantic colour family, and neither does `@acko/enterprise-tokens`.
+
+- **ONLY valid sources for any Compass token value:** the ACKO Enterprise Design
+  System Figma library (`zgzPlhKxDXc3E9OmfxmF9y`) and `@acko/enterprise-tokens`. No
+  other Figma library is a source. **"Umbrella DS 2.0"** (surfaced in Figma search)
+  is a DIFFERENT system — different product context and visual language — and carries
+  **NO authority**; it may be named as unrelated prior art but must never be cited to
+  justify a value.
+- **`verify` is NOT a system token** — it maps to `primary`. Family = success /
+  warning / info only (6 tokens, each with `-foreground`), shaped like `--destructive`.
+- **Sourcing order:** values are a brand decision for owner + FE dev; they are added
+  to the ACKO Enterprise **Figma library FIRST**, then mirrored into
+  `@acko/enterprise-tokens`, so Figma and code agree from day one. No values from any
+  other source. Staged proposal (shape only): `drift-log/proposals/2026-07-19__status-token-family.md`.
+
+## Ruling 2026-07-19 — `_incoming/` is audit-excluded (migration snapshots only)
+
+`token-audit.mjs` + `compliance-audit.mjs` exclude any `_incoming/` directory. It is
+ONLY for `compass-migrate` foreign-source snapshots and must **NEVER** hold product
+code — an excluded dir is invisible to the audit, so real code there would be a silent
+loophole around the token gate. Documented in CLAUDE.md.
+
+## Figma access audit — Batch 6, 2026-07-19 (read-only confirmed)
+
+Strictly READ-ONLY: only `search_design_system` (×5) + `whoami` (×1) were invoked; the
+only file key touched was `zgzPlhKxDXc3E9OmfxmF9y` (queried, never modified). No
+write / create / upload / code-connect / export Figma tool was called; no Figma file
+was changed.

@@ -107,6 +107,7 @@ const EXCLUDE_DIRS_LEGACY = [
   'node_modules', '.next', '.git', 'scripts', 'public',
   'storybook-static', // generated Storybook build output (synced from token-audit, S5 2026-07-07)
   'dist', // generated package bundle (synced from token-audit, S3 2026-07-07)
+  '_incoming', // compass-migrate foreign-source snapshot ONLY — never product code (see CLAUDE.md)
 ];
 const EXCLUDE_DIRS_COMPLIANCE = [
   ...EXCLUDE_DIRS_LEGACY,

@@ -163,3 +163,18 @@ npm run audit      # runs scripts/token-audit.mjs
 Zero errors required before committing. If audit fails, fix before proceeding.
 The audit catches: hardcoded hex colors, arbitrary pixel values, raw Tailwind
 color utilities used instead of semantic token classes.
+
+### `_incoming/` is audit-excluded — migration snapshots ONLY
+
+Both `token-audit.mjs` and `compliance-audit.mjs` **skip any directory named
+`_incoming/`**. It exists for exactly one purpose: to hold the untouched
+foreign-source snapshot a `compass-migrate` run reads *from* (raw Lovable /
+shadcn / Radix / etc. code that is deliberately NOT Compass-compliant, so
+auditing it would only produce false positives).
+
+Because an excluded directory is **invisible to the audit**, `_incoming/` must
+**NEVER** contain product code, shipped components, or anything meant to be
+governed — putting real code there would be a silent loophole around the token
+gate. Migrated code counts as done only once it has been moved OUT of
+`_incoming/` into `app/`, `components/`, `lib/`, etc., where the audit runs.
+(Owner ruling, 2026-07-19 — see the DECISION LOG.)

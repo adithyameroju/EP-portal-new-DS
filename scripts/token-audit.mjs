@@ -32,6 +32,7 @@ const EXCLUDE_DIRS = [
   'public',
   'storybook-static',
   'dist',
+  '_incoming', // compass-migrate foreign-source snapshot ONLY — never product code (see CLAUDE.md)
 ];
 
 const EXCLUDE_FILES = [
