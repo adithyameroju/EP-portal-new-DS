@@ -18,14 +18,29 @@
  *   C6  import hygiene     — ui primitives must be imported from
  *                            "@/components/ui/..." (relative reach-ins and
  *                            locally copied/shadowed primitives = error)
+ *   C8  invented motion    — bespoke motion/effects outside the Compass motion
+ *                            system (*.module.css files, custom @keyframes, and
+ *                            non-system animation refs in CSS + inline-style TSX)
+ *                            = WARNING (advisory per owner ruling #10 — never an
+ *                            error). Never flags app/globals.css, the @acko
+ *                            tokens package, tw-animate-css, node_modules, or
+ *                            components/ui. Sanctioned names come from the motion
+ *                            spec presets + Tailwind/tw-animate-css built-ins;
+ *                            extend via audit-rubric.json ("c8.systemAnimations").
  *
  * Meta-driven checks (live since S1; resolve against components/ui/*.meta.ts
  * via the transpiling loader — meta files are never modified by this script):
  *   C2  provenance         — raw <button>/<input>/<select>/<textarea>/<table>
  *                            where a Compass primitive exists (error; element
  *                            map DERIVED at runtime, see deriveElementMap);
- *                            div/span carrying a primitive's signature tokens
- *                            without importing it (warning)
+ *                            div/span genuinely RE-IMPLEMENTING a primitive
+ *                            (warning). The shape-match tier requires component-
+ *                            specific signature tokens (generic surface/layout/
+ *                            focus utilities are filtered out) PLUS structural
+ *                            evidence — a matching ARIA role or ≥2 interactive
+ *                            children — or a strong ≥3-token signature. Bare
+ *                            co-occurrence of a couple of common tokens does not
+ *                            fire (de-noised 2026-07-19).
  *   C3  composite completeness — composite rendered with children but none of
  *                            its meta childComponents used (kept uniform WARNING
  *                            per owner ruling 2026-07-07: the compliance audit is
@@ -756,6 +771,93 @@ function classNamesOnLine(line) {
   return m ? (m[1] ?? m[2] ?? '') : '';
 }
 
+// ─── C2 shape-match de-noising (2026-07-19) ─────────────────────────────────
+//
+// The old shape-match tier fired on mere token *co-occurrence*: any div carrying
+// ≥2 of a component's meta.tokens where ≥1 was "distinctive" (owned by ≤2 metas).
+// But distinctiveness was measured over meta *declarations*, and plain surface/
+// layout utilities are declared unevenly — e.g. `rounded-lg` happens to appear in
+// exactly one meta (menubar), so a claim-number info box `rounded-lg bg-muted p-4`
+// got flagged as a hand-rolled Menubar. These utilities carry no component signal.
+//
+// Fix: (1) a token only counts as a *signature* token if it is component-specific
+// (surface / radius / shadow / focus-ring plumbing that every box uses is
+// filtered out below); (2) firing now requires STRUCTURAL evidence that the
+// element re-implements the component's anatomy (a matching ARIA role or ≥2
+// interactive children) OR a strong pure-token signature (≥3 component-specific
+// tokens = a genuine full re-implementation of the look) — never bare
+// co-occurrence of a couple of generic tokens.
+
+// Pure surface / layout / typography / focus-ring utilities. Any plain styled box
+// legitimately uses these, so on their own they never implicate a component.
+const C2_GENERIC_TOKENS = new Set([
+  // surfaces
+  'bg-background', 'bg-card', 'bg-muted', 'bg-muted/50', 'bg-secondary', 'bg-accent',
+  'bg-popover', 'bg-input', 'bg-border', 'bg-foreground',
+  // generic text colors
+  'text-foreground', 'text-muted-foreground', 'text-card-foreground',
+  'text-popover-foreground', 'text-accent-foreground', 'text-secondary-foreground',
+  'text-background', 'text-foreground/60',
+  // borders
+  'border', 'border-border', 'border-input', 'border-ring',
+  // radius (all)
+  'rounded', 'rounded-sm', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-2xl',
+  'rounded-3xl', 'rounded-4xl', 'rounded-full', 'rounded-none',
+  // shadow (all)
+  'shadow', 'shadow-xs', 'shadow-sm', 'shadow-md', 'shadow-lg', 'shadow-xl', 'shadow-none',
+  // focus-ring plumbing
+  'ring', 'ring-ring', 'ring-ring/50', 'ring-offset-background',
+  'ring-foreground', 'ring-foreground/10', 'ring-background',
+]);
+
+// ARIA roles that signal a genuine re-implementation of a given component.
+const C2_COMPONENT_ROLES = {
+  menubar: ['menubar', 'menu', 'menuitem'],
+  'navigation-menu': ['navigation'],
+  tabs: ['tablist', 'tab'],
+  'dropdown-menu': ['menu', 'menuitem'],
+  'context-menu': ['menu', 'menuitem'],
+  table: ['table', 'grid', 'row', 'cell', 'columnheader'],
+  'radio-group': ['radiogroup', 'radio'],
+  'toggle-group': ['group'],
+  sidebar: ['navigation', 'complementary'],
+  breadcrumb: ['navigation'],
+  pagination: ['navigation'],
+};
+
+// Interactive / structural children whose presence (≥2) marks a container the
+// component would normally provide (menubar, toolbar, tabs, nav, radio-group…).
+const C2_INTERACTIVE_CHILD_RE =
+  /<button[\s/>]|<a\s[^>]*href|<Button[\s/>]|<Link[\s/>]|<input[\s/>]|role=["'](?:menuitem|menuitemradio|menuitemcheckbox|tab|option|radio)["']/g;
+
+/**
+ * The JSX subtree rooted at lines[i], bounded by indentation: collect lines until
+ * one at ≤ the opening line's indent (its close/sibling), capped at `max` lines.
+ * Good enough to look for structural anatomy without a full JSX parser.
+ */
+function elementSubtree(lines, i, max = 40) {
+  const base = (lines[i].match(/^\s*/) || [''])[0].length;
+  const buf = [lines[i]];
+  for (let j = i + 1; j < lines.length && buf.length < max; j++) {
+    const l = lines[j];
+    if (l.trim() === '') { buf.push(l); continue; }
+    const indent = (l.match(/^\s*/) || [''])[0].length;
+    buf.push(l);
+    if (indent <= base) break; // reached the close / a sibling — stop
+  }
+  return buf.join('\n');
+}
+
+/** Does the element subtree show the component's structural anatomy? */
+function hasC2StructuralEvidence(subtree, componentName) {
+  const roles = C2_COMPONENT_ROLES[componentName] || [];
+  for (const r of roles) {
+    if (new RegExp(`role=["']${r}["']`).test(subtree)) return true;
+  }
+  const nInteractive = (subtree.match(C2_INTERACTIVE_CHILD_RE) || []).length;
+  return nInteractive >= 2;
+}
+
 function checkC2(rel, raw, elementMap, metaIndex, tokenOwners) {
   const findings = [];
   if (!/\.(tsx|jsx)$/.test(rel)) return findings;
@@ -781,24 +883,45 @@ function checkC2(rel, raw, elementMap, metaIndex, tokenOwners) {
       });
     }
 
-    // (b) shape-match tier: div/span dressed in a primitive's signature tokens
+    // (b) shape-match tier: div/span genuinely re-implementing a primitive.
+    //     Requires COMPONENT-SPECIFIC signature tokens (generic surface/layout/
+    //     focus utilities are filtered) PLUS structural evidence (a matching
+    //     ARIA role or ≥2 interactive children) OR a strong ≥3-token signature.
+    //     Bare co-occurrence of a couple of generic tokens no longer fires.
     if (metaIndex && /<(div|span)[\s>]/.test(line)) {
       const classStr = classNamesOnLine(line);
       if (classStr) {
+        const subtree = elementSubtree(lines, i);
         let best = null;
         for (const meta of metaIndex.values()) {
           if (!meta.tokens || meta.tokens.length < 2) continue;
           if (imported.has(meta.name)) continue; // they use the real one; styling overlap is fine
           const matches = meta.tokens.filter((t) => classStr.includes(t));
-          const distinctive = matches.filter((t) => (tokenOwners.get(t) || []).length <= 2);
-          if (matches.length >= 2 && distinctive.length >= 1) {
-            if (!best || matches.length > best.matches.length) best = { meta, matches };
+          // Only component-specific tokens count toward a signature; pure surface/
+          // layout/focus utilities are filtered out entirely.
+          const signature = matches.filter((t) => !C2_GENERIC_TOKENS.has(t));
+          if (signature.length < 2) continue; // never fire on ≤1 component-specific token
+          const distinctive = signature.filter((t) => (tokenOwners.get(t) || []).length <= 2);
+          const structural = hasC2StructuralEvidence(subtree, meta.name);
+          // Fire when the element shows the component's structural anatomy (a
+          // matching ARIA role or ≥2 interactive children) alongside ≥2 of its
+          // signature tokens, OR carries a strong ≥3-token signature that
+          // includes a rare, component-specific token (a genuine full
+          // re-implementation of the look). Bare co-occurrence never fires.
+          const fires = (structural && signature.length >= 2)
+            || (signature.length >= 3 && distinctive.length >= 1);
+          if (!fires) continue;
+          if (!best || signature.length > best.signature.length) {
+            best = { meta, signature, structural };
           }
         }
         if (best) {
+          const evidence = best.structural
+            ? 'structural anatomy + signature tokens'
+            : 'signature tokens';
           findings.push({
             ruleId: 'C2-shape-match', level: 'warning', line: lineNum,
-            message: `div/span carries \`${best.meta.name}\` signature tokens (${best.matches.join(', ')}) without importing it — hand-rolled ${kebabToPascal(best.meta.name)}?`,
+            message: `div/span re-implements \`${best.meta.name}\` (${evidence}: ${best.signature.join(', ')}) without importing it — hand-rolled ${kebabToPascal(best.meta.name)}?`,
             suggestion: `→ Use \`${kebabToPascal(best.meta.name)}\` from \`@/components/ui/${best.meta.name}\` (heuristic — verify before acting)`,
             component: best.meta.name,
           });
@@ -884,6 +1007,169 @@ function checkC4(rel, raw, metaIndex) {
   return findings;
 }
 
+// ─── C8: invented, non-system CSS / motion (advisory WARNING) ────────────────
+//
+// Rationale: a build can ship a bespoke animated CSS module (custom @keyframes +
+// animation) and still score ~clean because it references token *vars*. Compass
+// motion lives in the motion spec + tw-animate-css + shadcn's built-in keyframes
+// — NOT in per-build CSS modules or hand-rolled @keyframes. This flags bespoke
+// motion/effects outside that system. Advisory only (owner ruling #10: the
+// compliance audit is never an error — token-audit is the sole gate), so every
+// C8 finding is a WARNING.
+//
+// Never flags app/globals.css, the @acko tokens package, tw-animate-css,
+// node_modules, or Compass's own components/ui (all already out of scan scope;
+// re-guarded here so --files mode can't sneak them in).
+
+const MOTION_SPEC_REL = '.claude/specs/foundations/motion.md';
+
+// System animation names Compass sanctions — motion-spec presets + Tailwind
+// built-ins + tw-animate-css / shadcn data-state conventions. Matched
+// case-insensitively so `fadeIn` and `fade-in` are both recognized.
+const C8_SYSTEM_ANIMATION_FALLBACK = [
+  // motion spec presets (.claude/specs/foundations/motion.md)
+  'accordion-down', 'accordion-up', 'fadeIn', 'fadeOut',
+  'slideInFromTop', 'slideInFromBottom', 'slideInFromLeft', 'slideInFromRight',
+  // Tailwind built-in animations
+  'spin', 'ping', 'pulse', 'bounce', 'none',
+  // tw-animate-css / shadcn data-state motion
+  'enter', 'exit', 'in', 'out',
+  'fade-in', 'fade-out', 'zoom-in', 'zoom-out',
+  'slide-in-from-top', 'slide-in-from-bottom', 'slide-in-from-left', 'slide-in-from-right',
+  'slide-out-to-top', 'slide-out-to-bottom', 'slide-out-to-left', 'slide-out-to-right',
+  'caret-blink', 'collapsible-down', 'collapsible-up',
+];
+
+/** System animation names: fallback ∪ motion-spec presets ∪ rubric override. */
+function loadSystemAnimations(rubric) {
+  const names = new Set(C8_SYSTEM_ANIMATION_FALLBACK.map((n) => n.toLowerCase()));
+  // Scrape preset names out of the motion spec's "Animation presets" table.
+  try {
+    const md = fs.readFileSync(path.join(ROOT, MOTION_SPEC_REL), 'utf8');
+    const section = md.split(/##\s+Animation presets/i)[1] || '';
+    const table = section.split(/\n##\s/)[0];
+    const re = /\|\s*`([A-Za-z][\w-]*)`\s*\|/g;
+    let m;
+    while ((m = re.exec(table)) !== null) names.add(m[1].toLowerCase());
+  } catch { /* fallback set is sufficient */ }
+  for (const n of (rubric.c8 && rubric.c8.systemAnimations) || []) names.add(String(n).toLowerCase());
+  return names;
+}
+
+function isSystemAnimation(name, systemAnimations) {
+  return systemAnimations.has(String(name).toLowerCase());
+}
+
+/** True for files whose CSS/motion is system-owned and must never be C8-flagged. */
+function c8IsExempt(rel) {
+  return rel === 'app/globals.css'
+    || rel.startsWith('components/ui/')
+    || rel.includes('node_modules/')
+    || rel.includes('tw-animate')
+    || rel.includes('@acko/enterprise-tokens');
+}
+
+function checkC8(rel, raw, systemAnimations) {
+  const findings = [];
+  const ext = path.extname(rel);
+  if (ext !== '.css' && ext !== '.tsx' && ext !== '.jsx') return findings;
+  if (c8IsExempt(rel)) return findings;
+
+  const lineAt = (index) => raw.slice(0, index).split('\n').length;
+  const suggestion = `→ Use the Compass motion system (tw-animate-css + shadcn presets) — see ${MOTION_SPEC_REL}. If a new motion pattern is genuinely needed, flag it for owner review rather than shipping bespoke CSS.`;
+
+  if (ext === '.css') {
+    // Bespoke CSS module: Compass components style with Tailwind utilities, not
+    // *.module.css. The module itself is invented, non-system CSS.
+    if (/\.module\.css$/.test(rel)) {
+      const firstContent = raw.split('\n').findIndex((l) => l.trim() && !l.trim().startsWith('/*'));
+      findings.push({
+        ruleId: 'C8-invented-motion', level: 'warning',
+        file: rel, line: firstContent >= 0 ? firstContent + 1 : 1,
+        message: `Bespoke CSS module \`${path.basename(rel)}\` — Compass styles components with Tailwind utilities + tw-animate-css, not per-build CSS modules; motion/effects here bypass the Compass motion system`,
+        suggestion,
+        component: null,
+      });
+    }
+
+    // Invented @keyframes (a name the motion system does not define).
+    const invented = new Set();
+    const kfRe = /@keyframes\s+([A-Za-z_][\w-]*)/g;
+    let m;
+    while ((m = kfRe.exec(raw)) !== null) {
+      if (isSystemAnimation(m[1], systemAnimations)) continue;
+      invented.add(m[1]);
+      findings.push({
+        ruleId: 'C8-invented-motion', level: 'warning',
+        file: rel, line: lineAt(m.index),
+        message: `Custom \`@keyframes ${m[1]}\` — not part of the Compass motion system`,
+        suggestion,
+        component: null,
+      });
+    }
+
+    // animation: / animation-name: referencing a non-system animation — skip
+    // names already reported as an invented local @keyframes (dedupe).
+    const animRe = /animation(?:-name)?\s*:\s*([^;{}]+)[;}]/g;
+    while ((m = animRe.exec(raw)) !== null) {
+      const value = m[1];
+      const names = value.match(/[A-Za-z_][\w-]*/g) || [];
+      const bad = names.find(
+        (n) => !isSystemAnimation(n, systemAnimations)
+          && !invented.has(n)
+          // ignore CSS keywords that appear in the animation shorthand
+          && !/^(infinite|normal|reverse|alternate|forwards|backwards|both|none|linear|ease|ease-in|ease-out|ease-in-out|running|paused|steps|cubic-bezier|var|s|ms)$/i.test(n),
+      );
+      if (bad) {
+        findings.push({
+          ruleId: 'C8-invented-motion', level: 'warning',
+          file: rel, line: lineAt(m.index),
+          message: `Custom \`animation\` referencing \`${bad}\` — not a Compass motion-system animation`,
+          suggestion,
+          component: null,
+        });
+      }
+    }
+    return findings;
+  }
+
+  // TSX/JSX: arbitrary animate-[…] utilities and inline-style animations bypass
+  // the motion system. Object-literal data fields (no `style=`) are left alone.
+  raw.split('\n').forEach((line, i) => {
+    let m;
+    const arbRe = /\banimate-\[[^\]]+\]/g;
+    while ((m = arbRe.exec(line)) !== null) {
+      findings.push({
+        ruleId: 'C8-invented-motion', level: 'warning',
+        file: rel, line: i + 1,
+        message: `Arbitrary animation utility \`${m[0]}\` bypasses tw-animate-css / the Compass motion system`,
+        suggestion,
+        component: null,
+      });
+    }
+    if (/style\s*=/.test(line)) {
+      const styleAnimRe = /animation(?:Name)?\s*:\s*['"]([^'"]*)['"]/g;
+      while ((m = styleAnimRe.exec(line)) !== null) {
+        const names = m[1].match(/[A-Za-z_][\w-]*/g) || [];
+        const bad = names.find(
+          (n) => !isSystemAnimation(n, systemAnimations)
+            && !/^(infinite|normal|reverse|alternate|forwards|backwards|both|none|linear|ease|ease-in|ease-out|ease-in-out|running|paused|steps|cubic-bezier|var|s|ms)$/i.test(n),
+        );
+        if (bad) {
+          findings.push({
+            ruleId: 'C8-invented-motion', level: 'warning',
+            file: rel, line: i + 1,
+            message: `Inline-style animation referencing \`${bad}\` — not a Compass motion-system animation`,
+            suggestion,
+            component: null,
+          });
+        }
+      }
+    }
+  });
+  return findings;
+}
+
 /** token → [component names using it], for C2 shape-match distinctiveness. */
 function buildTokenOwners(metaIndex) {
   const owners = new Map();
@@ -935,6 +1221,8 @@ async function run() {
   const metaIndex = mode.parity ? null : await loadMetaIndex();
   const elementMap = mode.parity ? null : deriveElementMap(metaIndex);
   const tokenOwners = buildTokenOwners(metaIndex);
+  // C8 (invented motion) is meta-independent; system animation names loaded once.
+  const systemAnimations = mode.parity ? null : loadSystemAnimations(rubric);
 
   let scanFiles;
   let scopeLabel;
@@ -977,6 +1265,7 @@ async function run() {
     for (const f of checkC1(abs, raw, mode)) findings.push({ ...f, file: rel });
     if (!mode.parity) {
       for (const f of checkC6(rel, raw)) findings.push({ ...f, file: rel });
+      for (const f of checkC8(rel, raw, systemAnimations)) findings.push({ ...f, file: rel });
       if (metaIndex) {
         for (const f of checkC2(rel, raw, elementMap, metaIndex, tokenOwners)) findings.push({ ...f, file: rel });
         for (const f of checkC3(rel, raw, metaIndex)) findings.push({ ...f, file: rel });
@@ -1054,6 +1343,7 @@ async function run() {
         implemented: [
           ...(metaIndex ? ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'] : ['C1', 'C5', 'C6']),
           ...(c7a.ran ? ['C7a'] : []),
+          'C8',
         ],
         skipped: [
           ...(metaIndex ? [] : ['C2', 'C3', 'C4']),

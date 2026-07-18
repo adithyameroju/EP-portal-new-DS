@@ -20,5 +20,9 @@
       "Times", "Courier New", "Courier",
       "sans-serif", "serif", "monospace", "cursive", "fantasy", "math", "emoji"
     ]
+  },
+  "c8": {
+    "$comment": "C8 invented, non-system CSS / motion (built 2026-07-19). Advisory WARNING only — never an error (owner ruling #10: token-audit is the sole gate). Flags *.module.css files, custom @keyframes, and non-system animation refs (CSS + inline-TSX) that bypass the Compass motion system (motion spec + tw-animate-css + shadcn presets). Never flags app/globals.css, the @acko tokens package, tw-animate-css, node_modules, or components/ui. systemAnimations: extra sanctioned animation names to treat as system-owned (merged with the motion-spec presets + Tailwind/tw-animate-css built-ins the check already knows).",
+    "systemAnimations": []
   }
 }
