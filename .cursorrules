@@ -3,6 +3,9 @@
 > You are working on **Compass**, Acko's enterprise design system built on
 > shadcn/ui and Tailwind CSS v4. Read this file fully before writing or
 > modifying any code. It overrides all default behaviors.
+>
+> This file **mirrors `CLAUDE.md`** — the same Compass governance, for Cursor.
+> Keep the two in sync; when a rule changes, change both.
 
 ---
 
@@ -74,8 +77,9 @@ If a component spec exists in `.claude/specs/components/`, follow it exactly.
   are Compass primitives owned by CODEOWNERS.
 - **Use composite sub-components correctly**: Card uses CardHeader/CardContent/
   CardFooter. Dialog uses DialogHeader/DialogTitle/DialogContent/DialogFooter.
-  Form uses FormField/FormItem/FormLabel/FormControl/FormMessage. Don't
-  reimplement their layouts with divs.
+  The Field system (Field/FieldLabel/FieldContent/FieldError/FieldDescription —
+  see `.claude/specs/components/field.md`) provides form structure; this repo
+  has no `form.tsx`. Don't reimplement their layouts with divs.
 - **Icons from `lucide-react` only** (the active icon library). No mixing.
 - **Navigation = `render={<Link href="..." />}` on Button**, not `onClick` + `router.push()`.
   Example: `<Button render={<Link href="/path" />} variant="link">Go</Button>`
@@ -116,8 +120,8 @@ the code. This is the single most important rule for preventing drift.
 
 ```
 compass-design-system/
-├── CLAUDE.md                ← Claude Code instructions (auto-loaded)
-├── .cursorrules             ← You are here (auto-loaded by Cursor)
+├── CLAUDE.md                ← Claude Code instructions (auto-loaded every session)
+├── .cursorrules             ← Cursor mirror of CLAUDE.md (you are here)
 ├── README.md                ← Project overview for humans
 ├── .claude/
 │   ├── settings.json        ← Permissions & allowed commands
@@ -128,27 +132,36 @@ compass-design-system/
 │   │   ├── generate-code.md ← Figma frame → React component
 │   │   ├── import-variables.md ← Figma token export → globals.css
 │   │   └── write-to-figma.md   ← Code → Figma library instances
-│   └── specs/
+│   └── specs/               ← CANONICAL spec location (decided S0.1, 2026-07-06)
 │       ├── foundations/     ← color, spacing, typography, radius, elevation, motion
-│       ├── components/      ← button, input, card (more added on demand)
+│       ├── components/      ← button, input, card (33 specs; more added on demand)
 │       ├── tokens/          ← token-reference.md (master cross-ref)
 │       └── figma/           ← component-keys.md (Figma library keys)
 ├── app/
-│   └── globals.css          ← 3-layer Acko token file — do not hand-edit
+│   └── globals.css          ← imports Tailwind, shadcn, and @acko/enterprise-tokens
+│                              (tokens live in that package) — do not hand-edit
 ├── components/
 │   ├── ui/                  ← shadcn primitives (all ~55 components)
 │   └── blocks/              ← Acko-specific compositions (Phase 3+)
+├── stories/                 ← CANONICAL Storybook stories location (built in S2)
 ├── scripts/
-│   └── token-audit.js       ← Runs on commit. Zero errors required.
+│   └── token-audit.mjs       ← Runs on commit. Zero errors required.
 └── code-connect/            ← .figma.tsx mapping files for Dev Mode
 ```
+
+**Canonical layout (owner decision, S0.1):** specs live in `.claude/specs/` —
+never in a top-level `specs/`; Storybook stories live in top-level `stories/`.
+Any tree that diverges from this conforms to this layout, not the other way round.
+Naming: component/renderer files are kebab-case everywhere (enforced by
+compliance check C5); Storybook MDX doc-page filenames follow Storybook's
+PascalCase convention and are exempt (owner ruling, 2026-07-07).
 
 ---
 
 ## Audit command
 
 ```bash
-npm run audit      # runs scripts/token-audit.js
+npm run audit      # runs scripts/token-audit.mjs
 ```
 
 Zero errors required before committing. If audit fails, fix before proceeding.
