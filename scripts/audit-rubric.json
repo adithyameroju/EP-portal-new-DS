@@ -5,8 +5,9 @@
   "warningWeight": 1,
   "floor": 0,
   "detect": {
-    "$comment": "Detect-step thresholds (per the approved detect-clustering design). hotspotMinBuilds: a {component,rule} cluster or assumption theme must appear in at least this many distinct builds to rank as a hotspot; below it = 'watching, not acting'. windowSize: default number of most-recent ledger entries Detect reads.",
+    "$comment": "Detect-step thresholds. hotspotMinBuilds: a {component,rule} finding cluster must appear in at least this many distinct builds to rank as a hotspot. assumptionHotspotMinBuilds: separate, lower bar for repeated ASSUMPTIONS (a spec-ambiguity signal surfaces sooner — the same 'what I assumed' across 2 builds already means the spec failed to decide). windowSize: default number of most-recent ledger entries Detect reads.",
     "hotspotMinBuilds": 3,
+    "assumptionHotspotMinBuilds": 2,
     "windowSize": 10
   },
   "c7a": {

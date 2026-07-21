@@ -71,35 +71,75 @@ function contentWords(text) {
   );
 }
 
-/** Greedy clustering: same category + ≥2 shared content words = same theme. */
+// Semantic concepts: assumptions expressing the SAME underlying gap cluster
+// together regardless of category or exact wording. Owner-tunable. A concept
+// matches when the assumption text contains any of its keywords (whole word,
+// case-insensitive). The status/semantic concept is the one the test builds keep
+// hitting — no success/warning/info token or badge variant, so status gets mapped
+// onto destructive/outline/default/chart-*.
+const ASSUMPTION_CONCEPTS = [
+  {
+    id: 'status-tokens',
+    label: 'status / semantic color (success · warning · info) — no Compass token or variant',
+    // Specific status vocabulary. `status` alone is NOT a keyword (it would catch
+    // "claim-status" filenames and incidental "status icons"); it only counts as a
+    // status *badge/color/variant/token* via the pattern below.
+    keywords: ['success', 'warning', 'info', 'amber', 'semantic', 'verify'],
+    patterns: [/\bstatus\s+(badges?|colou?rs?|variants?|tokens?)\b/],
+  },
+];
+
+function conceptOf(text) {
+  const t = String(text).toLowerCase();
+  for (const c of ASSUMPTION_CONCEPTS) {
+    const kw = (c.keywords || []).some((k) => new RegExp(`\\b${k}\\b`).test(t));
+    const pat = (c.patterns || []).some((re) => re.test(t));
+    if (kw || pat) return c;
+  }
+  return null;
+}
+
+/**
+ * Theme assumptions in two tiers so semantically-equivalent items don't scatter:
+ *  1. CONCEPT themes — assumptions matching a known concept (status tokens, …)
+ *     cluster ACROSS categories and wordings. This is what makes "no success
+ *     token" / "no info variant" / "amber unavailable" ONE hotspot instead of ten.
+ *  2. Fallback — the rest use greedy same-category + ≥2 shared content-word
+ *     clustering (the original behavior).
+ */
 function themeAssumptions(items) {
-  const themes = [];
+  const conceptThemes = new Map();
+  const rest = [];
   for (const item of items) {
+    const c = conceptOf(item.text);
+    if (c) {
+      const ct = conceptThemes.get(c.id) || { concept: c, assumptions: [] };
+      ct.assumptions.push(item);
+      conceptThemes.set(c.id, ct);
+    } else {
+      rest.push(item);
+    }
+  }
+  const themes = [];
+  for (const item of rest) {
     const words = contentWords(item.text);
     let placed = false;
     for (const theme of themes) {
       if (theme.category !== item.category) continue;
       const shared = [...words].filter((w) => theme.words.has(w));
-      if (shared.length >= 2) {
-        theme.assumptions.push(item);
-        shared.forEach(() => {}); // keep original theme words stable
-        placed = true;
-        break;
-      }
+      if (shared.length >= 2) { theme.assumptions.push(item); placed = true; break; }
     }
-    if (!placed) {
-      themes.push({ category: item.category, words, assumptions: [item] });
-    }
+    if (!placed) themes.push({ category: item.category, words, assumptions: [item] });
   }
-  return themes
-    .map((t) => ({
-      category: t.category,
-      theme: [...t.words].slice(0, 4).join(' '),
-      count: t.assumptions.length,
-      builds: [...new Set(t.assumptions.map((a) => a.entry))].length,
-      assumptions: t.assumptions,
-    }))
-    .sort((a, b) => b.builds - a.builds || b.count - a.count);
+  const build = (category, theme, assumptions, concept) => ({
+    category, theme, concept,
+    count: assumptions.length,
+    builds: [...new Set(assumptions.map((a) => a.entry))].length,
+    assumptions,
+  });
+  const conceptOut = [...conceptThemes.values()].map((t) => build('concept', t.concept.label, t.assumptions, t.concept.id));
+  const fallbackOut = themes.map((t) => build(t.category, [...t.words].slice(0, 4).join(' '), t.assumptions));
+  return [...conceptOut, ...fallbackOut].sort((a, b) => b.builds - a.builds || b.count - a.count);
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -110,6 +150,10 @@ function run() {
   const detectCfg = rubric.detect || {};
   const windowSize = args.window || detectCfg.windowSize || 10;
   const minBuilds = detectCfg.hotspotMinBuilds || 3;
+  // A repeated ASSUMPTION is a spec-ambiguity signal and surfaces sooner than a
+  // code-finding cluster: the same "what I assumed" across 2 builds already means
+  // the spec failed to decide something. Separate, lower, owner-tunable threshold.
+  const assumptionMinBuilds = detectCfg.assumptionHotspotMinBuilds || 2;
 
   console.log(`\n🧭 Compass Detect — drift clustering${args.includeDemo ? '  [DEMO MODE — includes demo entries; not real evidence]' : ''}\n`);
 
@@ -189,13 +233,13 @@ function run() {
     }))
     .sort((a, b) => b.builds - a.builds || b.findings - a.findings);
   const assumptionThemes = themeAssumptions(assumptionItems)
-    .map((t) => ({ ...t, hotspot: t.builds >= minBuilds }));
+    .map((t) => ({ ...t, hotspot: t.builds >= assumptionMinBuilds }));
 
   const result = {
     generatedAt: new Date().toISOString(),
     demoMode: !!args.includeDemo,
     window: { n: windowSize, entriesConsidered: entries.map((e) => e.file), scored: scored.length },
-    thresholds: { hotspotMinBuilds: minBuilds },
+    thresholds: { hotspotMinBuilds: minBuilds, assumptionHotspotMinBuilds: assumptionMinBuilds },
     componentHotspots,
     ruleHotspots,
     clusters,

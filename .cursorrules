@@ -218,15 +218,19 @@ UI in this repo, do these in order — automatically, without being asked:
    Any spacing/copy tweak the designer makes afterward is then a clean git diff on
    top of this baseline — the drift the system should have gotten right.
 3. CAPTURE THE ASSUMPTIONS — non-interactive, never prompt, never block the designer.
-   Run ONE command with a repeatable `--assume "<category>: <text>"` for EACH item in
-   your "What I assumed" list (categories: styling, spacing, component-choice,
-   content, behavior, token), plus the files you built:
+   Run ONE command with `--source "<one-line task description>"` (so the entry isn't
+   "unspecified"), a repeatable `--assume "<category>: <text>"` for EACH item in your
+   "What I assumed" list (categories: styling, spacing, component-choice, content,
+   behavior, token), and the files you built:
      npm run log -- --no-input \
+       --source "<one-line task description>" \
        --assume "component-choice: <text>" \
        --assume "token: <text>" \
        --files <comma,separated,build,files>
-   Then COMMIT the entry — otherwise it never reaches the owner when the branch is
-   pushed (the drift pipeline depends on committed entries):
+   Note the entry path it prints (drift-log/entries/<file>.json). Then SCORE that entry
+   (so the ledger carries a result and rule hotspots can compute) and COMMIT it —
+   entries must be committed to reach the owner on push:
+       npm run audit:compliance -- --entry drift-log/entries/<file>.json
        git add drift-log/entries/ && git commit -m "compass: drift capture — <task>"
    The entry is anchored to the raw-output commit. Do NOT pass `--demo`. If git or
    `npm run log` is unavailable, say so in one line and continue — capture is
