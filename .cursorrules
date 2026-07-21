@@ -170,6 +170,26 @@ color utilities used instead of semantic token classes.
 
 ---
 
+## Session start — pull in Compass updates (zero-touch, never force)
+
+The FIRST time the designer engages you in this repo in a session (they say "Using
+Compass in Loop", or ask you to build), bring in any Compass tightenings first — this
+is how every rule/spec/audit update reaches them with no extra effort:
+
+1. `git fetch origin` — read-only; it changes none of their files.
+2. Is their branch behind main? Check `git rev-list --count HEAD..origin/main`. If it
+   is > 0, tell the designer plainly, e.g.: "Heads up — the Compass team pushed N
+   update(s) (rules / specs / audit) since your branch. Want me to pull them in?"
+   OFFER — never do it silently.
+3. If they say yes: `git merge origin/main` (or `git pull --no-rebase origin main`).
+   NEVER `git push --force`, NEVER `git reset --hard`, NEVER discard their work. If the
+   merge conflicts, STOP and explain in plain English — do not auto-resolve over their
+   changes.
+4. If they decline, or nothing is new, continue normally. Do this at most once per
+   session — don't re-fetch before every build.
+
+---
+
 ## First run in a fresh clone — verify setup before building
 
 If this is a fresh clone (you just ran `npm install`, or the dev server hasn't
