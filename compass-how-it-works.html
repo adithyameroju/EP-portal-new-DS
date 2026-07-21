@@ -92,6 +92,136 @@
      ledger: <code>COMPASS_SYSTEM.md §9</code>.</p>
 </header>
 
+<!-- ===================== OVERVIEW: THE LOOP AT A GLANCE ===================== -->
+<p class="lede" style="margin-top:20px">At a glance — the <strong>Compass-in-Loop</strong>
+   cycle. The core loop is <span class="pill built">built</span> and runs today; two
+   side-entries feed it — Migration is <span class="pill partial">partial</span>
+   (built, not yet validated on a real repo) and S6 promotion is
+   <span class="pill no">planned</span> (not started).</p>
+
+<div class="fig">
+<!--
+  Mermaid source for this diagram (regenerate, then restyle to match this file).
+  NOTE: to stay valid inside an HTML comment, links are written as tokens —
+    TO  = a solid link   (hyphen hyphen greater-than,  A TO B)
+    DOT = a dotted link  (hyphen dot hyphen greater-than, A DOT B)
+  Swap the tokens back to real mermaid arrows when regenerating.
+  ```mermaid
+  flowchart TD
+    %% core loop — BUILT (solid)
+    Build["Build: designer prompts, AI builds on Compass"]
+    Capture["Capture: raw-output commit + drift entry (What I assumed)"]
+    Score["Score: token audit + compliance"]
+    Detect["Detect: cluster drift into hotspots"]
+    Prescribe["Prescribe: propose spec/token tightenings"]
+    Tighten["Tighten: owner rules, commit, designers pull"]
+    Build TO Capture
+    Capture TO Score
+    Score TO Detect
+    Detect TO Prescribe
+    Prescribe TO Tighten
+    Tighten TO Build
+    %% side-entries
+    Migration["Migration (compass-migrate): built, not yet validated"]
+    S6["S6 promotion: gaps to new components (planned, not started)"]
+    Migration DOT Build
+    Migration DOT Score
+    Detect DOT S6
+    %% legend: solid = built · dashed amber = partial · dashed grey = planned
+  ```
+-->
+<svg viewBox="0 0 980 600" role="img" aria-label="Compass-in-Loop cycle: Build, Capture, Score, Detect, Prescribe, Tighten, returning to Build. Migration (partial) and S6 promotion (planned) feed the loop as side-entries.">
+  <defs>
+    <marker id="cyk" markerWidth="10" markerHeight="10" refX="7.5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--primary)"/></marker>
+    <marker id="cym" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted-fg)"/></marker>
+    <marker id="cy2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="var(--c2)"/></marker>
+  </defs>
+
+  <!-- core loop arrows (clockwise), solid primary = BUILT -->
+  <path class="flowk" marker-end="url(#cyk)" d="M578,106 C650,118 700,132 726,152"/>
+  <path class="flowk" marker-end="url(#cyk)" d="M746,226 C792,300 792,300 746,374"/>
+  <path class="flowk" marker-end="url(#cyk)" d="M700,446 C648,498 620,504 578,506"/>
+  <path class="flowk" marker-end="url(#cyk)" d="M402,506 C352,504 322,498 302,446"/>
+  <path class="flowk" marker-end="url(#cyk)" d="M234,374 C188,300 188,300 234,226"/>
+  <path class="flowk" marker-end="url(#cyk)" d="M312,158 C352,120 368,110 402,104"/>
+
+  <!-- center caption -->
+  <text class="t"  x="490" y="294" text-anchor="middle" font-size="15" fill="var(--primary)">Compass-in-Loop</text>
+  <text class="lbl" x="490" y="313" text-anchor="middle" font-size="12">each build tightens the system</text>
+
+  <!-- Build (top) -->
+  <rect class="box" x="405" y="58" width="170" height="68" rx="10"/>
+  <text class="t"  x="490" y="83"  text-anchor="middle" font-size="13.5">1 · Build</text>
+  <text class="ts" x="490" y="100" text-anchor="middle" font-size="10.5">designer prompts,</text>
+  <text class="ts" x="490" y="114" text-anchor="middle" font-size="10.5">AI builds on Compass</text>
+
+  <!-- Capture (top-right) -->
+  <rect class="box" x="655" y="156" width="170" height="68" rx="10"/>
+  <text class="t"  x="740" y="181" text-anchor="middle" font-size="13.5">2 · Capture</text>
+  <text class="ts" x="740" y="198" text-anchor="middle" font-size="10.5">raw-output commit +</text>
+  <text class="ts" x="740" y="212" text-anchor="middle" font-size="10.5">drift entry (What I assumed)</text>
+
+  <!-- Score (bottom-right) -->
+  <rect class="box" x="655" y="376" width="170" height="68" rx="10"/>
+  <text class="t"  x="740" y="401" text-anchor="middle" font-size="13.5">3 · Score</text>
+  <text class="ts" x="740" y="418" text-anchor="middle" font-size="10.5">token audit +</text>
+  <text class="ts" x="740" y="432" text-anchor="middle" font-size="10.5">compliance</text>
+
+  <!-- Detect (bottom) -->
+  <rect class="box" x="405" y="474" width="170" height="68" rx="10"/>
+  <text class="t"  x="490" y="499" text-anchor="middle" font-size="13.5">4 · Detect</text>
+  <text class="ts" x="490" y="516" text-anchor="middle" font-size="10.5">cluster drift</text>
+  <text class="ts" x="490" y="530" text-anchor="middle" font-size="10.5">into hotspots</text>
+
+  <!-- Prescribe (bottom-left) -->
+  <rect class="box" x="155" y="376" width="170" height="68" rx="10"/>
+  <text class="t"  x="240" y="401" text-anchor="middle" font-size="13.5">5 · Prescribe</text>
+  <text class="ts" x="240" y="418" text-anchor="middle" font-size="10.5">propose spec /</text>
+  <text class="ts" x="240" y="432" text-anchor="middle" font-size="10.5">token tightenings</text>
+
+  <!-- Tighten (top-left) -->
+  <rect class="box" x="155" y="156" width="170" height="68" rx="10"/>
+  <text class="t"  x="240" y="181" text-anchor="middle" font-size="13.5">6 · Tighten</text>
+  <text class="ts" x="240" y="198" text-anchor="middle" font-size="10.5">owner rules → commit</text>
+  <text class="ts" x="240" y="212" text-anchor="middle" font-size="10.5">→ designers pull</text>
+
+  <!-- side-entry: Migration (PARTIAL — dashed amber) feeds Build + Score -->
+  <path class="flow" marker-end="url(#cy2)" stroke="var(--c2)" stroke-dasharray="6 4" d="M190,108 C300,90 348,90 402,102"/>
+  <text class="lbl" x="300" y="80" text-anchor="middle" font-size="10.5" fill="var(--c2)">feeds → build + score</text>
+  <rect x="8" y="78" width="182" height="72" rx="10" fill="var(--card)" stroke="var(--c2)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text class="t"  x="99" y="102" text-anchor="middle" font-size="12.5">Migration</text>
+  <text class="ts" x="99" y="118" text-anchor="middle" font-size="10.5">(compass-migrate)</text>
+  <text class="lbl" x="99" y="134" text-anchor="middle" font-size="10">built · not yet validated</text>
+
+  <!-- side-entry: S6 promotion (PLANNED — dashed grey / greyed) -->
+  <path class="flow" marker-end="url(#cym)" stroke-dasharray="6 4" d="M578,508 C672,510 724,500 788,490"/>
+  <text class="lbl" x="672" y="524" text-anchor="middle" font-size="10.5">gaps →</text>
+  <g opacity="0.62">
+    <rect x="792" y="452" width="180" height="72" rx="10" fill="var(--muted)" stroke="var(--muted-fg)" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text class="t"  x="882" y="476" text-anchor="middle" font-size="12.5" fill="var(--muted-fg)">S6 promotion</text>
+    <text class="ts" x="882" y="492" text-anchor="middle" font-size="10.5">gaps → new components</text>
+    <text class="lbl" x="882" y="508" text-anchor="middle" font-size="10">planned — not started</text>
+  </g>
+
+  <!-- legend -->
+  <rect x="196" y="556" width="28" height="15" rx="4" fill="var(--card)" stroke="var(--primary)" stroke-width="2"/>
+  <text class="ts" x="230" y="568" font-size="11">solid = built (core loop)</text>
+  <rect x="392" y="556" width="28" height="15" rx="4" fill="var(--card)" stroke="var(--c2)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text class="ts" x="426" y="568" font-size="11">dashed = partial (migration)</text>
+  <rect x="620" y="556" width="28" height="15" rx="4" fill="var(--muted)" stroke="var(--muted-fg)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text class="ts" x="654" y="568" font-size="11">grey = planned (S6)</text>
+</svg>
+</div>
+<p class="cap">This is the same loop detailed in §2, drawn as one cycle. Solid = the
+   <span class="pill built">built</span> core loop. Dashed amber = <strong>Migration</strong>
+   (<span class="pill partial">partial</span> — built but not yet validated on a real repo).
+   Greyed/dashed = <strong>S6 promotion</strong> (<span class="pill no">planned</span> — not
+   started; gap-list seeded). No box is shown as done that the honesty ledger (§6) doesn't
+   back.</p>
+
 <!-- ============================ ARCHITECTURE ============================ -->
 <h2><span class="n">1.</span> The building blocks — and what reads what</h2>
 <p class="lede">The keystone idea: <strong>Storybook, the audit, and the migration
