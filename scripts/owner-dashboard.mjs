@@ -43,6 +43,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ENTRIES_DIR = path.join(ROOT, 'drift-log', 'entries');
@@ -93,19 +94,55 @@ function deriveProject(entry) {
 
 // ─── data loading ────────────────────────────────────────────────────────────
 
+function git(args) {
+  try {
+    return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  } catch {
+    return '';
+  }
+}
+
+// Collect committed drift-log entries from EVERY branch (local heads +
+// remote-tracking refs), not just the checked-out one — branch-per-designer is the
+// collection model, so a designer's entries live on THEIR branch. Deduped by
+// filename (entries are immutable and uniquely named). Unioned with the working
+// tree so the owner's own uncommitted local entries are also counted. If git is
+// unavailable, this degrades to the working tree alone.
+function collectEntryFiles() {
+  const out = new Map(); // filename -> { ref, read: () => string }
+  // 1. working tree (checked-out branch, including not-yet-committed entries)
+  if (fs.existsSync(ENTRIES_DIR)) {
+    for (const f of fs.readdirSync(ENTRIES_DIR).filter((f) => f.endsWith('.json'))) {
+      out.set(f, { ref: '(working tree)', read: () => fs.readFileSync(path.join(ENTRIES_DIR, f), 'utf8') });
+    }
+  }
+  // 2. every branch's committed entries
+  const refs = git(['for-each-ref', '--format=%(refname)', 'refs/heads', 'refs/remotes'])
+    .split('\n').map((s) => s.trim()).filter(Boolean);
+  for (const ref of refs) {
+    const listing = git(['ls-tree', '-r', '--name-only', ref, '--', 'drift-log/entries']);
+    for (const p of listing.split('\n').map((s) => s.trim()).filter(Boolean)) {
+      if (!p.endsWith('.json')) continue;
+      const fname = p.split('/').pop();
+      if (out.has(fname)) continue; // first source wins; entries are immutable
+      out.set(fname, { ref, read: () => git(['show', `${ref}:${p}`]) });
+    }
+  }
+  return { files: out, refsScanned: refs.length };
+}
+
 function loadLedger(includeDemo) {
-  const files = fs.existsSync(ENTRIES_DIR)
-    ? fs.readdirSync(ENTRIES_DIR).filter((f) => f.endsWith('.json')).sort()
-    : [];
+  const { files, refsScanned } = collectEntryFiles();
   const entries = [];
   let demoSkipped = 0;
-  for (const f of files) {
-    const e = loadJson(path.join(ENTRIES_DIR, f));
+  for (const [f, src] of [...files.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    let e;
+    try { e = JSON.parse(src.read()); } catch { continue; }
     if (!e) continue;
     if (e.demo && !includeDemo) { demoSkipped++; continue; }
-    entries.push({ file: f, data: e });
+    entries.push({ file: f, data: e, ref: src.ref });
   }
-  return { entries, demoSkipped };
+  return { entries, demoSkipped, refsScanned };
 }
 
 function loadReportsByEntry() {
@@ -450,7 +487,8 @@ function run() {
   const args = parseArgs(process.argv.slice(2));
   console.log(`\n🧭 Compass Owner Dashboard — cross-team drift rollup${args.includeDemo ? '  [DEMO MODE]' : ''}\n`);
 
-  const { entries, demoSkipped } = loadLedger(args.includeDemo);
+  const { entries, demoSkipped, refsScanned } = loadLedger(args.includeDemo);
+  console.log(`  Collected across ${refsScanned} branch ref(s) + working tree (branch-per-designer model).`);
   const { byEntry, weights } = loadReportsByEntry();
   const agg = aggregate(entries, byEntry, weights);
 

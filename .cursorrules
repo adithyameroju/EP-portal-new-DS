@@ -225,9 +225,12 @@ UI in this repo, do these in order — automatically, without being asked:
        --assume "component-choice: <text>" \
        --assume "token: <text>" \
        --files <comma,separated,build,files>
-   This writes a committed `drift-log/entries/` record anchored to the raw-output
-   commit. Do NOT pass `--demo`. If git or `npm run log` is unavailable, say so in one
-   line and continue — capture is best-effort and must NEVER block the build.
+   Then COMMIT the entry — otherwise it never reaches the owner when the branch is
+   pushed (the drift pipeline depends on committed entries):
+       git add drift-log/entries/ && git commit -m "compass: drift capture — <task>"
+   The entry is anchored to the raw-output commit. Do NOT pass `--demo`. If git or
+   `npm run log` is unavailable, say so in one line and continue — capture is
+   best-effort and must NEVER block the build.
 4. SHOW THE DESIGNER your "What I assumed" list (the same items you just captured) so
    they can confirm or correct. Never silently substitute — anything Figma/spec/token
    didn't cleanly resolve is a question, not a guess.
