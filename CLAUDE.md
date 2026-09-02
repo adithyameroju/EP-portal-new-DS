@@ -18,6 +18,7 @@ All supporting docs live in `.claude/`. Read the relevant ones before acting.
 | [`.claude/skills/generate-code.md`](.claude/skills/generate-code.md) | Before generating any UI code from a Figma frame or screenshot |
 | [`.claude/skills/import-variables.md`](.claude/skills/import-variables.md) | Before syncing token changes from a Figma export |
 | [`.claude/skills/write-to-figma.md`](.claude/skills/write-to-figma.md) | Before writing designs back to Figma |
+| [`.claude/skills/skills-registry.md`](.claude/skills/skills-registry.md) | Before using ANY third-party/external skill — only registry-approved skills are allowed, and Compass tokens/components/specs always supersede them |
 
 ## Spec files (read before touching any component)
 
