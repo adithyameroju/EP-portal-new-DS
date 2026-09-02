@@ -206,6 +206,21 @@ if any step fails — never build on a broken setup:
 
 ---
 
+## Before you generate — read the Compass Feel pack (craft, if present)
+
+BEFORE generating UI, if the designer has installed the **Compass Feel** pack, read
+those files and apply them as *craft guidance* — typography voice, spacing rhythm,
+density, motion restraint, form patterns. Look for them at (first that exists):
+- Cursor (primary): `~/compass-feel/*.md` (macOS/Linux) or `%USERPROFILE%\compass-feel\*.md` (Windows)
+- Claude Code: `~/.claude/skills/compass-feel/*.md` (macOS/Linux) or `%USERPROFILE%\.claude\skills\compass-feel\*.md` (Windows)
+
+If the folder isn't there, just continue — the pack is optional. It only restates
+ruled craft and NEVER overrides Compass tokens, components, or specs: on any conflict
+the Compass rule and the token audit (0 errors) win. Third-party skills are gated
+separately — only ones listed in `.claude/skills/skills-registry.md` may be used.
+
+---
+
 ## The build loop — run these on EVERY build (never skipped)
 
 This is what lets Compass learn from what it got wrong. After you generate or change

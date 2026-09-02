@@ -29,6 +29,11 @@ governance + verify + build + capture loop — do not restate or override them.
    From there the repo's rules govern everything — verify, build, and the automatic
    commit-raw + capture loop. You do not need this Settings rule again.
 
+Optional craft: before generating UI, if the "Compass Feel" pack is installed at
+`~/compass-feel/` (macOS/Linux) or `%USERPROFILE%\compass-feel\` (Windows), read those
+files and apply them as craft. They never override Compass tokens/components/specs —
+on conflict, Compass wins. (Claude Code users: `~/.claude/skills/compass-feel/`.)
+
 --- Why this is thin (context for maintainers, not part of the pasted rule) ---
 The full build + capture protocol lives in the repo's .cursorrules (versioned,
 auto-loaded in every clone), so it can never go stale. This Settings rule only
