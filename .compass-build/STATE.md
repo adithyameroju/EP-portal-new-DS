@@ -233,3 +233,19 @@ Strictly READ-ONLY: only `search_design_system` (×5) + `whoami` (×1) were invo
 only file key touched was `zgzPlhKxDXc3E9OmfxmF9y` (queried, never modified). No
 write / create / upload / code-connect / export Figma tool was called; no Figma file
 was changed.
+
+## Rulings 2026-07-21 — SOP page, Compass Feel pack, skills gate, release DoD
+
+- **SOP is the designer front door.** `stories/compass-sop.mdx` (React, Storybook,
+  above How It Works) + standalone `compass-sop.html` — tabbed: Setup / Build /
+  Updates / Footer. Honesty: clone path only; Nexus/package path stays undocumented
+  until it ships (then it's added to the Updates tab).
+- **Compass Feel pack** (`skills-pack/compass-feel/`, 6 spec-distilled craft files):
+  Cursor is the primary consumer — installed at `~/compass-feel/` and READ by the
+  rule before generating (referenced, not parked). Craft only; never overrides
+  tokens/components/specs (token audit stays the only hard gate).
+- **Third-party skills gate:** `.claude/skills/skills-registry.md` — owner-review
+  only; Compass supersedes on any conflict; each entry logged.
+- **Release definition-of-done:** a release is not shipped until its entry is in
+  BOTH `CHANGELOG.md` AND the SOP Updates tab (designer-phrased). Enforced like this
+  decision log.

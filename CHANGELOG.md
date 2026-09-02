@@ -5,6 +5,36 @@ All notable changes to Compass are documented here. Format follows
 approved Compass semver policy (additive = minor · token/behavior change =
 major, shipped with a codemod · docs-only = patch).
 
+> **Release definition-of-done (owner ruling 2026-07-21):** a release is NOT
+> shipped until its entry appears in BOTH this file AND the **SOP → Updates** tab
+> (`stories/compass-sop.mdx` + `compass-sop.html`), phrased for designers (date ·
+> what changed · what they do — usually "nothing, pull is automatic"). Same
+> enforcement discipline as the `.compass-build/STATE.md` decision log.
+
+## [Unreleased] — on `main`, 2026-07-21
+
+Designer-facing changes shipped this week. **What you do: nothing** — the rule pulls
+these automatically next time you say "Using Compass in Loop" (one-time exceptions:
+paste the Settings bootstrap once, and build on a branch).
+
+### Added / changed
+- **Automatic drift capture on every build** — the AI commits its raw output, then
+  records a `drift-log/entries/` record (your "What I assumed" list) with no manual
+  step. This is how the system learns from what it got wrong.
+- **`/compass-health` is scoped to *your* work** and every warning now carries a
+  plain "To fix, prompt Cursor:" line. The rich trend dashboard moved to owners.
+- **Audit accuracy** — a false "hand-rolled Menubar" flag was removed; a new advisory
+  check catches bespoke CSS/animation outside the motion system.
+- **Status/semantic-token gap now surfaces as the top drift hotspot** — driven by real
+  Figma-frame + migration builds that kept mapping success/info/warning onto other
+  tokens. (Proposal staged; values are an owner + FE-dev decision.)
+- **Zero-touch updates** — on session start the rule fetches and offers to pull
+  Compass tightenings into your branch (never force).
+- **Safer access** — `main` is branch-protected (PR + owner review + audit CI); you
+  build on your own branch and push it at end of day.
+- **This SOP page** + the **Compass Feel** craft pack (Setup tab) + a third-party
+  skills gate.
+
 ## [0.1.0] — 2026-07-07
 
 First packaged release (tag `s3-build-complete`).

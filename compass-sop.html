@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compass — Start Here (SOP)</title>
+<style>
+  /* Real Compass tokens (@acko/enterprise-tokens, light). Euclid via font stack with
+     fallback — no font files embedded, so this file is self-contained + shareable. */
+  :root{
+    --primary:oklch(0.5242 0.2326 286.073); --primary-fg:oklch(1 0 0);
+    --bg:oklch(0.9851 0.0001 271.152); --fg:oklch(0 0 0 / 0.8784); --card:oklch(1 0 0);
+    --border:oklch(0.9219 0.0001 271.152); --muted:oklch(0.9702 0.0001 271.152);
+    --muted-fg:oklch(0 0 0 / 0.5608); --destructive:oklch(0.5771 0.2152 27.312);
+    --ok:oklch(0.7228 0.192 149.6); --warn:oklch(0.7533 0.1719 55.708);
+    --font:"Euclid Circular B",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.55;-webkit-font-smoothing:antialiased;font-size:15px}
+  .wrap{max-width:940px;margin:0 auto;padding:40px 24px 72px}
+  .badge{display:inline-block;font-size:12px;font-weight:600;color:var(--primary);border:1px solid var(--border);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+  h1{font-size:36px;font-weight:600;letter-spacing:-0.02em;margin:0 0 8px}
+  .sub{font-size:17px;color:var(--muted-fg);margin:0 0 6px;max-width:66ch}
+  .stamp{font-size:12.5px;color:var(--muted-fg);margin-top:12px}
+  h2{font-size:21px;font-weight:600;letter-spacing:-0.01em;margin:30px 0 8px}
+  h3{font-size:15.5px;font-weight:600;margin:22px 0 6px}
+  p{margin:9px 0;max-width:72ch} .lead{color:var(--muted-fg)}
+  code{font-family:var(--mono);background:var(--muted);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-size:12.5px}
+  a{color:var(--primary)}
+  ol,ul{max-width:72ch;padding-left:22px} li{margin:5px 0}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.05);margin:14px 0}
+  .card h3{margin-top:0}
+  .pill{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:2px 9px}
+  .pill.built{color:var(--ok);border:1px solid var(--ok)} .pill.new{color:var(--primary);border:1px solid var(--primary)}
+  .gate{color:var(--destructive);font-weight:600}
+  .fail{background:oklch(0.5771 0.2152 27.312 / 0.06);border:1px solid var(--destructive);border-radius:12px;padding:8px 18px;margin:16px 0}
+  .fail h3{color:var(--destructive)}
+  .grid{display:grid;gap:14px;margin:14px 0} @media(min-width:720px){.grid.three{grid-template-columns:1fr 1fr 1fr}}
+  pre.block{background:var(--muted);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow:auto;font-family:var(--mono);font-size:12px;line-height:1.5;max-height:340px}
+  .btnrow{display:flex;gap:8px;margin:10px 0}
+  button.btn,a.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;padding:7px 14px;border:1px solid var(--border);background:var(--card);color:var(--fg);text-decoration:none;display:inline-block}
+  button.btn.primary{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+  button.btn:active{transform:translateY(1px)}
+  .ok{color:var(--ok);font-weight:600}
+  /* CSS-only tabs (no JS): radios drive panel visibility */
+  .tabin{position:absolute;opacity:0;pointer-events:none}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin:20px 0 4px}
+  .tabs label{font-size:14px;font-weight:600;color:var(--muted-fg);padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .panel{display:none;padding-top:6px}
+  #t-setup:checked ~ .tabs label[for="t-setup"],
+  #t-build:checked ~ .tabs label[for="t-build"],
+  #t-updates:checked ~ .tabs label[for="t-updates"]{color:var(--primary);border-bottom-color:var(--primary)}
+  #t-setup:checked ~ #p-setup, #t-build:checked ~ #p-build, #t-updates:checked ~ #p-updates{display:block}
+  footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--border);font-size:13.5px;color:var(--muted-fg);display:flex;flex-wrap:wrap;gap:18px}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="badge">Compass · Acko Enterprise Design System</span>
+  <h1>Start here</h1>
+  <p class="sub">The one page to install Compass, build with it, and see what's new.
+     Set up once, then say a phrase and build — the system keeps you on-brand and gets
+     tighter every time you use it.</p>
+  <p class="stamp">Everything here works <strong>today</strong> via the clone path.
+     No aspirational steps. Deep dive: <a href="#" data-goto="how">How It Works</a>.
+     Questions: <strong>#design-system-feedback</strong>.</p>
+
+  <!-- CSS-only tab state (must precede .tabs and panels) -->
+  <input class="tabin" type="radio" name="soptab" id="t-setup" checked>
+  <input class="tabin" type="radio" name="soptab" id="t-build">
+  <input class="tabin" type="radio" name="soptab" id="t-updates">
+
+  <nav class="tabs">
+    <label for="t-setup">1 · Setup</label>
+    <label for="t-build">2 · Build</label>
+    <label for="t-updates">3 · Updates</label>
+  </nav>
+
+  <!-- ================= SETUP ================= -->
+  <section class="panel" id="p-setup">
+    <h2>One-time setup — about five minutes</h2>
+
+    <div class="card">
+      <h3>Before you start</h3>
+      <ul>
+        <li><strong>Acko VPN / network</strong> — Compass tokens come from Acko's
+          internal Nexus registry, only reachable on the Acko network.</li>
+        <li><strong>GitHub access</strong> to <code>ackotech/enterprise-compass-in-loop</code>
+          (ask the design-system owner if you get an access error).</li>
+        <li><strong>Cursor</strong> installed.</li>
+      </ul>
+    </div>
+
+    <h3>1 · Paste the setup rule into Cursor (once)</h3>
+    <p class="lead">Cursor → Settings → Rules → paste this. You do this a single time;
+       everything after ships with the repo, so you never re-paste.</p>
+    <div class="btnrow">
+      <button class="btn primary" onclick="copyBootstrap()">Copy rule</button>
+      <button class="btn" onclick="downloadBootstrap()">Download .md</button>
+    </div>
+    <pre class="block" id="bootstrap">Using Compass in Loop — setup bootstrap (Cursor Settings → Rules)
+
+Activate this rule ONLY when the user's message begins with the exact phrase
+"Using Compass in Loop" (e.g. "Using Compass in Loop, build a signup screen").
+Otherwise ignore this rule completely. The user is a designer, not a developer —
+narrate briefly in plain English, and when a command fails, explain why first.
+
+Your ONLY job here is to get the designer into a set-up Compass repo. Once they are
+inside it, the repo's own CLAUDE.md and .cursorrules AUTO-LOAD and carry the full
+governance + verify + build + capture loop — do not restate or override them.
+
+1. Already set up? If the current workspace root has ALL of: CLAUDE.md,
+   scripts/token-audit.mjs, and a package.json whose "name" is "@acko/compass",
+   it is a Compass checkout. If node_modules/@acko/enterprise-tokens is missing, run
+   `npm install`. Then say "Compass is ready" and follow the repo's CLAUDE.md +
+   .cursorrules to verify and build.
+
+2. Not set up (empty/other folder)? Clone Compass and open THAT folder as the Cursor
+   workspace so its rules load:
+     git clone https://github.com/ackotech/enterprise-compass-in-loop.git
+   then `npm install`. This pulls @acko/enterprise-tokens from Acko's INTERNAL Nexus
+   registry. If install fails with "E404 @acko/enterprise-tokens", "ETIMEDOUT", or
+   "ENOTFOUND nexus-dev.acko.in", STOP and say exactly: "I can't reach Acko's package
+   registry — connect to the Acko network or VPN, then say 'Using Compass in Loop'
+   again." If git auth fails, STOP and say they need access to the ackotech GitHub org.
+
+3. After install, tell the designer to open the cloned folder as their Cursor
+   workspace (so CLAUDE.md + .cursorrules auto-load), then re-send their request.
+   From there the repo's rules govern everything — verify, build, and the automatic
+   commit-raw + capture loop. You do not need this Settings rule again.
+
+Optional craft: before generating UI, if the "Compass Feel" pack is installed at
+`~/compass-feel/` (macOS/Linux) or `%USERPROFILE%\compass-feel\` (Windows), read those
+files and apply them as craft. They never override Compass tokens/components/specs —
+on conflict, Compass wins. (Claude Code users: `~/.claude/skills/compass-feel/`.)</pre>
+
+    <h3>2 · What happens on your first prompt</h3>
+    <p>Open an empty folder in Cursor and type, e.g.,
+       <code>Using Compass in Loop, build a signup screen</code>. The rule does the rest:
+       it <strong>detects</strong> whether you're set up, <strong>clones + installs</strong>
+       if not, <strong>verifies</strong> the setup (audit runs, brand font wired, app boots),
+       and only then builds. <strong>You do nothing</strong> but watch and answer its
+       questions.</p>
+
+    <div class="fail">
+      <h3>When it fails — and what to do</h3>
+      <ul>
+        <li><code>E404 @acko/enterprise-tokens</code> / <code>ETIMEDOUT</code> /
+          <code>ENOTFOUND nexus-dev.acko.in</code> → you're off the Acko network.
+          <strong>Connect to the Acko VPN</strong>, then say "Using Compass in Loop" again.</li>
+        <li><strong>git auth failed / repo not found</strong> → you don't have access to the
+          ackotech GitHub org yet. Ping <strong>#design-system-feedback</strong>.</li>
+        <li><strong>Anything else</strong> → paste the error into
+          <strong>#design-system-feedback</strong>; the owner watches it.</li>
+      </ul>
+    </div>
+
+    <h3>3 · Optional — the “Compass Feel” craft pack</h3>
+    <p>Short craft guides (typography voice, spacing rhythm, density, motion restraint,
+       form patterns, do/don't) distilled from the Compass specs. The build rule reads
+       them before generating, so your output feels more on-brand. It's craft only —
+       it never overrides the enforced tokens/components/specs.</p>
+    <div class="btnrow"><button class="btn primary" onclick="downloadSkills()">Download Compass Feel pack (.zip)</button></div>
+    <p class="lead"><strong>Cursor (primary):</strong> unzip to <code>~/compass-feel/</code>
+       (macOS/Linux) or <code>%USERPROFILE%\compass-feel\</code> (Windows).
+       <strong>Claude Code:</strong> <code>~/.claude/skills/compass-feel/</code>.
+       Per-designer, works across all your projects.</p>
+  </section>
+
+  <!-- ================= BUILD ================= -->
+  <section class="panel" id="p-build">
+    <h2>Build with Compass</h2>
+    <p class="lead">Three ways in. Each starts with a phrase. The AI stays on Compass
+       components + tokens and ends with a “What I assumed” list — read it, that's where
+       you confirm or correct its guesses.</p>
+
+    <div class="grid three">
+      <div class="card">
+        <h3>Prompt → build</h3>
+        <p class="lead">Say: <code>Using Compass in Loop, build a &lt;screen&gt;</code></p>
+        <ol>
+          <li>Describe the screen in plain words.</li>
+          <li>The AI builds it from Compass components.</li>
+          <li>It ends with “What I assumed”.</li>
+          <li>Confirm / correct; it captures the build.</li>
+        </ol>
+        <p><span class="ok">Good output:</span> real Compass components (Card, Field, Button),
+           semantic tokens, 0 audit errors.</p>
+      </div>
+      <div class="card">
+        <h3>Figma frame → build</h3>
+        <p class="lead">Say: <code>Using Compass in Loop, build this Figma frame …</code></p>
+        <ol>
+          <li>Connect the <strong>Figma MCP</strong> (Cursor → the Figma connector).</li>
+          <li>Point it at the frame.</li>
+          <li>It maps frame values onto Compass tokens/components.</li>
+          <li>The “What I assumed” list is longer here — every mapping is a choice.</li>
+        </ol>
+        <p><span class="ok">Good output:</span> values <em>mapped</em> to tokens, and anything
+           that didn't map cleanly <em>surfaced as a question</em> — never silently guessed.</p>
+      </div>
+      <div class="card">
+        <h3>Migrate a codebase</h3>
+        <p class="lead">Say: <code>Migrate this project to Compass using the compass-migrate skill</code></p>
+        <ol>
+          <li>Open the existing project.</li>
+          <li>The skill inventories foreign components.</li>
+          <li>It writes <code>-compass</code> variants + reports.</li>
+          <li>It STOPS before deleting/repointing — your call.</li>
+        </ol>
+        <p><span class="ok">Good output:</span> <strong>heavy flagging is the tool working</strong> —
+           a long needs-decision list means it refused to silently mis-map.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>See your score — <code>/compass-health</code></h3>
+      <p>After building, run the app and open
+         <code>http://localhost:3000/compass-health</code> — no terminal needed. It scores
+         <strong>only your files</strong>:</p>
+      <ul>
+        <li><strong>Token discipline</strong> — hard-coded colors/sizes. <span class="gate">Errors here are the only hard gate</span> (they block a commit); fix them first.</li>
+        <li><strong>Compliance score</strong> — advisory. Warnings are signals, not blockers; each one has a “To fix, prompt Cursor:” line you can paste back.</li>
+      </ul>
+      <p class="lead">Rule of thumb: <strong>token audit at 0 errors → you can ship.</strong>
+         Warnings are worth a look but never block you.</p>
+    </div>
+
+    <div class="card">
+      <h3>Work on a branch — never <code>main</code></h3>
+      <ol>
+        <li>Before building: <code>git checkout -b &lt;your-name&gt;/&lt;feature&gt;</code></li>
+        <li>Build. Capture happens automatically.</li>
+        <li><strong>End of day: <code>git push -u origin &lt;your-branch&gt;</code></strong> — every day, even
+           if unfinished. This is how your work + drift data reach the team.</li>
+        <li>Never push to <code>main</code>; open a PR when a feature is ready.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= UPDATES ================= -->
+  <section class="panel" id="p-updates">
+    <h2>What's new</h2>
+    <p class="lead">Every Compass release shows up here. Usually there's nothing for you
+       to do — the rule pulls updates into your branch automatically on your next build.
+       This is the loop made visible: several of these came straight from drift the tool
+       saw in real builds.</p>
+
+    <div class="card">
+      <h3>Latest — on <code>main</code>, 2026-07-21 <span class="pill new">new</span></h3>
+      <p><strong>What you do: nothing</strong> (one-time: paste the Settings rule once, build on a branch).</p>
+      <ul>
+        <li><strong>Automatic drift capture</strong> on every build — no manual step.</li>
+        <li><strong><code>/compass-health</code> scoped to your work</strong>, with a paste-ready fix for each warning. The trend dashboard moved to owners.</li>
+        <li><strong>Sharper audit</strong> — removed a false “hand-rolled Menubar” flag; new advisory check for bespoke CSS/motion.</li>
+        <li><strong>Status/semantic-token gap now surfaces as the top drift hotspot</strong> — <em>driven by your real Figma + migration builds</em> that kept mapping success/info/warning onto other tokens. (Values are an owner + FE-dev decision.)</li>
+        <li><strong>Zero-touch updates</strong> + <strong>branch-protected <code>main</code></strong> for safe access.</li>
+        <li>This SOP page, the Compass Feel pack, and a third-party skills gate.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>0.1.0 — 2026-07-07 <span class="pill built">first release</span></h3>
+      <ul>
+        <li>55 components (shadcn/ui v4 + Base UI), all with machine-readable contracts.</li>
+        <li>Storybook docs + 6 token foundations pages + the interactive SOP, on Chromatic.</li>
+        <li>The audit loop: token gate + compliance audit + drift ledger + detect/prescribe.</li>
+        <li>The <code>compass-migrate</code> skill for existing React + Tailwind codebases.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <a href="#" data-goto="how">How It Works (deep dive) →</a>
+    <a href="#" data-goto="components">Storybook component docs →</a>
+    <span>Help: <strong>#design-system-feedback</strong></span>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const B64_SKILLS = "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";
+  function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600); }
+  function copyBootstrap(){
+    const txt = document.getElementById('bootstrap').textContent;
+    navigator.clipboard.writeText(txt).then(()=>toast('Rule copied — paste into Cursor → Settings → Rules')).catch(()=>toast('Copy failed — select the text manually'));
+  }
+  function dl(dataUrl, name){ const a=document.createElement('a'); a.href=dataUrl; a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+  function downloadBootstrap(){
+    const txt = document.getElementById('bootstrap').textContent;
+    dl('data:text/markdown;charset=utf-8,'+encodeURIComponent(txt), 'using-compass-in-loop.cursorrule.md');
+    toast('Downloaded the rule');
+  }
+  function downloadSkills(){
+    if(!B64_SKILLS || B64_SKILLS.indexOf('__')===0){ toast('Pack unavailable in this copy'); return; }
+    dl('data:application/zip;base64,'+B64_SKILLS, 'compass-feel-skills.zip');
+    toast('Downloaded the Compass Feel pack');
+  }
+  // Footer/deep-dive links are placeholders here (the standalone file has no Storybook
+  // router); in Storybook these point at the real sidebar entries.
+  document.querySelectorAll('[data-goto]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();toast('Open this from the Storybook sidebar');}));
+</script>
+</body>
+</html>

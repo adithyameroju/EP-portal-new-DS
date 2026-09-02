@@ -19,7 +19,7 @@ const preview: Preview = {
         order: [
           'Introduction',
           ['Welcome', 'Getting Started', 'Design Principles', 'Working with Compass',
-            ['How It Works', 'Overview', 'Choosing a Component', 'Common Tasks', 'The Figma → Code Loop', 'Working with AI'],
+            ['Compass SOP', 'How It Works', 'Overview', 'Choosing a Component', 'Common Tasks', 'The Figma → Code Loop', 'Working with AI'],
             'Changelog'],
           'Foundations',
           ['Color', 'Typography', 'Spacing', 'Radius', 'Elevation', 'Motion'],
