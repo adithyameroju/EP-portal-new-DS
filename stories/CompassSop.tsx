@@ -87,9 +87,20 @@ export default function CompassSop() {
             <h3 className="text-base font-semibold">Before you start</h3>
             <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
               <li><strong className="text-foreground">Acko VPN / network</strong> — Compass tokens come from Acko&rsquo;s internal Nexus registry, only reachable on the Acko network.</li>
-              <li><strong className="text-foreground">GitHub access</strong> to <code className="rounded bg-muted px-1">ackotech/enterprise-compass-in-loop</code> (ask the owner if you get an access error).</li>
+              <li><strong className="text-foreground">Read access</strong> to <code className="rounded bg-muted px-1">ackotech/enterprise-compass-in-loop</code> on GitHub (ask the owner if you get an access error). You never push to it.</li>
               <li><strong className="text-foreground">Cursor</strong> installed.</li>
+              <li><strong className="text-foreground">Google Drive for Desktop</strong> signed in with your <strong className="text-foreground">Acko</strong> account, and accept the shared <strong className="text-foreground">Compass Drift</strong> folder (below).</li>
             </ul>
+          </Card>
+
+          <Card>
+            <h3 className="text-base font-semibold">Connect your Compass Drift folder (one-time)</h3>
+            <p className="text-sm text-muted-foreground">Your builds sync a tiny drift record to a shared Drive folder so the design-system team can see where to tighten. No git, no tokens — just your synced Drive.</p>
+            <ol className="mt-2 list-decimal pl-5 text-sm">
+              <li>Accept the <strong>Compass Drift</strong> share — it lands under &ldquo;Shared with me&rdquo;, which does <strong>not</strong> sync to your computer on its own.</li>
+              <li>At drive.google.com → right-click <strong>Compass Drift</strong> → <strong>Add shortcut to Drive</strong> → My Drive. It then appears locally: macOS <code className="rounded bg-muted px-1">~/Library/CloudStorage/GoogleDrive-&lt;you&gt;@acko.tech/My Drive/Compass Drift</code>; Windows <code className="rounded bg-muted px-1">%USERPROFILE%\My Drive\Compass Drift</code>.</li>
+              <li>On your <strong>first build</strong>, the rule asks for this path <strong>once</strong> — paste it, never asked again. Drive offline? Builds still work; records sync later — <strong>telemetry never blocks a build</strong>.</li>
+            </ol>
           </Card>
 
           <h3 className="mt-5 text-base font-semibold">1 · Paste the setup rule into Cursor (once)</h3>
@@ -199,6 +210,7 @@ export default function CompassSop() {
               <li><strong>Sharper audit</strong> — removed a false &ldquo;hand-rolled Menubar&rdquo; flag; new advisory check for bespoke CSS/motion.</li>
               <li><strong>Status/semantic-token gap now surfaces as the top drift hotspot</strong> — <em>driven by your real Figma + migration builds</em>. (Values are an owner + FE-dev decision.)</li>
               <li><strong>Zero-touch updates</strong> + <strong>branch-protected <code className="rounded bg-muted px-1">main</code></strong>.</li>
+              <li><strong>Drift telemetry via Google Drive</strong> — builds sync a drift record to a shared folder so the DS team sees drift and tightens the system. <em>What you do:</em> accept the share + paste your path once (the rule prompts). Never blocks a build.</li>
               <li>This SOP page, the Compass Feel pack, and a third-party skills gate.</li>
             </ul>
           </Card>

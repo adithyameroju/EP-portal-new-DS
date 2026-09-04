@@ -1,19 +1,20 @@
 # Owner pipeline — the weekly Compass tightening cycle
 
 How the design-system owner turns designers' captured drift into system
-improvements. **Branch-per-designer is the collection model:** each designer builds
-on their own branch and pushes it (they never touch `main`), so their committed
-`drift-log/entries/` live on their branches. This runbook collects those, finds the
-hotspots, and closes the loop.
+improvements. **Google Drive is the primary collection model:** each build syncs the
+designer's drift entry + score to a shared **Compass Drift** folder, one subfolder
+per designer (username derived from their git/GitHub identity). Your machine reads
+that synced folder as the PRIMARY source; committed branch entries stay as a fallback.
 
-Run this once a week (or after a burst of building).
+One-time owner setup: `node scripts/drift-config.mjs --set-path "<your synced Compass
+Drift path>"`, then set `"role": "owner"` in `~/.compass/config.json`. Run the cycle
+weekly (or after a burst of building).
 
-## 1 · Fetch every designer's branch
-```bash
-git fetch --all --prune
-```
-Pulls all designer branches (and their committed entries) into your clone. Nothing
-merges — you're only collecting.
+## 1 · Confirm Drive is synced
+Open Google Drive for Desktop and confirm **Compass Drift** shows the designer
+subfolders and recent files (green check, not syncing). That's the whole collection
+step — no fetch, no PATs. (Branch fallback: if you also want branch-committed entries,
+`git fetch --all --prune`.)
 
 ## 2 · Cross-team rollup — owner dashboard
 ```bash
@@ -69,8 +70,9 @@ Or run the whole cycle in a throwaway clone you don't build in.
 ---
 
 ## The cycle in one line
-**fetch → owner:dashboard + detect (across branches) → prescribe → you rule → commit
-to `main` → designers pull on next build.** Every week the system gets tighter.
+**confirm Drive synced → detect + owner:dashboard (Drive-primary) → prescribe → you
+rule → ship (commit `main` + add the SOP → Updates changelog entry) → designers pull
+on next build.** Every week the system gets tighter.
 
 ## Note on scoring
 Assumption-theme hotspots (the highest-value signal — e.g. a missing token) come

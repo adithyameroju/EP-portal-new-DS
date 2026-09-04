@@ -89,10 +89,31 @@
       <ul>
         <li><strong>Acko VPN / network</strong> — Compass tokens come from Acko's
           internal Nexus registry, only reachable on the Acko network.</li>
-        <li><strong>GitHub access</strong> to <code>ackotech/enterprise-compass-in-loop</code>
-          (ask the design-system owner if you get an access error).</li>
+        <li><strong>Read access</strong> to <code>ackotech/enterprise-compass-in-loop</code>
+          on GitHub (ask the owner if you get an access error). You never push to it.</li>
         <li><strong>Cursor</strong> installed.</li>
+        <li><strong>Google Drive for Desktop</strong> signed in with your <strong>Acko</strong>
+          account, and accept the shared <strong>Compass Drift</strong> folder (see below).</li>
       </ul>
+    </div>
+
+    <div class="card">
+      <h3>Connect your Compass Drift folder (one-time)</h3>
+      <p class="lead">Your builds sync a tiny drift record to a shared Drive folder so the
+         design-system team can see where the system needs tightening. No git, no tokens —
+         just your synced Drive.</p>
+      <ol>
+        <li>Accept the <strong>Compass Drift</strong> share (it arrives under "Shared with me",
+          which does <strong>not</strong> sync to your computer on its own).</li>
+        <li>At <a href="https://drive.google.com" target="_blank" rel="noreferrer">drive.google.com</a> →
+          right-click <strong>Compass Drift</strong> → <strong>Add shortcut to Drive</strong> → My Drive.
+          It then appears locally:
+          <br>macOS: <code>~/Library/CloudStorage/GoogleDrive-&lt;you&gt;@acko.tech/My Drive/Compass Drift</code>
+          <br>Windows: <code>%USERPROFILE%\My Drive\Compass Drift</code> (or your Drive letter, e.g. <code>G:\My Drive\Compass Drift</code>)</li>
+        <li>The <strong>first time you build</strong>, the rule asks for this path <strong>once</strong> —
+          paste it. You're never asked again. If Drive is offline, builds still work and the
+          records sync later — <strong>telemetry never blocks or slows a build</strong>.</li>
+      </ol>
     </div>
 
     <h3>1 · Paste the setup rule into Cursor (once)</h3>
@@ -259,6 +280,7 @@ on conflict, Compass wins. (Claude Code users: `~/.claude/skills/compass-feel/`.
         <li><strong>Sharper audit</strong> — removed a false “hand-rolled Menubar” flag; new advisory check for bespoke CSS/motion.</li>
         <li><strong>Status/semantic-token gap now surfaces as the top drift hotspot</strong> — <em>driven by your real Figma + migration builds</em> that kept mapping success/info/warning onto other tokens. (Values are an owner + FE-dev decision.)</li>
         <li><strong>Zero-touch updates</strong> + <strong>branch-protected <code>main</code></strong> for safe access.</li>
+        <li><strong>Drift telemetry via Google Drive</strong> — your builds sync a drift record to a shared folder so the DS team sees drift and tightens the system. <em>What you do:</em> accept the Compass Drift share + paste your path once (the rule prompts). It never blocks a build.</li>
         <li>This SOP page, the Compass Feel pack, and a third-party skills gate.</li>
       </ul>
     </div>

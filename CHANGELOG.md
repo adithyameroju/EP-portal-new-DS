@@ -32,6 +32,13 @@ paste the Settings bootstrap once, and build on a branch).
   Compass tightenings into your branch (never force).
 - **Safer access** — `main` is branch-protected (PR + owner review + audit CI); you
   build on your own branch and push it at end of day.
+- **Drift telemetry via Google Drive** — after each build the drift entry + score
+  sync to a shared "Compass Drift" folder (per-designer subfolder, username derived
+  from git/GitHub identity, sticky). Fail-safe: offline → queued locally, drained
+  next session; never blocks a build. Owner reads the synced folder as the primary
+  aggregation source. No PATs, no API keys, no git remote for telemetry.
+  *What designers do differently: nothing after setup* (one-time: accept the folder
+  share, Add-shortcut-to-Drive, paste the path once when the rule asks).
 - **This SOP page** + the **Compass Feel** craft pack (Setup tab) + a third-party
   skills gate.
 
