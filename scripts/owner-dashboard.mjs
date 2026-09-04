@@ -44,6 +44,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import { ownerDriveSources } from './drift-config.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ENTRIES_DIR = path.join(ROOT, 'drift-log', 'entries');
@@ -110,6 +111,17 @@ function git(args) {
 // unavailable, this degrades to the working tree alone.
 function collectEntryFiles() {
   const out = new Map(); // filename -> { ref, read: () => string }
+  // 0. OWNER Drive telemetry (PRIMARY) — committed entries synced from every
+  // designer's Google Drive subfolder. Attribution: the subfolder = username.
+  const drive = ownerDriveSources();
+  let driveCount = 0;
+  if (drive) {
+    for (const e of drive.entries) {
+      if (out.has(e.name)) continue;
+      out.set(e.name, { ref: `drive:${e.username}`, read: () => fs.readFileSync(e.path, 'utf8') });
+      driveCount++;
+    }
+  }
   // 1. working tree (checked-out branch, including not-yet-committed entries)
   if (fs.existsSync(ENTRIES_DIR)) {
     for (const f of fs.readdirSync(ENTRIES_DIR).filter((f) => f.endsWith('.json'))) {
@@ -128,11 +140,11 @@ function collectEntryFiles() {
       out.set(fname, { ref, read: () => git(['show', `${ref}:${p}`]) });
     }
   }
-  return { files: out, refsScanned: refs.length };
+  return { files: out, refsScanned: refs.length, driveCount, driveDesigners: drive ? drive.designers.length : 0 };
 }
 
 function loadLedger(includeDemo) {
-  const { files, refsScanned } = collectEntryFiles();
+  const { files, refsScanned, driveCount, driveDesigners } = collectEntryFiles();
   const entries = [];
   let demoSkipped = 0;
   for (const [f, src] of [...files.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
@@ -142,7 +154,7 @@ function loadLedger(includeDemo) {
     if (e.demo && !includeDemo) { demoSkipped++; continue; }
     entries.push({ file: f, data: e, ref: src.ref });
   }
-  return { entries, demoSkipped, refsScanned };
+  return { entries, demoSkipped, refsScanned, driveCount, driveDesigners };
 }
 
 function loadReportsByEntry() {
@@ -487,8 +499,9 @@ function run() {
   const args = parseArgs(process.argv.slice(2));
   console.log(`\n🧭 Compass Owner Dashboard — cross-team drift rollup${args.includeDemo ? '  [DEMO MODE]' : ''}\n`);
 
-  const { entries, demoSkipped, refsScanned } = loadLedger(args.includeDemo);
-  console.log(`  Collected across ${refsScanned} branch ref(s) + working tree (branch-per-designer model).`);
+  const { entries, demoSkipped, refsScanned, driveCount, driveDesigners } = loadLedger(args.includeDemo);
+  if (driveCount > 0) console.log(`  Drive telemetry (PRIMARY): ${driveCount} entr(y/ies) across ${driveDesigners} designer folder(s).`);
+  console.log(`  Collected across ${refsScanned} branch ref(s) + working tree (fallback).`);
   const { byEntry, weights } = loadReportsByEntry();
   const agg = aggregate(entries, byEntry, weights);
 

@@ -188,6 +188,16 @@ is how every rule/spec/audit update reaches them with no extra effort:
 4. If they decline, or nothing is new, continue normally. Do this at most once per
    session — don't re-fetch before every build.
 
+Also at session start, wire up drift telemetry (one-time), then flush any backlog:
+5. Run `node scripts/drift-config.mjs --check`. If it reports `needsPath: true`, ask the
+   designer ONCE: "Paste your synced **Compass Drift** folder path (the one under
+   ~/Library/CloudStorage/… after you added the shared folder as a shortcut to My
+   Drive)." Then run `node scripts/drift-config.mjs --set-path "<their path>"`. If that
+   prints a fix message and fails, relay it verbatim and ask again. Once saved, never
+   ask again. (If they don't have it set up, skip telemetry and continue — it's optional.)
+6. Run `node scripts/drift-sync.mjs --drain` — best-effort; flushes any builds that were
+   queued while Drive was offline. It never fails; ignore its output unless it errors.
+
 ---
 
 ## First run in a fresh clone — verify setup before building
@@ -247,6 +257,12 @@ UI in this repo, do these in order — automatically, without being asked:
    entries must be committed to reach the owner on push:
        npm run audit:compliance -- --entry drift-log/entries/<file>.json
        git add drift-log/entries/ && git commit -m "compass: drift capture — <task>"
+   Note the report path `audit:compliance` prints ("Report: drift-log/reports/<…>.json").
+   Then PUSH this build to the team's Drive telemetry (best-effort — NEVER blocks a build):
+       node scripts/drift-sync.mjs --entry drift-log/entries/<file>.json --report drift-log/reports/<that-report>.json
+   It copies the entry + report to the designer's synced Compass Drift folder (attributed
+   to their derived username), or queues them locally if Drive is offline (drained next
+   session). It always exits 0 — if it errors, ignore it, the build is done.
    The entry is anchored to the raw-output commit. Do NOT pass `--demo`. If git or
    `npm run log` is unavailable, say so in one line and continue — capture is
    best-effort and must NEVER block the build.

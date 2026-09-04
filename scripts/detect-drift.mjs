@@ -36,6 +36,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ownerDriveSources } from './drift-config.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ENTRIES_DIR = path.join(ROOT, 'drift-log', 'entries');
@@ -157,27 +158,40 @@ function run() {
 
   console.log(`\n🧭 Compass Detect — drift clustering${args.includeDemo ? '  [DEMO MODE — includes demo entries; not real evidence]' : ''}\n`);
 
-  // ── Load the window of entries (newest first by filename timestamp)
-  const allEntryFiles = fs.existsSync(ENTRIES_DIR)
-    ? fs.readdirSync(ENTRIES_DIR).filter((f) => f.endsWith('.json')).sort().reverse()
-    : [];
+  // ── Source: OWNER Drive telemetry (PRIMARY, all designer subfolders) when this
+  // machine is role:owner with a valid Drive folder; else local working tree.
+  const drive = ownerDriveSources();
+  if (drive) console.log(`  Source: Drive telemetry (PRIMARY) — ${drive.entries.length} entr(y/ies) across ${drive.designers.length} designer folder(s).\n`);
+
+  // entries — newest first by filename timestamp, deduped by name
+  let entrySrcs;
+  if (drive && drive.entries.length) {
+    const seen = new Map();
+    for (const e of drive.entries) if (!seen.has(e.name)) seen.set(e.name, e.path);
+    entrySrcs = [...seen.entries()].map(([name, p]) => ({ name, read: () => fs.readFileSync(p, 'utf8') }))
+      .sort((a, b) => b.name.localeCompare(a.name));
+  } else {
+    entrySrcs = (fs.existsSync(ENTRIES_DIR) ? fs.readdirSync(ENTRIES_DIR).filter((f) => f.endsWith('.json')) : [])
+      .sort().reverse().map((name) => ({ name, read: () => fs.readFileSync(path.join(ENTRIES_DIR, name), 'utf8') }));
+  }
   const entries = [];
-  for (const f of allEntryFiles) {
-    const e = loadJson(path.join(ENTRIES_DIR, f));
+  for (const s of entrySrcs) {
+    let e; try { e = JSON.parse(s.read()); } catch { continue; }
     if (!e) continue;
     if (e.demo && !args.includeDemo) continue;
-    entries.push({ file: f, data: e });
+    entries.push({ file: s.name, data: e });
     if (entries.length >= windowSize) break;
   }
 
-  // ── Join reports (latest report per entry)
-  const reportFiles = fs.existsSync(REPORTS_DIR)
-    ? fs.readdirSync(REPORTS_DIR).filter((f) => f.endsWith('.json')).sort()
-    : [];
+  // ── Join reports (latest report per entry) — Drive reports when owner, else local
+  const reportSrcs = (drive && drive.reports.length)
+    ? drive.reports.map((r) => ({ name: r.name, read: () => fs.readFileSync(r.path, 'utf8') }))
+    : (fs.existsSync(REPORTS_DIR) ? fs.readdirSync(REPORTS_DIR).filter((f) => f.endsWith('.json')) : [])
+        .sort().map((name) => ({ name, read: () => fs.readFileSync(path.join(REPORTS_DIR, name), 'utf8') }));
   const reportsByEntry = new Map();
-  for (const f of reportFiles) {
-    const r = loadJson(path.join(REPORTS_DIR, f));
-    if (r && r.entry) reportsByEntry.set(r.entry, { file: f, data: r }); // later files overwrite = latest wins
+  for (const s of reportSrcs) {
+    let r; try { r = JSON.parse(s.read()); } catch { continue; }
+    if (r && r.entry) reportsByEntry.set(r.entry, { file: s.name, data: r }); // latest wins
   }
 
   const scored = [];
