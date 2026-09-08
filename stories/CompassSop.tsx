@@ -228,7 +228,7 @@ export default function CompassSop() {
       )}
 
       <footer className="mt-9 flex flex-wrap gap-5 border-t border-border pt-4 text-sm text-muted-foreground">
-        <a href="https://6a4c6bc7a7294c9b64f0b80e-jnmjylcclb.chromatic.com/" target="_blank" rel="noopener" className="font-medium text-primary underline">Live docs — Storybook on Chromatic</a>
+        <a href="https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com/" target="_blank" rel="noopener" className="font-medium text-primary underline">Live docs — Storybook on Chromatic</a>
         <span>How It Works (deep dive — sidebar)</span>
         <span>Storybook component docs (sidebar)</span>
         <span>Help: <strong>#design-system-feedback</strong></span>

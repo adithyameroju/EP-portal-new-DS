@@ -67,6 +67,7 @@
   4. Euclid weights: narrowed typography.md + typography-blocks.tsx to 300–700 (removed thin/extralight/extrabold/black). C7a reads expected weights FROM the spec, so the weight-gap warning clears automatically (verified).
   5. Table gaps: #19–21 → new S6 gap list (.compass-build/design/s6/gap-list.md, seeded also with KPI promotion candidates); #22 (header color) CLOSED as non-issue.
 - 2026-07-07: NEXT (owner-gated, do NOT start until told): (1) harden `compass init` with the full drift loop (log/detect/prescribe/dashboard + drift-log scaffold — currently init only scaffolds audit + audit:compliance); (2) the two workflow runbooks (new-project build; Lovable migration).
+- 2026-09-08: **RELEASE DoD AMENDED (owner) — add "local Chromatic republish."** The release definition-of-done now has THREE requirements, not two: a release ships only once its entry is in (1) `CHANGELOG.md`, (2) the SOP → Updates tab (designer-phrased), AND (3) a local Chromatic republish (`npm run chromatic`) has run so the **live docs show the change** — "a release isn't shipped until the live docs carry it." Amended in both the CHANGELOG DoD callout and the 2026-07-21 rulings section above. RATIONALE: the Chromatic docs link is the designers' front door; a CHANGELOG/Updates entry that isn't reflected in the published Storybook leaves the live docs stale. IMPLEMENTATION NOTE: the docs permalink used in the SOP footer + README is the STABLE `main` branch permalink `https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com/` (always resolves to the latest build on `main`) — NOT the per-build `<appId>-<hash>.chromatic.com` URL, which changes every publish (confirmed: build 4 `jnmjylcclb` → build 5 `mfpubmxopx`). Access-gated to repo members (Chromatic OAuth tied to GitHub repo access), which is why the SOP Setup tab says accept the GitHub invite first.
 
 ## Current stage
 **STANDING QUEUE CLEAR (2026-07-07): card ruling + 12 SOP gaps + 5 queue items all applied. Next (gated): harden compass init, then 2 workflow runbooks.**
@@ -247,5 +248,6 @@ was changed.
 - **Third-party skills gate:** `.claude/skills/skills-registry.md` — owner-review
   only; Compass supersedes on any conflict; each entry logged.
 - **Release definition-of-done:** a release is not shipped until its entry is in
-  BOTH `CHANGELOG.md` AND the SOP Updates tab (designer-phrased). Enforced like this
-  decision log.
+  BOTH `CHANGELOG.md` AND the SOP Updates tab (designer-phrased), AND a local
+  Chromatic republish (`npm run chromatic`) has run so the live docs show it
+  (amended 2026-09-08 — see DECISION LOG). Enforced like this decision log.

@@ -132,8 +132,9 @@ component architecture, and the PR review process.
 Stages per `Compass_GA_Roadmap.md`; ledger in `.compass-build/STATE.md`
 (baseline tag `s3-build-complete`, 2026-07-07; latest on `main`, 2026-07-21).
 
-**Live docs:** [Storybook on Chromatic](https://6a4c6bc7a7294c9b64f0b80e-jnmjylcclb.chromatic.com/)
-— 56 components / 176 stories, incl. the interactive Compass SOP (Chromatic build 4).
+**Live docs:** [Storybook on Chromatic](https://main--6a4c6bc7a7294c9b64f0b80e.chromatic.com/)
+— 56 components / 176 stories, incl. the interactive Compass SOP. This is the stable
+`main` branch permalink (always the latest published build; access-gated to repo members).
 
 | Stage | Status | What was built |
 |-------|--------|---------------|

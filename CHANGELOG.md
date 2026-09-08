@@ -5,11 +5,13 @@ All notable changes to Compass are documented here. Format follows
 approved Compass semver policy (additive = minor · token/behavior change =
 major, shipped with a codemod · docs-only = patch).
 
-> **Release definition-of-done (owner ruling 2026-07-21):** a release is NOT
-> shipped until its entry appears in BOTH this file AND the **SOP → Updates** tab
-> (`stories/compass-sop.mdx` + `compass-sop.html`), phrased for designers (date ·
-> what changed · what they do — usually "nothing, pull is automatic"). Same
-> enforcement discipline as the `.compass-build/STATE.md` decision log.
+> **Release definition-of-done (owner ruling 2026-07-21; amended 2026-09-08):** a
+> release is NOT shipped until its entry appears in BOTH this file AND the
+> **SOP → Updates** tab (`stories/compass-sop.mdx` + `compass-sop.html`), phrased for
+> designers (date · what changed · what they do — usually "nothing, pull is
+> automatic"), **AND a local Chromatic republish (`npm run chromatic`) has run so the
+> live docs show the change** — a release isn't shipped until the live docs carry it.
+> Same enforcement discipline as the `.compass-build/STATE.md` decision log.
 
 ## [Unreleased] — on `main`, 2026-07-21
 
