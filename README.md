@@ -130,7 +130,10 @@ component architecture, and the PR review process.
 ## Build status
 
 Stages per `Compass_GA_Roadmap.md`; ledger in `.compass-build/STATE.md`
-(stamped at tag `s3-build-complete`, 2026-07-07).
+(baseline tag `s3-build-complete`, 2026-07-07; latest on `main`, 2026-07-21).
+
+**Live docs:** [Storybook on Chromatic](https://6a4c6bc7a7294c9b64f0b80e-jnmjylcclb.chromatic.com/)
+— 56 components / 176 stories, incl. the interactive Compass SOP (Chromatic build 4).
 
 | Stage | Status | What was built |
 |-------|--------|---------------|
@@ -138,9 +141,15 @@ Stages per `Compass_GA_Roadmap.md`; ledger in `.compass-build/STATE.md`
 | S1 | ✅ Complete | Meta layer — 55 `.meta.ts` component descriptors + index, spec fixes |
 | S2 | ✅ Complete | Storybook + SOP — deployed to Chromatic (55 components / 171 stories) |
 | S3 | ✅ Built | Package + CLI — npm-pack tarball verified in a fresh Next 16 consumer; registry publish pending owner go |
-| S4 | ✅ Operational | Audit loop — compliance scoring, drift ledger, detect, prescribe, dashboard |
+| S4 | ✅ Operational | Audit loop — compliance scoring (C1–C8, incl. invented-motion advisory), drift ledger, detect, prescribe, dashboard |
 | S5 | ✅ Built | Migration tool (compass-migrate) — engine live, dry-run verified; validation on sample repos pending |
 | S6 | 🔜 Not started | — |
+
+**Since GA (`main`, 2026-07-21):** interactive **Compass SOP** designer front-door
+page (Setup / Loop / Updates) · **Compass Feel** craft pack · **Drive drift-telemetry**
+transport — per-designer subfolders, owner-primary aggregation, fail-safe (never
+blocks a build) · **sharpened compliance audit** (C8 invented-motion advisory,
+per-entry scoring). See `CHANGELOG.md` → `[Unreleased]` and the SOP → **Updates** tab.
 
 ---
 

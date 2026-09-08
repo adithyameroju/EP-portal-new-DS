@@ -87,7 +87,7 @@ export default function CompassSop() {
             <h3 className="text-base font-semibold">Before you start</h3>
             <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
               <li><strong className="text-foreground">Acko VPN / network</strong> — Compass tokens come from Acko&rsquo;s internal Nexus registry, only reachable on the Acko network.</li>
-              <li><strong className="text-foreground">Read access</strong> to <code className="rounded bg-muted px-1">ackotech/enterprise-compass-in-loop</code> on GitHub (ask the owner if you get an access error). You never push to it.</li>
+              <li><strong className="text-foreground">Accept the GitHub invite first</strong> — the owner sends you a <strong className="text-foreground">Read</strong> invite to <code className="rounded bg-muted px-1">ackotech/enterprise-compass-in-loop</code>; accept it before anything else, because the docs link uses that access. (Ask the owner if you get an access error.) You never push to it.</li>
               <li><strong className="text-foreground">Cursor</strong> installed.</li>
               <li><strong className="text-foreground">Google Drive for Desktop</strong> signed in with your <strong className="text-foreground">Acko</strong> account, and accept the shared <strong className="text-foreground">Compass Drift</strong> folder (below).</li>
             </ul>
@@ -228,6 +228,7 @@ export default function CompassSop() {
       )}
 
       <footer className="mt-9 flex flex-wrap gap-5 border-t border-border pt-4 text-sm text-muted-foreground">
+        <a href="https://6a4c6bc7a7294c9b64f0b80e-jnmjylcclb.chromatic.com/" target="_blank" rel="noopener" className="font-medium text-primary underline">Live docs — Storybook on Chromatic</a>
         <span>How It Works (deep dive — sidebar)</span>
         <span>Storybook component docs (sidebar)</span>
         <span>Help: <strong>#design-system-feedback</strong></span>
