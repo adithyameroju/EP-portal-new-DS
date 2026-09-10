@@ -6,7 +6,7 @@
 // Token-clean (semantic classes only — it is scanned by the token audit).
 
 import { useState } from 'react'
-import { BOOTSTRAP, SKILLS_ZIP_B64 } from './sop-assets'
+import { BOOTSTRAP, BOOTSTRAP_VERSION, SKILLS_ZIP_B64 } from './sop-assets'
 
 type Tab = 'setup' | 'build' | 'updates'
 
@@ -105,14 +105,21 @@ export default function CompassSop() {
 
           <h3 className="mt-5 text-base font-semibold">1 · Paste the setup rule into Cursor (once)</h3>
           <p className="text-sm text-muted-foreground">Cursor → Settings → Rules → paste this. A single time — everything after ships with the repo, so you never re-paste.</p>
-          <div className="my-2.5 flex gap-2">
+          <div className="my-2.5 flex items-center gap-2">
             <button onClick={copyBootstrap} className="rounded-lg border border-primary bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground">Copy rule</button>
             <button onClick={downloadBootstrap} className="rounded-lg border border-border bg-card px-3.5 py-1.5 text-sm font-semibold text-foreground">Download .md</button>
+            <span className="text-xs text-muted-foreground">Current: <strong className="text-foreground">{BOOTSTRAP_VERSION}</strong></span>
           </div>
+          <p className="text-sm text-muted-foreground">The rule is stamped with its version. If Cursor says your pasted rule is older than the version above, re-copy it here — a stale paste is what let an unrelated rule capture a build before.</p>
           <pre className="max-h-80 overflow-auto rounded-lg border border-border bg-muted p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap">{BOOTSTRAP}</pre>
 
           <h3 className="mt-5 text-base font-semibold">2 · What happens on your first prompt</h3>
           <p className="text-sm">Open an empty folder in Cursor and type e.g. <code className="rounded bg-muted px-1">Using Compass in Loop, build a signup screen</code>. The rule <strong>detects</strong> whether you&rsquo;re set up, <strong>clones + installs</strong> if not, <strong>verifies</strong> (audit runs, brand font wired, app boots), then builds. <strong>You do nothing</strong> but watch and answer its questions.</p>
+
+          <Card tone="fail">
+            <h3 className="text-base font-semibold text-destructive">If you have another Acko/retail Cursor rule</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Only one Settings rule should react to a build request. If a non-Compass rule (e.g. a retail project&rsquo;s rule) ever starts committing or capturing while you build — especially outside your cloned Compass repo — that&rsquo;s a collision. Start your message with <code className="rounded bg-muted px-1">Using Compass in Loop</code> so this rule leads (it matches that phrase in any capitalisation), and disable the other Acko rule while doing Compass work. The repo also refuses to commit or capture in a folder that isn&rsquo;t a Compass checkout, so a misfire can&rsquo;t quietly capture your build in the wrong place.</p>
+          </Card>
 
           <Card tone="fail">
             <h3 className="text-base font-semibold text-destructive">When it fails — and what to do</h3>
@@ -202,7 +209,17 @@ export default function CompassSop() {
           <p className="text-sm text-muted-foreground">Every Compass release shows up here. Usually there&rsquo;s nothing to do — the rule pulls updates into your branch automatically on your next build. This is the loop made visible: several of these came from drift the tool saw in real builds.</p>
 
           <Card>
-            <h3 className="text-base font-semibold">Latest — on <code className="rounded bg-muted px-1">main</code>, 2026-07-21 <span className="ml-1 rounded-full border border-primary px-2 py-0.5 text-xs font-semibold text-primary">new</span></h3>
+            <h3 className="text-base font-semibold">Latest — on <code className="rounded bg-muted px-1">main</code>, 2026-09-10 <span className="ml-1 rounded-full border border-primary px-2 py-0.5 text-xs font-semibold text-primary">new</span></h3>
+            <p className="mt-1 text-sm"><strong>What you do: re-copy the Setup rule once.</strong> Open the <strong>Setup</strong> tab, hit <strong>Copy</strong> (it shows the current version), and paste it into Cursor → Settings → Rules, replacing the old one.</p>
+            <ul className="mt-2 list-disc pl-5 text-sm">
+              <li><strong>The Setup rule is version-stamped (now v2)</strong> — if your pasted copy ever goes stale, Cursor tells you to re-copy it. No more silent staleness.</li>
+              <li><strong>Case-insensitive trigger</strong> — &ldquo;using compass in loop&rdquo; works however you capitalise it, so another Acko/retail rule can&rsquo;t quietly take over your build.</li>
+              <li><strong>Safer capture</strong> — a build is only ever committed or captured inside a real Compass checkout, never an empty or foreign folder.</li>
+            </ul>
+          </Card>
+
+          <Card>
+            <h3 className="text-base font-semibold">On <code className="rounded bg-muted px-1">main</code>, 2026-07-21</h3>
             <p className="mt-1 text-sm"><strong>What you do: nothing</strong> (one-time: paste the Settings rule once, build on a branch).</p>
             <ul className="mt-2 list-disc pl-5 text-sm">
               <li><strong>Automatic drift capture</strong> on every build — no manual step.</li>

@@ -198,6 +198,16 @@ Also at session start, wire up drift telemetry (one-time), then flush any backlo
 6. Run `node scripts/drift-sync.mjs --drain` — best-effort; flushes any builds that were
    queued while Drive was offline. It never fails; ignore its output unless it errors.
 
+7. BOOTSTRAP STALENESS CHECK — the Settings-pasted rule can't auto-update, so catch a
+   stale paste here. **The current bootstrap version is `v2`.** If the designer's pasted
+   "Using Compass in Loop" Cursor Settings rule is what activated you, read its
+   `Bootstrap version:` line. If that line is MISSING, or its version is lower than `v2`,
+   tell the designer plainly: "Your Settings rule is vX, current is v2 — re-copy it from
+   the SOP → Setup tab (the Copy button shows the current version)." Do NOT try to edit
+   their Settings rule yourself — only they can re-paste it. (Two stale-paste incidents
+   traced to this: a rule missing the capture step, and a case-sensitive trigger that let
+   an unrelated rule capture a build. When you bump the bootstrap, bump this number too.)
+
 ---
 
 ## First run in a fresh clone — verify setup before building
@@ -235,6 +245,16 @@ separately — only ones listed in `.claude/skills/skills-registry.md` may be us
 
 This is what lets Compass learn from what it got wrong. After you generate or change
 UI in this repo, do these in order — automatically, without being asked:
+
+0. GUARD — confirm you are in a Compass checkout BEFORE anything commits or captures.
+   This loop runs `git add -A` and writes ledger entries, so run it ONLY if the workspace
+   root has ALL Compass markers — `CLAUDE.md`, `scripts/token-audit.mjs`, and a
+   `package.json` whose `"name"` is `"@acko/compass"` — AND `git rev-parse --is-inside-work-tree`
+   succeeds. If any marker is missing, or the folder is empty/foreign, STOP — do not
+   `git add`, commit, or capture here. Say plainly: "This folder isn't a Compass checkout,
+   so I won't commit or capture here — open your cloned Compass repo as the workspace and
+   try again." (This stops a misfire — e.g. another Acko/retail Cursor rule reacting first,
+   or a stale trigger — from capturing a build into the wrong folder.)
 
 1. Run `npm run audit` and fix every error before you finish.
 2. SNAPSHOT THE RAW OUTPUT as its own commit, BEFORE the designer edits anything:

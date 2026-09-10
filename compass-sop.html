@@ -38,7 +38,8 @@
   .fail h3{color:var(--destructive)}
   .grid{display:grid;gap:14px;margin:14px 0} @media(min-width:720px){.grid.three{grid-template-columns:1fr 1fr 1fr}}
   pre.block{background:var(--muted);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow:auto;font-family:var(--mono);font-size:12px;line-height:1.5;max-height:340px}
-  .btnrow{display:flex;gap:8px;margin:10px 0}
+  .btnrow{display:flex;gap:8px;margin:10px 0;align-items:center}
+  .ver{font-size:12.5px;color:var(--muted-fg)}
   button.btn,a.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;padding:7px 14px;border:1px solid var(--border);background:var(--card);color:var(--fg);text-decoration:none;display:inline-block}
   button.btn.primary{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
   button.btn:active{transform:translateY(1px)}
@@ -124,13 +125,19 @@
     <div class="btnrow">
       <button class="btn primary" onclick="copyBootstrap()">Copy rule</button>
       <button class="btn" onclick="downloadBootstrap()">Download .md</button>
+      <span class="ver">Current: <strong>v2</strong></span>
     </div>
+    <p class="lead">The rule is stamped with its version. If Cursor ever says your pasted
+       rule is older than the current version above, re-copy it here — a stale paste is
+       what let an unrelated rule capture a build before.</p>
     <pre class="block" id="bootstrap">Using Compass in Loop — setup bootstrap (Cursor Settings → Rules)
+Bootstrap version: v2 (2026-09-10). If the Compass repo reports a newer version, re-copy this rule from the SOP → Setup tab (the Copy button shows the current version).
 
-Activate this rule ONLY when the user's message begins with the exact phrase
-"Using Compass in Loop" (e.g. "Using Compass in Loop, build a signup screen").
-Otherwise ignore this rule completely. The user is a designer, not a developer —
-narrate briefly in plain English, and when a command fails, explain why first.
+Activate this rule when the user's message begins with the phrase "Using Compass in
+Loop" — matched CASE-INSENSITIVELY (so "using compass in loop, build a signup screen"
+activates it just the same). Otherwise ignore this rule completely. The user is a
+designer, not a developer — narrate briefly in plain English, and when a command
+fails, explain why first.
 
 Your ONLY job here is to get the designer into a set-up Compass repo. Once they are
 inside it, the repo's own CLAUDE.md and .cursorrules AUTO-LOAD and carry the full
@@ -140,7 +147,8 @@ governance + verify + build + capture loop — do not restate or override them.
    scripts/token-audit.mjs, and a package.json whose "name" is "@acko/compass",
    it is a Compass checkout. If node_modules/@acko/enterprise-tokens is missing, run
    `npm install`. Then say "Compass is ready" and follow the repo's CLAUDE.md +
-   .cursorrules to verify and build.
+   .cursorrules to verify and build. If NONE of those markers are present, treat the
+   folder as NOT set up (step 2) — never commit or capture into an empty/foreign folder.
 
 2. Not set up (empty/other folder)? Clone Compass and open THAT folder as the Cursor
    workspace so its rules load:
@@ -156,6 +164,11 @@ governance + verify + build + capture loop — do not restate or override them.
    From there the repo's rules govern everything — verify, build, and the automatic
    commit-raw + capture loop. You do not need this Settings rule again.
 
+If another Acko/retail Cursor rule is also installed and reacts to build requests,
+only ONE rule should lead: starting your message with "Using Compass in Loop" keeps
+this rule in front. If a non-Compass rule ever starts committing or capturing outside
+your Compass repo, disable that other rule (see the SOP → Setup tab).
+
 Optional craft: before generating UI, if the "Compass Feel" pack is installed at
 `~/compass-feel/` (macOS/Linux) or `%USERPROFILE%\compass-feel\` (Windows), read those
 files and apply them as craft. They never override Compass tokens/components/specs —
@@ -168,6 +181,17 @@ on conflict, Compass wins. (Claude Code users: `~/.claude/skills/compass-feel/`.
        if not, <strong>verifies</strong> the setup (audit runs, brand font wired, app boots),
        and only then builds. <strong>You do nothing</strong> but watch and answer its
        questions.</p>
+
+    <div class="fail">
+      <h3>If you have another Acko/retail Cursor rule</h3>
+      <p>Only one Settings rule should react to a build request. If a non-Compass rule
+         (e.g. a retail project's rule) ever starts committing or capturing while you build
+         — especially outside your cloned Compass repo — that's a collision. Start your
+         message with <code>Using Compass in Loop</code> so this rule leads (it matches that
+         phrase in any capitalisation), and disable the other Acko rule while doing Compass
+         work. The repo also refuses to commit or capture in a folder that isn't a Compass
+         checkout, so a misfire can't quietly capture your build in the wrong place.</p>
+    </div>
 
     <div class="fail">
       <h3>When it fails — and what to do</h3>
@@ -274,7 +298,17 @@ on conflict, Compass wins. (Claude Code users: `~/.claude/skills/compass-feel/`.
        saw in real builds.</p>
 
     <div class="card">
-      <h3>Latest — on <code>main</code>, 2026-07-21 <span class="pill new">new</span></h3>
+      <h3>Latest — on <code>main</code>, 2026-09-10 <span class="pill new">new</span></h3>
+      <p><strong>What you do: re-copy the Setup rule once.</strong> Open the <strong>Setup</strong> tab, hit <strong>Copy rule</strong> (it shows the current version), and paste it into Cursor → Settings → Rules, replacing the old one.</p>
+      <ul>
+        <li><strong>The Setup rule is version-stamped (now v2)</strong> — if your pasted copy ever goes stale, Cursor tells you to re-copy it. No more silent staleness.</li>
+        <li><strong>Case-insensitive trigger</strong> — “using compass in loop” works however you capitalise it, so another Acko/retail rule can’t quietly take over your build.</li>
+        <li><strong>Safer capture</strong> — a build is only ever committed or captured inside a real Compass checkout, never an empty or foreign folder.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>On <code>main</code>, 2026-07-21</h3>
       <p><strong>What you do: nothing</strong> (one-time: paste the Settings rule once, build on a branch).</p>
       <ul>
         <li><strong>Automatic drift capture</strong> on every build — no manual step.</li>

@@ -1,9 +1,11 @@
 Using Compass in Loop — setup bootstrap (Cursor Settings → Rules)
+Bootstrap version: v2 (2026-09-10). If the Compass repo reports a newer version, re-copy this rule from the SOP → Setup tab (the Copy button shows the current version).
 
-Activate this rule ONLY when the user's message begins with the exact phrase
-"Using Compass in Loop" (e.g. "Using Compass in Loop, build a signup screen").
-Otherwise ignore this rule completely. The user is a designer, not a developer —
-narrate briefly in plain English, and when a command fails, explain why first.
+Activate this rule when the user's message begins with the phrase "Using Compass in
+Loop" — matched CASE-INSENSITIVELY (so "using compass in loop, build a signup screen"
+activates it just the same). Otherwise ignore this rule completely. The user is a
+designer, not a developer — narrate briefly in plain English, and when a command
+fails, explain why first.
 
 Your ONLY job here is to get the designer into a set-up Compass repo. Once they are
 inside it, the repo's own CLAUDE.md and .cursorrules AUTO-LOAD and carry the full
@@ -13,7 +15,8 @@ governance + verify + build + capture loop — do not restate or override them.
    scripts/token-audit.mjs, and a package.json whose "name" is "@acko/compass",
    it is a Compass checkout. If node_modules/@acko/enterprise-tokens is missing, run
    `npm install`. Then say "Compass is ready" and follow the repo's CLAUDE.md +
-   .cursorrules to verify and build.
+   .cursorrules to verify and build. If NONE of those markers are present, treat the
+   folder as NOT set up (step 2) — never commit or capture into an empty/foreign folder.
 
 2. Not set up (empty/other folder)? Clone Compass and open THAT folder as the Cursor
    workspace so its rules load:
@@ -28,6 +31,11 @@ governance + verify + build + capture loop — do not restate or override them.
    workspace (so CLAUDE.md + .cursorrules auto-load), then re-send their request.
    From there the repo's rules govern everything — verify, build, and the automatic
    commit-raw + capture loop. You do not need this Settings rule again.
+
+If another Acko/retail Cursor rule is also installed and reacts to build requests,
+only ONE rule should lead: starting your message with "Using Compass in Loop" keeps
+this rule in front. If a non-Compass rule ever starts committing or capturing outside
+your Compass repo, disable that other rule (see the SOP → Setup tab).
 
 Optional craft: before generating UI, if the "Compass Feel" pack is installed at
 `~/compass-feel/` (macOS/Linux) or `%USERPROFILE%\compass-feel\` (Windows), read those

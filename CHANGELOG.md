@@ -13,7 +13,7 @@ major, shipped with a codemod · docs-only = patch).
 > live docs show the change** — a release isn't shipped until the live docs carry it.
 > Same enforcement discipline as the `.compass-build/STATE.md` decision log.
 
-## [Unreleased] — on `main`, 2026-07-21
+## [Unreleased] — on `main`, 2026-07-21 · updated 2026-09-10
 
 Designer-facing changes shipped this week. **What you do: nothing** — the rule pulls
 these automatically next time you say "Using Compass in Loop" (one-time exceptions:
@@ -43,6 +43,13 @@ paste the Settings bootstrap once, and build on a branch).
   share, Add-shortcut-to-Drive, paste the path once when the rule asks).
 - **This SOP page** + the **Compass Feel** craft pack (Setup tab) + a third-party
   skills gate.
+- **Setup rule is now version-stamped (v2) and case-insensitive** (2026-09-10). The
+  "Using Compass in Loop" trigger matches in any capitalisation, so a different Acko
+  rule can't quietly take over a build; the rule carries a version, and the repo warns
+  you to re-copy it from the SOP Setup tab if your pasted copy is stale. The build loop
+  now refuses to commit or capture in a folder that isn't a Compass checkout.
+  *What designers do differently: re-copy the Setup rule once from the SOP → Setup tab
+  (it shows the current version); nothing else.*
 
 ## [0.1.0] — 2026-07-07
 
