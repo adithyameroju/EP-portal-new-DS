@@ -295,6 +295,23 @@ UI in this repo, do these in order — automatically, without being asked:
    team (`main` is protected, so pushing your branch is the only way it arrives)."
    If the designer is on `main` (no feature branch), tell them to create one first:
    `git checkout -b <your-name>/<feature>`.
+6. REPORT WHERE THEY STAND — END your chat response with ONE result block, on EVERY
+   build. Never skip it: silence must never be ambiguous. Use the SCOPED report you
+   wrote in step 3 (`audit:compliance -- --entry …` — it printed "Report: …" and
+   "Scorecard: …"; `npm run audit:compliance` with no args also scores the latest
+   build, never the whole repo). Print exactly:
+     Compass score: <score>/100 · components used: <componentsUsed from the entry>
+   then EACH finding on its own line — rule · file:line · severity · point cost · fix:
+     C2-shape-match · app/page.tsx:28 · warning · −1 · Use Badge from @/components/ui/badge
+   (point cost is in the report as `pointCost`: errors −5, warnings −1.) If there are
+   ZERO findings, say exactly: "100/100, clean — nothing to fix."
+   Then the health-page link for THIS build. Check if the dev server is up:
+   `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000` — if it prints 200, give
+     http://localhost:3000/compass-health?build=<report-file-basename>.json
+   (it opens this build's scorecard: score, components, findings with point costs, and
+   the assumptions). If it is NOT up, give the one command first, then the same link:
+     npm run dev   →   then open the link above
+   Never make the designer hunt for the number or the page.
 
 > This build loop is the source of truth and is auto-loaded here — it does NOT depend
 > on any Cursor Settings paste. The Settings rule only bootstraps a fresh clone.

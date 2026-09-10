@@ -17,6 +17,7 @@ type Finding = {
   message?: string
   suggestion?: string
   component?: string
+  pointCost?: number // from the scoring rubric: errors −5, warnings −1
 }
 
 type Health = {
@@ -36,6 +37,28 @@ type Health = {
     skipped: string[]
     findings: Finding[]
   }
+}
+
+// THIS build's paired scorecard — what /compass-health?build=<report.json> opens.
+// The end-of-build chat link points here so the designer lands on their own card.
+type Scorecard = {
+  build: string
+  generatedAt: string | null
+  scope: string | null
+  score: number | null
+  startScore: number
+  errors: number
+  warnings: number
+  byRule: Record<string, number>
+  implemented: string[]
+  skipped: string[]
+  filesScanned: number
+  designer: string | null
+  source: string | null
+  components: string[]
+  assumptions: Array<{ text: string; category: string }>
+  findings: Finding[]
+  entryFile: string | null
 }
 
 const RULE_PLAIN: Record<string, string> = {
@@ -83,10 +106,64 @@ function Card(props: { children: React.ReactNode; className?: string }) {
   )
 }
 
+// One finding — rule · file:line · severity · point cost · fix. Shared by the live
+// list and THIS build's scorecard so both read identically.
+function FindingRow({ f }: { f: Finding }) {
+  return (
+    <div className="rounded-md border border-border p-3">
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span
+          className={`rounded px-1.5 py-0.5 font-medium ${
+            f.level === 'error' ? 'text-destructive' : 'text-muted-foreground'
+          }`}
+        >
+          {(f.level ?? '').toUpperCase()}
+        </span>
+        <span
+          className="font-medium text-foreground"
+          title={RULE_PLAIN[(f.ruleId ?? '').split('-')[0]] ?? f.ruleId}
+        >
+          {f.ruleId}
+        </span>
+        <span className="text-muted-foreground">
+          {f.file}
+          {f.line ? `:${f.line}` : ''}
+        </span>
+        {f.component && (
+          <span className="rounded border border-border bg-muted px-1.5 py-0.5 text-muted-foreground">
+            {f.component}
+          </span>
+        )}
+        {typeof f.pointCost === 'number' && (
+          <span
+            className={`ml-auto rounded border px-1.5 py-0.5 font-medium ${
+              f.level === 'error' ? 'border-destructive text-destructive' : 'border-border text-foreground'
+            }`}
+            title="What this finding costs your score (from the scoring rubric)"
+          >
+            {f.pointCost} pts
+          </span>
+        )}
+      </div>
+      {f.message && <p className="mt-1 text-sm text-foreground">{f.message}</p>}
+      {f.suggestion && <p className="mt-1 text-sm text-muted-foreground">{f.suggestion}</p>}
+
+      {/* Plain-English, ready-to-paste fix instruction */}
+      <div className="mt-2 rounded-md border border-border bg-muted p-2">
+        <p className="text-xs font-medium text-foreground">To fix, prompt Cursor:</p>
+        <p className="mt-1 text-sm text-foreground">{fixPrompt(f)}</p>
+      </div>
+    </div>
+  )
+}
+
 export default function CompassHealthPage() {
   const [data, setData] = useState<Health | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  // THIS build's card, when opened via ?build=<report.json> (the end-of-build chat link).
+  const [scorecard, setScorecard] = useState<Scorecard | null>(null)
+  const [scorecardError, setScorecardError] = useState<string | null>(null)
 
   const run = useCallback(async () => {
     setLoading(true)
@@ -113,6 +190,22 @@ export default function CompassHealthPage() {
     run()
   }, [run])
 
+  useEffect(() => {
+    // ?build=<report.json> — the end-of-build chat link — opens THIS build's scorecard.
+    // Read from the URL directly (client page) so no Suspense boundary is needed.
+    const build = new URLSearchParams(window.location.search).get('build')
+    if (!build) return
+    fetch(`/api/compass-health?build=${encodeURIComponent(build)}`, { cache: 'no-store' })
+      .then(async (res) => {
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error ?? `Request failed (${res.status})`)
+        setScorecard(json.scorecard as Scorecard)
+      })
+      .catch((e) =>
+        setScorecardError(e instanceof Error ? e.message : "Could not load this build's scorecard."),
+      )
+  }, [])
+
   const gateLine = data && (
     <p className="text-xs text-muted-foreground">
       Repo commit gate (whole project):{' '}
@@ -137,6 +230,95 @@ export default function CompassHealthPage() {
           {loading ? 'Running…' : 'Re-run checks'}
         </Button>
       </header>
+
+      {/* THIS build's scorecard — opened by the end-of-build chat link (?build=…) */}
+      {scorecardError && (
+        <Card className="mb-6 border-destructive">
+          <h2 className="text-base font-semibold text-destructive">Couldn&rsquo;t open this build&rsquo;s scorecard</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{scorecardError}</p>
+        </Card>
+      )}
+
+      {scorecard && (
+        <Card className="mb-8 border-primary">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-medium text-primary">This build</p>
+              <h2 className="text-lg font-semibold text-foreground">
+                {scorecard.source ?? scorecard.scope ?? scorecard.build}
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {scorecard.designer ? `${scorecard.designer} · ` : ''}
+                {scorecard.generatedAt ? new Date(scorecard.generatedAt).toLocaleString() : ''}
+                {' · '}
+                {scorecard.filesScanned} file{scorecard.filesScanned === 1 ? '' : 's'} scored
+              </p>
+            </div>
+            <span
+              className={`rounded-md border px-3 py-1 text-lg font-semibold ${
+                scorecard.errors > 0 ? 'border-destructive text-destructive' : 'border-border text-foreground'
+              }`}
+            >
+              {scorecard.score ?? '—'} / {scorecard.startScore}
+            </span>
+          </div>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-sm font-medium text-foreground">Components used</p>
+              {scorecard.components.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {scorecard.components.map((c) => (
+                    <span key={c} className="rounded-md border border-border bg-muted px-2 py-1 text-xs text-foreground">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-muted-foreground">None recorded.</p>
+              )}
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">Checks</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Ran {scorecard.implemented.join(', ') || '—'}
+                {scorecard.skipped.length > 0 ? ` · skipped ${scorecard.skipped.join(', ')}` : ''}
+                {' · '}
+                {scorecard.errors} error{scorecard.errors === 1 ? '' : 's'}, {scorecard.warnings} warning
+                {scorecard.warnings === 1 ? '' : 's'}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <p className="text-sm font-medium text-foreground">Findings</p>
+            {scorecard.findings.length === 0 ? (
+              <p className="mt-2 text-sm text-foreground">
+                {scorecard.score ?? scorecard.startScore}/{scorecard.startScore}, clean — nothing to fix.
+              </p>
+            ) : (
+              <div className="mt-2 space-y-3">
+                {scorecard.findings.map((f, i) => (
+                  <FindingRow key={i} f={f} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {scorecard.assumptions.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm font-medium text-foreground">What the AI assumed — confirm or correct</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                {scorecard.assumptions.map((a, i) => (
+                  <li key={i}>
+                    <span className="font-medium text-foreground">{a.category}:</span> {a.text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Card>
+      )}
 
       {error && (
         <Card className="mb-6 border-destructive">
@@ -254,40 +436,7 @@ export default function CompassHealthPage() {
 
               <div className="space-y-3">
                 {data.compliance.findings.map((f, i) => (
-                  <div key={i} className="rounded-md border border-border p-3">
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                      <span
-                        className={`rounded px-1.5 py-0.5 font-medium ${
-                          f.level === 'error' ? 'text-destructive' : 'text-muted-foreground'
-                        }`}
-                      >
-                        {(f.level ?? '').toUpperCase()}
-                      </span>
-                      <span
-                        className="font-medium text-foreground"
-                        title={RULE_PLAIN[(f.ruleId ?? '').split('-')[0]] ?? f.ruleId}
-                      >
-                        {f.ruleId}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {f.file}
-                        {f.line ? `:${f.line}` : ''}
-                      </span>
-                      {f.component && (
-                        <span className="rounded border border-border bg-muted px-1.5 py-0.5 text-muted-foreground">
-                          {f.component}
-                        </span>
-                      )}
-                    </div>
-                    {f.message && <p className="mt-1 text-sm text-foreground">{f.message}</p>}
-                    {f.suggestion && <p className="mt-1 text-sm text-muted-foreground">{f.suggestion}</p>}
-
-                    {/* Plain-English, ready-to-paste fix instruction */}
-                    <div className="mt-2 rounded-md border border-border bg-muted p-2">
-                      <p className="text-xs font-medium text-foreground">To fix, prompt Cursor:</p>
-                      <p className="mt-1 text-sm text-foreground">{fixPrompt(f)}</p>
-                    </div>
-                  </div>
+                  <FindingRow key={i} f={f} />
                 ))}
               </div>
             </Card>

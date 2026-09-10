@@ -50,6 +50,14 @@ paste the Settings bootstrap once, and build on a branch).
   now refuses to commit or capture in a folder that isn't a Compass checkout.
   *What designers do differently: re-copy the Setup rule once from the SOP → Setup tab
   (it shows the current version); nothing else.*
+- **Every build now ends with a scorecard** (2026-09-10). Cursor's reply ends with your
+  Compass score /100, the components you used, and each finding on one line —
+  rule · file:line · severity · point cost · fix — or "100/100, clean — nothing to
+  fix." Then a link that opens *this build's* card on the health page
+  (`/compass-health?build=…`): score, components, findings with point costs, and what
+  the AI assumed. `npm run audit:compliance` now scores your **latest build** by
+  default — never the whole repo (`--repo` is an explicit opt-in).
+  *What designers do differently: nothing — read the block at the end of each build.*
 
 ## [0.1.0] — 2026-07-07
 

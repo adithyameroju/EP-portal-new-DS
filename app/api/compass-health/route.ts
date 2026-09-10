@@ -6,9 +6,16 @@
 // commands, so it MUST NEVER run in a deployed build: the guard below refuses
 // when NODE_ENV === 'production'.
 //
+// Two modes:
+//   GET /api/compass-health                → live scoped run over your changed files
+//   GET /api/compass-health?build=<f.json> → THIS build's scorecard: the paired report
+//                                            drift-log/reports/<f.json> (+ its ledger
+//                                            entry), no re-run. This is what the
+//                                            end-of-build chat link opens.
+//
 // Scaffolded by the "Using Compass in Loop" setup. Safe to delete.
 
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -19,7 +26,60 @@ export const dynamic = 'force-dynamic' // never cache; always re-run on request
 const SCOPE_EXTS = ['.tsx', '.ts', '.jsx', '.css']
 const SELF = ['app/compass-health/', 'app/api/compass-health/'] // never score this tool itself
 
+type Finding = {
+  ruleId?: string
+  level?: string
+  file?: string
+  line?: number
+  message?: string
+  suggestion?: string
+  component?: string
+  pointCost?: number
+}
+
+type Assumption = { text: string; category: string }
+
+type Report = {
+  generatedAt?: string
+  mode?: string
+  scope?: string
+  entry?: string | null
+  rubric?: { startScore?: number; errorWeight?: number; warningWeight?: number }
+  checks?: { implemented?: string[]; skipped?: string[] }
+  filesScanned?: number
+  totals?: { errors?: number; warnings?: number; byRule?: Record<string, number> }
+  score?: number
+  designer?: string | null
+  source?: string | null
+  componentsUsed?: string[]
+  assumptions?: Assumption[]
+  findings?: Finding[]
+}
+
+type Entry = {
+  designer?: string
+  source?: string
+  componentsUsed?: string[]
+  assumptions?: Assumption[]
+}
+
 type ScriptRun = { ok: boolean; code: number | null; stdout: string; stderr: string }
+
+// Point cost per finding from the report's OWN rubric (errors −5, warnings −1 by
+// default). Reports written before 2026-09-10 have no pointCost — derive it.
+function withCost(findings: Finding[], rubric?: Report['rubric']): Finding[] {
+  const e = rubric?.errorWeight ?? 5
+  const w = rubric?.warningWeight ?? 1
+  return findings.map((f) => ({ ...f, pointCost: f.pointCost ?? -(f.level === 'error' ? e : w) }))
+}
+
+function readJson<T>(abs: string): T | null {
+  try {
+    return JSON.parse(fs.readFileSync(abs, 'utf8')) as T
+  } catch {
+    return null
+  }
+}
 
 function runScript(cwd: string, args: string[]): ScriptRun {
   const r = spawnSync(process.execPath, args, {
@@ -59,7 +119,7 @@ function scopeFiles(cwd: string): string[] {
   )
 }
 
-function newestReport(cwd: string): Record<string, unknown> | null {
+function newestReport(cwd: string): Report | null {
   const dir = path.join(cwd, 'drift-log', 'reports')
   if (!fs.existsSync(dir)) return null
   const files = fs
@@ -68,14 +128,10 @@ function newestReport(cwd: string): Record<string, unknown> | null {
     .map((f) => ({ f, m: fs.statSync(path.join(dir, f)).mtimeMs }))
     .sort((a, b) => b.m - a.m)
   if (files.length === 0) return null
-  try {
-    return JSON.parse(fs.readFileSync(path.join(dir, files[0].f), 'utf8'))
-  } catch {
-    return null
-  }
+  return readJson<Report>(path.join(dir, files[0].f))
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   // HARD REQUIREMENT: never execute in production.
   if (process.env.NODE_ENV === 'production') {
     return NextResponse.json(
@@ -98,6 +154,57 @@ export async function GET() {
   }
 
   const ranAt = new Date().toISOString()
+
+  // ── Scorecard mode: THIS build's paired report, no re-run ──────────────────
+  const build = request.nextUrl.searchParams.get('build')
+  if (build) {
+    const name = path.basename(build) // a filename only — never a path
+    if (!name.endsWith('.json')) {
+      return NextResponse.json({ error: 'build must be a report filename ending in .json' }, { status: 400 })
+    }
+    const report = readJson<Report>(path.join(cwd, 'drift-log', 'reports', name))
+    if (!report) {
+      return NextResponse.json(
+        {
+          error:
+            `No report named ${name} in drift-log/reports/ — it may have been cleaned up. ` +
+            'Re-run the build, or press "Re-run checks" for a live score.',
+        },
+        { status: 404 },
+      )
+    }
+    // The paired ledger entry (committed evidence) — only ever read from inside the repo.
+    let entry: Entry | null = null
+    if (report.entry) {
+      const abs = path.resolve(cwd, report.entry)
+      if (abs.startsWith(cwd + path.sep)) entry = readJson<Entry>(abs)
+    }
+    return NextResponse.json({
+      ranAt,
+      scorecard: {
+        build: name,
+        generatedAt: report.generatedAt ?? null,
+        mode: report.mode ?? null,
+        scope: report.scope ?? null,
+        score: report.score ?? null,
+        startScore: report.rubric?.startScore ?? 100,
+        errors: report.totals?.errors ?? 0,
+        warnings: report.totals?.warnings ?? 0,
+        byRule: report.totals?.byRule ?? {},
+        implemented: report.checks?.implemented ?? [],
+        skipped: report.checks?.skipped ?? [],
+        filesScanned: report.filesScanned ?? 0,
+        designer: report.designer ?? entry?.designer ?? null,
+        source: report.source ?? entry?.source ?? null,
+        components: report.componentsUsed?.length ? report.componentsUsed : (entry?.componentsUsed ?? []),
+        assumptions: report.assumptions?.length ? report.assumptions : (entry?.assumptions ?? []),
+        findings: withCost(report.findings ?? [], report.rubric).slice(0, 200),
+        entryFile: report.entry ?? null,
+      },
+    })
+  }
+
+  // ── Live mode: scoped run over your changed files ──────────────────────────
   const files = scopeFiles(cwd)
 
   // Whole-repo commit gate — pass/fail only, so you know nothing project-wide is broken.
@@ -109,25 +216,15 @@ export async function GET() {
     return NextResponse.json({ ranAt, empty: true, scope: { files: [], count: 0 }, repoGate })
   }
 
-  // Scoped compliance over YOUR files (C1 token discipline + C2–C6; C7a is repo-level, skipped).
+  // Scoped compliance over YOUR files (C1 token discipline + C2–C6 + C8; C7a is repo-level, skipped).
   runScript(cwd, ['scripts/compliance-audit.mjs', '--files', ...files])
-  const report = newestReport(cwd)
+  const r = newestReport(cwd)
 
   // The rich trend dashboard is an OWNER/admin artifact (scripts/owner-dashboard.mjs),
   // not part of this build-only designer view. We deliberately do NOT generate or
   // expose it here.
 
-  const r = report as
-    | {
-        score?: number
-        rubric?: { startScore?: number }
-        totals?: { errors?: number; warnings?: number; byRule?: Record<string, number> }
-        checks?: { implemented?: string[]; skipped?: string[] }
-        findings?: Array<{ ruleId?: string; level?: string }>
-      }
-    | null
-
-  const findings = r?.findings ?? []
+  const findings = withCost(r?.findings ?? [], r?.rubric)
   const c1 = findings.filter((f) => String(f.ruleId ?? '').startsWith('C1'))
   const c1Errors = c1.filter((f) => f.level === 'error').length
   const c1Warnings = c1.filter((f) => f.level === 'warning').length

@@ -215,6 +215,8 @@ export default function CompassSop() {
               <li><strong>The Setup rule is version-stamped (now v2)</strong> — if your pasted copy ever goes stale, Cursor tells you to re-copy it. No more silent staleness.</li>
               <li><strong>Case-insensitive trigger</strong> — &ldquo;using compass in loop&rdquo; works however you capitalise it, so another Acko/retail rule can&rsquo;t quietly take over your build.</li>
               <li><strong>Safer capture</strong> — a build is only ever committed or captured inside a real Compass checkout, never an empty or foreign folder.</li>
+              <li><strong>A scorecard at the end of every build</strong> — Cursor&rsquo;s reply now ends with your score /100, the components you used, and each finding on one line (rule · file:line · severity · point cost · fix) — or &ldquo;100/100, clean&rdquo;. Plus a link that opens <em>this build&rsquo;s</em> card on the health page.</li>
+              <li><strong>The health page shows what each finding costs</strong> (−5 per error, −1 per warning) and can open a single build&rsquo;s card — score, components, findings, and what the AI assumed.</li>
             </ul>
           </Card>
 

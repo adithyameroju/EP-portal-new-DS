@@ -75,8 +75,12 @@
  * scoring — the compliance audit grades feature builds, not stock primitives.
  *
  * Usage:
- *   node scripts/compliance-audit.mjs                    # whole repo (minus components/ui/)
- *   node scripts/compliance-audit.mjs a.tsx b.tsx        # explicit files
+ *   node scripts/compliance-audit.mjs                    # DEFAULT: score your LATEST BUILD
+ *                                                        # (newest drift-log entry) — never
+ *                                                        # the whole repo (owner ruling 2026-09-10)
+ *   node scripts/compliance-audit.mjs --repo             # whole repo (minus components/ui/) —
+ *                                                        # explicit opt-in; design-system-wide noise
+ *   node scripts/compliance-audit.mjs --files a.tsx b.tsx # explicit files
  *   node scripts/compliance-audit.mjs --entry drift-log/entries/<e>.json
  *                                                        # score one logged build
  *   node scripts/compliance-audit.mjs --parity           # self-test: replicate
@@ -1207,16 +1211,46 @@ function parseArgs(argv) {
     const a = argv[i];
     if (a === '--parity') args.parity = true;
     else if (a === '--no-report') args.noReport = true;
+    else if (a === '--repo') args.repo = true;
+    else if (a === '--files') { /* explicit files mode — the paths follow as positionals */ }
     else if (a === '--entry') args.entry = argv[++i];
     else if (!a.startsWith('--')) args.files.push(a);
   }
   return args;
 }
 
+// The designer's LATEST BUILD = the newest ledger entry (ISO-timestamp filename
+// prefix, so a lexical sort is chronological). Demo fixtures are skipped.
+function newestRealEntry() {
+  const dir = path.join(ROOT, 'drift-log', 'entries');
+  if (!fs.existsSync(dir)) return null;
+  const names = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith('.json') && !f.includes('__demo-designer__'))
+    .sort();
+  return names.length ? path.join('drift-log', 'entries', names[names.length - 1]) : null;
+}
+
 async function run() {
   const args = parseArgs(process.argv.slice(2));
   const mode = { parity: !!args.parity };
   const rubric = loadRubric();
+
+  // DEFAULT SCOPE = the designer's latest build, NEVER the whole repo (owner ruling
+  // 2026-09-10). The repo-wide score is design-system-wide noise (30/100 on main) that
+  // hides the designer's own result; repo-wide is explicit opt-in via --repo. With no
+  // scope and no build yet, say so and stop — never silently fall back to repo-wide.
+  if (!args.entry && args.files.length === 0 && !args.repo && !mode.parity) {
+    const latest = newestRealEntry();
+    if (!latest) {
+      console.log('\n🧭 Compass Compliance Audit\n');
+      console.log('  No build to score yet — run a build first ("Using Compass in Loop, …"),');
+      console.log('  or pass --repo for the whole-repo audit (design-system-wide, not your build).\n');
+      process.exit(0);
+    }
+    args.entry = latest;
+    console.log(`\n  (no scope given → scoring your latest build: ${latest})`);
+  }
 
   // Meta-driven checks: load once (skipped in parity mode, which is C1-only).
   const metaIndex = mode.parity ? null : await loadMetaIndex();
@@ -1228,6 +1262,7 @@ async function run() {
   let scanFiles;
   let scopeLabel;
   let entryRel = null;
+  let entryMeta = null; // designer / source / components / assumptions → the paired scorecard
   let modeName;
 
   if (args.entry) {
@@ -1239,6 +1274,12 @@ async function run() {
       process.exit(1);
     }
     const entry = JSON.parse(fs.readFileSync(entryAbs, 'utf8'));
+    entryMeta = {
+      designer: entry.designer ?? null,
+      source: entry.source ?? null,
+      componentsUsed: entry.componentsUsed || [],
+      assumptions: entry.assumptions || [],
+    };
     scopeLabel = path.basename(entryAbs, '.json').split('__').pop() || 'entry';
     scanFiles = (entry.targetFiles || [])
       .map((f) => path.resolve(ROOT, f))
@@ -1305,6 +1346,12 @@ async function run() {
   }
   const score = scoreOf(errors.length, warnings.length, rubric);
 
+  // Point cost per finding, derived from the rubric (errors −5, warnings −1 by
+  // default) so the chat summary and the health page never have to recompute it.
+  for (const f of findings) {
+    f.pointCost = -(f.level === 'error' ? rubric.errorWeight : rubric.warningWeight);
+  }
+
   // ── Console output
   const byFile = {};
   for (const f of findings) (byFile[f.file] ||= []).push(f);
@@ -1312,7 +1359,7 @@ async function run() {
     console.log(`\n  ${file}`);
     for (const f of fList.sort((a, b) => a.line - b.line)) {
       const icon = f.level === 'error' ? '✗' : '⚠';
-      console.log(`    ${icon} ${f.level.toUpperCase().padEnd(7)} ${f.ruleId.padEnd(20)} ${f.line ? `line ${f.line}` : ''}`);
+      console.log(`    ${icon} ${f.level.toUpperCase().padEnd(7)} ${f.ruleId.padEnd(20)} ${f.line ? `line ${f.line}`.padEnd(9) : ''.padEnd(9)} ${f.pointCost} pts`);
       console.log(`           ${f.message}`);
       console.log(`           ${f.suggestion}`);
     }
@@ -1355,6 +1402,12 @@ async function run() {
       filesScanned: scanFiles.length,
       totals: { errors: errors.length, warnings: warnings.length, byRule },
       score,
+      // Paired scorecard data (entry mode): what the build used + assumed, so the
+      // health page can render THIS build's card from the report alone.
+      designer: entryMeta?.designer ?? null,
+      source: entryMeta?.source ?? null,
+      componentsUsed: entryMeta?.componentsUsed ?? [],
+      assumptions: entryMeta?.assumptions ?? [],
       perFile,
       perComponent,
       findings,
@@ -1364,6 +1417,10 @@ async function run() {
     const outPath = path.join(REPORTS_DIR, `${stamp}__${scopeLabel}.json`);
     fs.writeFileSync(outPath, JSON.stringify(report, null, 2) + '\n');
     console.log(`\n  Report: ${relOf(outPath)}`);
+    if (modeName === 'entry') {
+      console.log(`  Scorecard: http://localhost:3000/compass-health?build=${path.basename(outPath)}`);
+      console.log('             (opens THIS build\'s card — dev server must be running: npm run dev)');
+    }
     console.log('  Dashboard: npm run dashboard (regenerates drift-log/dashboard.html)');
   }
 

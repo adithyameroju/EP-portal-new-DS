@@ -43,6 +43,7 @@
     "start": "next start",
     "lint": "eslint",
     "audit": "node scripts/token-audit.mjs",
+    "check:bootstrap": "node scripts/check-bootstrap-consistency.mjs",
     "audit:compliance": "node scripts/compliance-audit.mjs",
     "log": "node scripts/compass-log.mjs",
     "dashboard": "node scripts/generate-dashboard.mjs",
