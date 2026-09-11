@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-09-11T07:44:23.328Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "basic signup flow with name, email, phone, and submit",
+  "targetFiles": [
+    "app/page.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "button",
+    "card",
+    "input",
+    "label"
+  ],
+  "assumptions": [
+    {
+      "text": "Card with Label + Input for a 3-field card form, per field spec for simple card-level forms",
+      "category": "component-choice"
+    },
+    {
+      "text": "Primary Submit button in CardFooter; one default button per card",
+      "category": "component-choice"
+    },
+    {
+      "text": "Page uses bg-background, semantic text tokens, scale spacing (p-8, gap-4, gap-1.5, max-w-sm)",
+      "category": "token"
+    },
+    {
+      "text": "Title Create an account; placeholders Rahul Sharma, rahul@acko.com, +91 98765 43210 from field spec examples",
+      "category": "content"
+    },
+    {
+      "text": "Client-side form preventDefault; native required; demo Alert on submit with no backend",
+      "category": "behavior"
+    }
+  ],
+  "gitHead": "c9db45fed9a74396edace9232191f3d355059dcb"
+}
