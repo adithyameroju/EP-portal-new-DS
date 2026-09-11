@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-09-11T08:08:00.563Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Figma employer portal dashboard frame 5849:23259",
+  "targetFiles": [
+    "app/dashboard/page.tsx",
+    "components/blocks/employer-dashboard.tsx"
+  ],
+  "componentsUsed": [
+    "avatar",
+    "button",
+    "card",
+    "chart",
+    "input",
+    "sidebar",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Used Compass Sidebar, Card, Tabs, Input, Avatar, Button, and Chart primitives; user declined Code Connect and matching interface icons use Lucide",
+      "category": "component-choice"
+    },
+    {
+      "text": "Mapped Figma purple orange and blue data colors to semantic chart-1 through chart-4 in series order rather than hardcoding source hex values",
+      "category": "token"
+    },
+    {
+      "text": "Used Compass responsive page spacing and default 256px Sidebar instead of the Figma frame's 238px fixed sidebar",
+      "category": "spacing"
+    },
+    {
+      "text": "Used rounded-2xl flat metric cards where Figma shows 16px borderless surfaces, while retaining Compass composition",
+      "category": "styling"
+    },
+    {
+      "text": "Preserved visible dashboard copy and data, correcting the Figma typo treatements to treatments",
+      "category": "content"
+    },
+    {
+      "text": "Tabs switch among static copies of the claims chart, navigation uses page anchors, and action controls have no backend routes",
+      "category": "behavior"
+    },
+    {
+      "text": "Saved exact Figma quick-action artwork at 64px, entity artwork at 24px, and composed VIMA and ACKO marks from local exports",
+      "category": "styling"
+    }
+  ],
+  "gitHead": "cd62aec74c1c96247e6090c6d9033e7d0a8b215d"
+}
