@@ -6,7 +6,6 @@ import {
   BarChart3,
   Bell,
   Bolt,
-  ChevronDown,
   ChevronRight,
   CircleHelp,
   FileCheck2,
@@ -33,6 +32,7 @@ import {
   YAxis,
 } from "recharts"
 
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -52,11 +52,19 @@ import {
 } from "@/components/ui/chart"
 import { Input } from "@/components/ui/input"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
@@ -78,25 +86,102 @@ const balanceData = [
   { month: "Aug 25", balance: 54 },
 ]
 
-const claimsData = [
-  { month: "February", approved: 22, inProgress: 2, rejected: 4, completed: 16 },
-  { month: "March", approved: 23, inProgress: 20, rejected: 18, completed: 13 },
-  { month: "April", approved: 22, inProgress: 2, rejected: 4, completed: 16 },
-  { month: "May", approved: 23, inProgress: 20, rejected: 18, completed: 13 },
-  { month: "June", approved: 15, inProgress: 2, rejected: 7, completed: 10 },
-  { month: "July", approved: 22, inProgress: 2, rejected: 4, completed: 16 },
-]
-
 const balanceConfig = {
   balance: { label: "CD Balance", color: "var(--chart-1)" },
 } satisfies ChartConfig
 
-const claimsConfig = {
+const statusConfig = {
   approved: { label: "Approved", color: "var(--chart-1)" },
   inProgress: { label: "In Progress", color: "var(--chart-2)" },
   rejected: { label: "Rejected", color: "var(--chart-3)" },
   completed: { label: "Completed", color: "var(--chart-4)" },
 } satisfies ChartConfig
+
+const familyConfig = {
+  employee: { label: "Employee", color: "var(--chart-1)" },
+  spouse: { label: "Spouse", color: "var(--chart-2)" },
+  child: { label: "Child", color: "var(--chart-3)" },
+  parent: { label: "Parent", color: "var(--chart-4)" },
+} satisfies ChartConfig
+
+const treatmentConfig = {
+  hospitalisation: { label: "Hospitalisation", color: "var(--chart-1)" },
+  dayCare: { label: "Day care", color: "var(--chart-2)" },
+  maternity: { label: "Maternity", color: "var(--chart-3)" },
+} satisfies ChartConfig
+
+const claimsViews = {
+  status: {
+    config: statusConfig,
+    series: ["approved", "inProgress", "rejected", "completed"],
+    diagram: "grouped",
+    info: "200 Claims were processed this week. Avg claim approval time is 2.5 days.",
+    count: [
+      { month: "February", approved: 22, inProgress: 2, rejected: 4, completed: 16 },
+      { month: "March", approved: 23, inProgress: 20, rejected: 18, completed: 13 },
+      { month: "April", approved: 22, inProgress: 2, rejected: 4, completed: 16 },
+      { month: "May", approved: 23, inProgress: 20, rejected: 18, completed: 13 },
+      { month: "June", approved: 15, inProgress: 2, rejected: 7, completed: 10 },
+      { month: "July", approved: 22, inProgress: 2, rejected: 4, completed: 16 },
+    ],
+    amount: [
+      { month: "February", approved: 820, inProgress: 110, rejected: 90, completed: 640 },
+      { month: "March", approved: 940, inProgress: 760, rejected: 420, completed: 610 },
+      { month: "April", approved: 880, inProgress: 95, rejected: 130, completed: 700 },
+      { month: "May", approved: 980, inProgress: 810, rejected: 390, completed: 670 },
+      { month: "June", approved: 620, inProgress: 80, rejected: 170, completed: 430 },
+      { month: "July", approved: 900, inProgress: 120, rejected: 150, completed: 650 },
+    ],
+  },
+  member: {
+    config: familyConfig,
+    series: ["employee", "spouse", "child", "parent"],
+    diagram: "stacked",
+    info: "Employees account for the highest claim volume, followed by spouses and children.",
+    count: [
+      { month: "February", employee: 13, spouse: 8, child: 5, parent: 3 },
+      { month: "March", employee: 18, spouse: 10, child: 7, parent: 5 },
+      { month: "April", employee: 15, spouse: 9, child: 6, parent: 4 },
+      { month: "May", employee: 20, spouse: 12, child: 8, parent: 6 },
+      { month: "June", employee: 12, spouse: 7, child: 4, parent: 3 },
+      { month: "July", employee: 17, spouse: 11, child: 7, parent: 5 },
+    ],
+    amount: [
+      { month: "February", employee: 510, spouse: 290, child: 180, parent: 220 },
+      { month: "March", employee: 690, spouse: 360, child: 250, parent: 310 },
+      { month: "April", employee: 580, spouse: 330, child: 210, parent: 270 },
+      { month: "May", employee: 760, spouse: 430, child: 290, parent: 350 },
+      { month: "June", employee: 450, spouse: 260, child: 160, parent: 200 },
+      { month: "July", employee: 650, spouse: 390, child: 240, parent: 300 },
+    ],
+  },
+  treatments: {
+    config: treatmentConfig,
+    series: ["hospitalisation", "dayCare", "maternity"],
+    diagram: "line",
+    info: "Hospitalisation remains the most common treatment type across the period.",
+    count: [
+      { month: "February", hospitalisation: 24, dayCare: 10, maternity: 6 },
+      { month: "March", hospitalisation: 29, dayCare: 14, maternity: 8 },
+      { month: "April", hospitalisation: 21, dayCare: 13, maternity: 7 },
+      { month: "May", hospitalisation: 32, dayCare: 16, maternity: 10 },
+      { month: "June", hospitalisation: 18, dayCare: 9, maternity: 5 },
+      { month: "July", hospitalisation: 27, dayCare: 15, maternity: 9 },
+    ],
+    amount: [
+      { month: "February", hospitalisation: 920, dayCare: 330, maternity: 410 },
+      { month: "March", hospitalisation: 1150, dayCare: 440, maternity: 520 },
+      { month: "April", hospitalisation: 840, dayCare: 390, maternity: 460 },
+      { month: "May", hospitalisation: 1280, dayCare: 510, maternity: 610 },
+      { month: "June", hospitalisation: 710, dayCare: 280, maternity: 350 },
+      { month: "July", hospitalisation: 1080, dayCare: 470, maternity: 550 },
+    ],
+  },
+}
+
+type ClaimsView = keyof typeof claimsViews
+type ClaimsMetric = "count" | "amount"
+type ClaimsDatum = Record<string, string | number>
 
 const totalLivesData = [
   { name: "Employees", value: 60, fill: "var(--chart-2)" },
@@ -199,7 +284,7 @@ function DonutChart({
   return (
     <div className="relative size-24 shrink-0">
       <ChartContainer
-        config={claimsConfig}
+        config={statusConfig}
         className="size-24 aspect-square"
         initialDimension={{ width: 96, height: 96 }}
       >
@@ -303,7 +388,11 @@ function BalanceCard() {
           className="h-60 w-full aspect-auto"
           initialDimension={{ width: 320, height: 240 }}
         >
-          <LineChart accessibilityLayer data={balanceData}>
+          <LineChart
+            accessibilityLayer
+            data={balanceData}
+            margin={{ top: 8, right: 16, bottom: 0, left: 8 }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -317,6 +406,7 @@ function BalanceCard() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}K`}
+              width={36}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Line
@@ -379,36 +469,27 @@ function QuickActions() {
   )
 }
 
-function ClaimsChart() {
+function ClaimsDiagram({
+  view,
+  metric,
+}: {
+  view: ClaimsView
+  metric: ClaimsMetric
+}) {
+  const settings = claimsViews[view]
+  const data: ClaimsDatum[] = settings[metric]
+  const tickFormatter = (value: number) =>
+    metric === "amount" ? `₹${value}K` : String(value)
+
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-2 rounded-xl bg-muted px-3 py-2">
-          <Info className="size-5 shrink-0" />
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold">200 Claims</span> were processed
-            this week. Avg claim approval time is{" "}
-            <span className="font-semibold">2.5 days</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-foreground">
-            View claims by
-          </span>
-          <Button type="button" size="sm">
-            Count
-          </Button>
-          <Button type="button" variant="outline" size="sm">
-            Amount
-          </Button>
-        </div>
-      </div>
-      <ChartContainer
-        config={claimsConfig}
-        className="h-80 w-full aspect-auto"
-        initialDimension={{ width: 900, height: 320 }}
-      >
-        <BarChart accessibilityLayer data={claimsData}>
+    <ChartContainer
+      key={`${view}-${metric}`}
+      config={settings.config}
+      className="h-80 w-full aspect-auto"
+      initialDimension={{ width: 900, height: 320 }}
+    >
+      {settings.diagram === "line" ? (
+        <LineChart accessibilityLayer data={data}>
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="month"
@@ -417,40 +498,85 @@ function ClaimsChart() {
             tickMargin={10}
           />
           <YAxis
-            domain={[0, 40]}
-            ticks={[0, 10, 20, 30, 40]}
             tickLine={false}
             axisLine={false}
+            tickFormatter={tickFormatter}
+            width={48}
+          />
+          <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+          <ChartLegend content={<ChartLegendContent />} />
+          {settings.series.map((series) => (
+            <Line
+              key={series}
+              type="monotone"
+              dataKey={series}
+              stroke={`var(--color-${series})`}
+              strokeWidth={3}
+              dot={false}
+              isAnimationActive={false}
+            />
+          ))}
+        </LineChart>
+      ) : (
+        <BarChart accessibilityLayer data={data}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="month"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={10}
+          />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={tickFormatter}
+            width={48}
           />
           <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
           <ChartLegend content={<ChartLegendContent />} />
-          <Bar
-            dataKey="approved"
-            fill="var(--color-approved)"
-            radius={4}
-            isAnimationActive={false}
-          />
-          <Bar
-            dataKey="inProgress"
-            fill="var(--color-inProgress)"
-            radius={4}
-            isAnimationActive={false}
-          />
-          <Bar
-            dataKey="rejected"
-            fill="var(--color-rejected)"
-            radius={4}
-            isAnimationActive={false}
-          />
-          <Bar
-            dataKey="completed"
-            fill="var(--color-completed)"
-            radius={4}
-            isAnimationActive={false}
-          />
+          {settings.series.map((series) => (
+            <Bar
+              key={series}
+              dataKey={series}
+              fill={`var(--color-${series})`}
+              stackId={settings.diagram === "stacked" ? "claims" : undefined}
+              radius={4}
+              isAnimationActive={false}
+            />
+          ))}
         </BarChart>
-      </ChartContainer>
-    </div>
+      )}
+    </ChartContainer>
+  )
+}
+
+function ClaimsMetricTabs({ view }: { view: ClaimsView }) {
+  const settings = claimsViews[view]
+
+  return (
+    <Tabs defaultValue="count" className="gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <Alert className="lg:max-w-2xl">
+          <Info />
+          <AlertDescription>{settings.info}</AlertDescription>
+        </Alert>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-foreground">
+            View claims by
+          </span>
+          <TabsList>
+            <TabsTrigger value="count">Count</TabsTrigger>
+            <TabsTrigger value="amount">Amount</TabsTrigger>
+          </TabsList>
+        </div>
+      </div>
+      <TabsContent value="count">
+        <ClaimsDiagram view={view} metric="count" />
+      </TabsContent>
+      <TabsContent value="amount">
+        <ClaimsDiagram view={view} metric="amount" />
+      </TabsContent>
+    </Tabs>
   )
 }
 
@@ -462,7 +588,7 @@ function ClaimsTrend() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="status" className="gap-6">
-          <TabsList className="grid h-auto w-full grid-cols-1 gap-2 rounded-2xl p-3 sm:grid-cols-3">
+          <TabsList className="w-full justify-start overflow-x-auto">
             <TabsTrigger value="status">
               <BarChart3 />
               View by status
@@ -477,13 +603,13 @@ function ClaimsTrend() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="status">
-            <ClaimsChart />
+            <ClaimsMetricTabs view="status" />
           </TabsContent>
           <TabsContent value="member">
-            <ClaimsChart />
+            <ClaimsMetricTabs view="member" />
           </TabsContent>
           <TabsContent value="treatments">
-            <ClaimsChart />
+            <ClaimsMetricTabs view="treatments" />
           </TabsContent>
         </Tabs>
       </CardContent>
@@ -493,9 +619,12 @@ function ClaimsTrend() {
 
 function DashboardSidebar() {
   return (
-    <Sidebar collapsible="offcanvas" className="bg-card">
+    <Sidebar collapsible="icon" className="bg-card">
+      <SidebarHeader>
+        <SidebarTrigger />
+      </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup className="pt-8">
+        <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
@@ -549,7 +678,9 @@ function DashboardSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <AckoLogo />
+        <div className="group-data-[collapsible=icon]:hidden">
+          <AckoLogo />
+        </div>
       </SidebarFooter>
     </Sidebar>
   )
@@ -559,7 +690,7 @@ function DashboardHeader() {
   return (
     <header className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-4 border-b border-border bg-card px-4 md:px-8">
       <div className="flex items-center gap-2">
-        <SidebarTrigger />
+        <SidebarTrigger className="md:hidden" />
         <VimaLogo />
       </div>
       <div className="flex items-center gap-4 md:gap-8">
@@ -572,17 +703,33 @@ function DashboardHeader() {
             className="pl-8"
           />
         </div>
-        <Button type="button" variant="secondary" className="hidden md:inline-flex">
-          <Avatar size="sm">
-            <AvatarImage
-              src="/employer-dashboard/entity.png"
-              alt="Entity 1"
-            />
-            <AvatarFallback>E1</AvatarFallback>
-          </Avatar>
-          Entity 1
-          <ChevronDown />
-        </Button>
+        <Select
+          defaultValue="entity-1"
+          items={{
+            "entity-1": "Entity 1",
+            "entity-2": "Entity 2",
+            "entity-3": "Entity 3",
+          }}
+        >
+          <SelectTrigger
+            aria-label="Select active entity"
+            className="hidden w-40 md:flex"
+          >
+            <Avatar size="sm">
+              <AvatarImage
+                src="/employer-dashboard/entity.png"
+                alt="Entity 1"
+              />
+              <AvatarFallback>E1</AvatarFallback>
+            </Avatar>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent align="end">
+            <SelectItem value="entity-1">Entity 1</SelectItem>
+            <SelectItem value="entity-2">Entity 2</SelectItem>
+            <SelectItem value="entity-3">Entity 3</SelectItem>
+          </SelectContent>
+        </Select>
         <Button
           type="button"
           variant="secondary"
