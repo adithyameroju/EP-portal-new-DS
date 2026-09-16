@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-09-16T10:56:21.552Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "refine employer dashboard DS controls and dynamic claims charts",
+  "targetFiles": [
+    "components/blocks/employer-dashboard.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "avatar",
+    "button",
+    "card",
+    "chart",
+    "input",
+    "select",
+    "sidebar",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Used Compass Select for active entity because the user confirmed it is a fixed value choice",
+      "category": "component-choice"
+    },
+    {
+      "text": "Used Compass SidebarTrigger inside an icon-collapsible Sidebar, with a second mobile-only opener in the page header",
+      "category": "component-choice"
+    },
+    {
+      "text": "Used nested Compass Tabs for claim dimension and Count or Amount, plus Compass Alert for the persistent info message",
+      "category": "component-choice"
+    },
+    {
+      "text": "Status uses grouped bars, family member uses stacked bars, and treatments uses lines as the most relevant diagram for each comparison",
+      "category": "behavior"
+    },
+    {
+      "text": "Dynamic claim values and Entity 2 or Entity 3 options are representative local demo data because no product API was provided",
+      "category": "content"
+    },
+    {
+      "text": "All chart series remain mapped to semantic chart-1 through chart-4 tokens rather than Figma or data-specific colors",
+      "category": "token"
+    },
+    {
+      "text": "CD Balance chart uses Recharts side margins and a fixed axis gutter to prevent edge crowding while Card padding remains system-owned",
+      "category": "spacing"
+    },
+    {
+      "text": "Claims dimension tabs scroll within their Compass TabsList on narrow screens to avoid page overflow",
+      "category": "styling"
+    }
+  ],
+  "gitHead": "86f55c5a2b1b6776831ac6758f4e2d173d4b95f3"
+}
