@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -24,6 +25,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Label,
   Line,
   LineChart,
   Pie,
@@ -51,7 +53,11 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart"
-import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import {
   Item,
   ItemActions,
@@ -118,6 +124,16 @@ const treatmentConfig = {
   hospitalisation: { label: "Hospitalisation", color: "var(--chart-1)" },
   dayCare: { label: "Day care", color: "var(--chart-2)" },
   maternity: { label: "Maternity", color: "var(--chart-3)" },
+} satisfies ChartConfig
+
+const totalLivesConfig = {
+  employees: { label: "Employees", color: "var(--chart-1)" },
+  dependents: { label: "Dependents", color: "var(--chart-2)" },
+} satisfies ChartConfig
+
+const openClaimsConfig = {
+  openClaims: { label: "Open claims", color: "var(--chart-1)" },
+  completed: { label: "Completed", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 const claimsViews = {
@@ -194,13 +210,13 @@ type ClaimsMetric = "count" | "amount"
 type ClaimsDatum = Record<string, string | number>
 
 const totalLivesData = [
-  { name: "Employees", value: 60, fill: "var(--chart-2)" },
-  { name: "Dependents", value: 40, fill: "var(--chart-1)" },
+  { category: "employees", value: 60, fill: "var(--color-employees)" },
+  { category: "dependents", value: 40, fill: "var(--color-dependents)" },
 ]
 
 const openClaimsData = [
-  { name: "Open claims", value: 60, fill: "var(--chart-2)" },
-  { name: "Completed", value: 40, fill: "var(--chart-1)" },
+  { category: "openClaims", value: 14, fill: "var(--color-openClaims)" },
+  { category: "completed", value: 52, fill: "var(--color-completed)" },
 ]
 
 const navigationItems = [
@@ -217,16 +233,19 @@ const quickActions = [
     title: "Send e-Cards",
     description: "to employees and dependents",
     image: "/employer-dashboard/send-ecards.gif",
+    stillImage: "/employer-dashboard/send-ecards-still.png",
   },
   {
     title: "Bulk endorsements",
     description: "Add, modify, delete details",
     image: "/employer-dashboard/bulk-endorsements.gif",
+    stillImage: "/employer-dashboard/bulk-endorsements-still.png",
   },
   {
     title: "Find Hospitals",
     description: "From 1000+ hospital network",
     image: "/employer-dashboard/find-hospitals.gif",
+    stillImage: "/employer-dashboard/find-hospitals-still.png",
   },
 ]
 
@@ -286,64 +305,81 @@ function DonutChart({
   data,
   label,
   value,
+  config,
 }: {
   data: typeof totalLivesData
   label: string
   value: string
+  config: ChartConfig
 }) {
   return (
-    <div className="relative size-24 shrink-0">
-      <ChartContainer
-        config={statusConfig}
-        className="size-24 aspect-square"
-        initialDimension={{ width: 96, height: 96 }}
-      >
-        <PieChart>
-          <Pie
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            innerRadius={30}
-            outerRadius={42}
-            strokeWidth={0}
-            isAnimationActive={false}
+    <ChartContainer
+      config={config}
+      className="size-24 shrink-0 aspect-square"
+      initialDimension={{ width: 96, height: 96 }}
+    >
+      <PieChart>
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent hideLabel nameKey="category" />}
+        />
+        <Pie
+          data={data}
+          dataKey="value"
+          nameKey="category"
+          innerRadius={30}
+          outerRadius={42}
+          strokeWidth={0}
+          isAnimationActive={false}
+        >
+          <Label
+            value={label}
+            position="center"
+            dy={-8}
+            className="fill-muted-foreground text-xs"
           />
-        </PieChart>
-      </ChartContainer>
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-xs text-muted-foreground">{label}</span>
-        <span className="text-base font-semibold text-foreground">{value}</span>
-      </div>
-    </div>
+          <Label
+            value={value}
+            position="center"
+            dy={10}
+            className="fill-foreground text-base font-semibold"
+          />
+        </Pie>
+      </PieChart>
+    </ChartContainer>
   )
 }
 
 function MetricLegend({
   firstLabel,
   secondLabel,
+  firstValue,
+  secondValue,
 }: {
   firstLabel: string
   secondLabel: string
+  firstValue: string
+  secondValue: string
 }) {
   return (
     <ItemGroup className="flex-row flex-wrap gap-4">
       <Item size="xs" className="w-auto p-0">
         <ItemMedia>
-          <span className="size-2.5 rounded-sm bg-chart-2" />
+          <span className="size-2.5 rounded-sm bg-chart-1" />
         </ItemMedia>
         <ItemContent>
           <ItemTitle className="text-xs font-normal">{firstLabel}</ItemTitle>
         </ItemContent>
-        <ItemActions className="text-xs font-medium">60%</ItemActions>
+        <ItemActions className="text-xs font-medium">{firstValue}</ItemActions>
       </Item>
       <Item size="xs" className="w-auto p-0">
         <ItemMedia>
-          <span className="size-2.5 rounded-sm bg-chart-1" />
+          <span className="size-2.5 rounded-sm bg-chart-2" />
         </ItemMedia>
         <ItemContent>
           <ItemTitle className="text-xs font-normal">{secondLabel}</ItemTitle>
         </ItemContent>
-        <ItemActions className="text-xs font-medium">40%</ItemActions>
+        <ItemActions className="text-xs font-medium">{secondValue}</ItemActions>
       </Item>
     </ItemGroup>
   )
@@ -355,16 +391,22 @@ function MetricCard({
   donutLabel,
   donutValue,
   data,
+  config,
   firstLabel,
   secondLabel,
+  firstValue,
+  secondValue,
 }: {
   title: string
   value: string
   donutLabel: string
   donutValue: string
   data: typeof totalLivesData
+  config: ChartConfig
   firstLabel: string
   secondLabel: string
+  firstValue: string
+  secondValue: string
 }) {
   return (
     <Card className="min-h-44 rounded-2xl border-0 shadow-none">
@@ -373,14 +415,24 @@ function MetricCard({
           {title}
         </CardTitle>
         <CardAction>
-          <DonutChart data={data} label={donutLabel} value={donutValue} />
+          <DonutChart
+            data={data}
+            label={donutLabel}
+            value={donutValue}
+            config={config}
+          />
         </CardAction>
         <CardDescription className="text-3xl font-semibold tracking-tight text-foreground">
           {value}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <MetricLegend firstLabel={firstLabel} secondLabel={secondLabel} />
+        <MetricLegend
+          firstLabel={firstLabel}
+          secondLabel={secondLabel}
+          firstValue={firstValue}
+          secondValue={secondValue}
+        />
       </CardContent>
     </Card>
   )
@@ -400,7 +452,7 @@ function BalanceCard() {
           ₹ 1,06,500
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-1 flex-col justify-end">
         <ChartContainer
           config={balanceConfig}
           className="h-60 w-full aspect-auto"
@@ -442,6 +494,48 @@ function BalanceCard() {
   )
 }
 
+function QuickActionItem({
+  action,
+}: {
+  action: (typeof quickActions)[number]
+}) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <Item
+      variant="outline"
+      className="flex-1 bg-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <ItemMedia variant="image" className="size-16">
+        <Image
+          key={isHovered ? "animated" : "still"}
+          src={isHovered ? action.image : action.stillImage}
+          alt=""
+          width={64}
+          height={64}
+          unoptimized
+        />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle className="text-lg">{action.title}</ItemTitle>
+        <ItemDescription>{action.description}</ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label={`Open ${action.title}`}
+        >
+          <ChevronRight />
+        </Button>
+      </ItemActions>
+    </Item>
+  )
+}
+
 function QuickActions() {
   return (
     <Card className="min-h-96 rounded-2xl border-0 bg-linear-to-b from-card to-primary/10 shadow-none">
@@ -453,37 +547,9 @@ function QuickActions() {
       </CardHeader>
       <CardContent className="flex flex-1">
         <ItemGroup className="gap-3">
-        {quickActions.map((action) => (
-          <Item
-            key={action.title}
-            variant="outline"
-            className="flex-1 bg-card"
-          >
-            <ItemMedia variant="image" className="size-16">
-              <Image
-                src={action.image}
-                alt=""
-                width={64}
-                height={64}
-                unoptimized
-              />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle className="text-lg">{action.title}</ItemTitle>
-              <ItemDescription>{action.description}</ItemDescription>
-            </ItemContent>
-            <ItemActions>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={`Open ${action.title}`}
-              >
-                <ChevronRight />
-              </Button>
-            </ItemActions>
-          </Item>
-        ))}
+          {quickActions.map((action) => (
+            <QuickActionItem key={action.title} action={action} />
+          ))}
         </ItemGroup>
       </CardContent>
     </Card>
@@ -661,7 +727,9 @@ export function DashboardSidebar({
                     size="lg"
                   >
                     <item.icon />
-                    <span>{item.label}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.label}
+                    </span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -678,7 +746,9 @@ export function DashboardSidebar({
               size="lg"
             >
               <Bolt />
-              <span>Quick Actions</span>
+              <span className="group-data-[collapsible=icon]:hidden">
+                Quick Actions
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -690,7 +760,9 @@ export function DashboardSidebar({
               tooltip="Contact"
             >
               <CircleHelp />
-              <span>Contact</span>
+              <span className="group-data-[collapsible=icon]:hidden">
+                Contact
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -699,7 +771,9 @@ export function DashboardSidebar({
               tooltip="Settings"
             >
               <Settings />
-              <span>Settings</span>
+              <span className="group-data-[collapsible=icon]:hidden">
+                Settings
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -719,15 +793,16 @@ export function DashboardHeader() {
         <VimaLogo />
       </div>
       <div className="flex items-center gap-4 md:gap-8">
-        <div className="relative hidden w-80 lg:block">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+        <InputGroup className="hidden w-80 lg:flex">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
             type="search"
             aria-label="Search employees"
             placeholder="Search employees by name/ID/email"
-            className="pl-8"
           />
-        </div>
+        </InputGroup>
         <Select
           defaultValue="entity-1"
           items={{
@@ -796,8 +871,11 @@ export function EmployerDashboard() {
                 donutLabel="Total Lives"
                 donutValue="100%"
                 data={totalLivesData}
+                config={totalLivesConfig}
                 firstLabel="Employees"
                 secondLabel="Dependents"
+                firstValue="60%"
+                secondValue="40%"
               />
               <MetricCard
                 title="Open Claims"
@@ -805,8 +883,11 @@ export function EmployerDashboard() {
                 donutLabel="Total Claims"
                 donutValue="66"
                 data={openClaimsData}
+                config={openClaimsConfig}
                 firstLabel="Open claims"
                 secondLabel="Completed"
+                firstValue="21%"
+                secondValue="79%"
               />
             </div>
             <div id="quick-actions">
