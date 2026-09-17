@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-09-17T10:34:20.538Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "make Quick Actions play once and align Claims table with Compass",
+  "targetFiles": [
+    "components/blocks/employer-dashboard.tsx",
+    "components/blocks/employer-claims.tsx",
+    "public/employer-dashboard/send-ecards-final.png",
+    "public/employer-dashboard/bulk-endorsements-final.png",
+    "public/employer-dashboard/find-hospitals-final.png"
+  ],
+  "componentsUsed": [
+    "alert",
+    "avatar",
+    "badge",
+    "button",
+    "calendar",
+    "card",
+    "chart",
+    "dropdown-menu",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "select",
+    "sidebar",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Each Quick Action GIF has 13 frames over 520 milliseconds, so one hover plays for 520 milliseconds and then holds its extracted final frame",
+      "category": "behavior"
+    },
+    {
+      "text": "Leaving a Quick Action resets it to the extracted first frame so the next hover can play once again",
+      "category": "behavior"
+    },
+    {
+      "text": "Recent Claims uses the complete Compass Table anatomy with TableCaption, TableHeader, TableBody, TableRow, TableHead, and TableCell",
+      "category": "component-choice"
+    },
+    {
+      "text": "Compass Table defaults control header casing, header background, row density, borders, and hover states without screen-specific overrides",
+      "category": "styling"
+    },
+    {
+      "text": "Claim statuses use Compass Badge, row actions use Button, and paging uses Pagination",
+      "category": "component-choice"
+    },
+    {
+      "text": "Claims filters use InputGroup, Popover with Calendar, and Select; reports use DropdownMenu; metrics and recent claims use Card",
+      "category": "component-choice"
+    },
+    {
+      "text": "The Claims metrics note uses the default Compass Alert surface instead of removing its border, background, and padding",
+      "category": "styling"
+    },
+    {
+      "text": "Semantic layout elements, Next Image assets, and date formatting remain outside Compass only where no matching design-system primitive exists",
+      "category": "component-choice"
+    }
+  ],
+  "gitHead": "16d3543d09135ced1f79e804760969b86d2a143e"
+}
