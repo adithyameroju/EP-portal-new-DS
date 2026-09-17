@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { format } from "date-fns"
 import {
   CalendarDays,
@@ -111,7 +112,7 @@ function ClaimsMetricCards() {
         {metrics.map((metric) => (
           <Card key={metric.title}>
             <CardHeader>
-              <CardTitle className="font-normal text-muted-foreground">
+              <CardTitle className="text-sm font-normal text-muted-foreground">
                 {metric.title}
               </CardTitle>
               <CardAction>
@@ -122,10 +123,10 @@ function ClaimsMetricCards() {
                   height={56}
                 />
               </CardAction>
-              <CardDescription className="text-3xl font-semibold tracking-tight text-foreground">
+              <CardDescription className="text-2xl font-semibold tracking-tight text-foreground">
                 {metric.value}{" "}
                 {metric.suffix ? (
-                  <span className="text-lg font-normal tracking-normal">
+                  <span className="text-sm font-normal tracking-normal">
                     {metric.suffix}
                   </span>
                 ) : null}
@@ -347,7 +348,15 @@ function RecentClaims() {
                   <ClaimStatusBadge status={claim.status} />
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button type="button" variant="outline" size="sm">
+                  <Button
+                    render={
+                      <Link
+                        href={`/dashboard/claims/${encodeURIComponent(claim.number)}`}
+                      />
+                    }
+                    variant="outline"
+                    size="sm"
+                  >
                     View details
                   </Button>
                 </TableCell>
