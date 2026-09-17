@@ -37,6 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -51,6 +52,15 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { Input } from "@/components/ui/input"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item"
 import {
   Select,
   SelectContent,
@@ -194,8 +204,8 @@ const openClaimsData = [
 ]
 
 const navigationItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, active: true },
-  { label: "Claims", href: "/dashboard#claims", icon: FileCheck2 },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Claims", href: "/dashboard/claims", icon: FileCheck2 },
   { label: "Endorsements", href: "/dashboard#endorsements", icon: FilePenLine },
   { label: "CD Balance", href: "/dashboard#balance", icon: WalletCards },
   { label: "Policy Management", href: "/dashboard#policies", icon: ShieldCheck },
@@ -316,18 +326,26 @@ function MetricLegend({
   secondLabel: string
 }) {
   return (
-    <div className="flex flex-wrap gap-4 text-xs text-foreground">
-      <div className="flex items-center gap-2">
-        <span className="size-2.5 rounded-sm bg-chart-2" />
-        <span>{firstLabel}</span>
-        <span className="font-medium">60%</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="size-2.5 rounded-sm bg-chart-1" />
-        <span>{secondLabel}</span>
-        <span className="font-medium">40%</span>
-      </div>
-    </div>
+    <ItemGroup className="flex-row flex-wrap gap-4">
+      <Item size="xs" className="w-auto p-0">
+        <ItemMedia>
+          <span className="size-2.5 rounded-sm bg-chart-2" />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="text-xs font-normal">{firstLabel}</ItemTitle>
+        </ItemContent>
+        <ItemActions className="text-xs font-medium">60%</ItemActions>
+      </Item>
+      <Item size="xs" className="w-auto p-0">
+        <ItemMedia>
+          <span className="size-2.5 rounded-sm bg-chart-1" />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="text-xs font-normal">{secondLabel}</ItemTitle>
+        </ItemContent>
+        <ItemActions className="text-xs font-medium">40%</ItemActions>
+      </Item>
+    </ItemGroup>
   )
 }
 
@@ -350,16 +368,16 @@ function MetricCard({
 }) {
   return (
     <Card className="min-h-44 rounded-2xl border-0 shadow-none">
-      <CardHeader className="grid grid-cols-[1fr_auto]">
-        <div className="flex flex-col gap-1">
-          <CardDescription className="text-base font-medium uppercase">
-            {title}
-          </CardDescription>
-          <CardTitle className="text-3xl font-semibold tracking-tight">
-            {value}
-          </CardTitle>
-        </div>
-        <DonutChart data={data} label={donutLabel} value={donutValue} />
+      <CardHeader>
+        <CardTitle className="text-base uppercase text-muted-foreground">
+          {title}
+        </CardTitle>
+        <CardAction>
+          <DonutChart data={data} label={donutLabel} value={donutValue} />
+        </CardAction>
+        <CardDescription className="text-3xl font-semibold tracking-tight text-foreground">
+          {value}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <MetricLegend firstLabel={firstLabel} secondLabel={secondLabel} />
@@ -426,33 +444,35 @@ function BalanceCard() {
 
 function QuickActions() {
   return (
-    <section className="flex min-h-96 flex-col gap-4 rounded-2xl bg-linear-to-b from-card to-primary/10 p-4">
-      <div className="flex items-center gap-2">
-        <Bolt className="size-5" />
-        <h2 className="text-base font-medium uppercase text-foreground">
+    <Card className="min-h-96 rounded-2xl border-0 bg-linear-to-b from-card to-primary/10 shadow-none">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 uppercase">
+          <Bolt className="size-5" />
           Quick actions
-        </h2>
-      </div>
-      <div className="flex flex-1 flex-col gap-3">
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-1">
+        <ItemGroup className="gap-3">
         {quickActions.map((action) => (
-          <Card key={action.title} size="sm" className="flex-1">
-            <CardContent className="flex h-full items-center gap-4">
+          <Item
+            key={action.title}
+            variant="outline"
+            className="flex-1 bg-card"
+          >
+            <ItemMedia variant="image" className="size-16">
               <Image
                 src={action.image}
                 alt=""
                 width={64}
                 height={64}
                 unoptimized
-                className="size-16 shrink-0 object-cover"
               />
-              <div className="min-w-0 flex-1">
-                <p className="text-lg font-medium text-foreground">
-                  {action.title}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {action.description}
-                </p>
-              </div>
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle className="text-lg">{action.title}</ItemTitle>
+              <ItemDescription>{action.description}</ItemDescription>
+            </ItemContent>
+            <ItemActions>
               <Button
                 type="button"
                 variant="ghost"
@@ -461,11 +481,12 @@ function QuickActions() {
               >
                 <ChevronRight />
               </Button>
-            </CardContent>
-          </Card>
+            </ItemActions>
+          </Item>
         ))}
-      </div>
-    </section>
+        </ItemGroup>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -617,7 +638,11 @@ function ClaimsTrend() {
   )
 }
 
-function DashboardSidebar() {
+export function DashboardSidebar({
+  activeItem = "dashboard",
+}: {
+  activeItem?: "dashboard" | "claims"
+}) {
   return (
     <Sidebar collapsible="icon" className="bg-card">
       <SidebarHeader>
@@ -631,7 +656,7 @@ function DashboardSidebar() {
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
                     render={<Link href={item.href} />}
-                    isActive={item.active}
+                    isActive={item.label.toLowerCase() === activeItem}
                     tooltip={item.label}
                     size="lg"
                   >
@@ -686,7 +711,7 @@ function DashboardSidebar() {
   )
 }
 
-function DashboardHeader() {
+export function DashboardHeader() {
   return (
     <header className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-4 border-b border-border bg-card px-4 md:px-8">
       <div className="flex items-center gap-2">
@@ -749,7 +774,7 @@ function DashboardHeader() {
 export function EmployerDashboard() {
   return (
     <SidebarProvider>
-      <DashboardSidebar />
+      <DashboardSidebar activeItem="dashboard" />
       <SidebarInset className="bg-muted">
         <DashboardHeader />
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:p-6 lg:p-8">
