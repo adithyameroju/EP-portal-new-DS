@@ -60,6 +60,7 @@ import {
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -133,7 +134,7 @@ function ClaimsMetricCards() {
           </Card>
         ))}
       </div>
-      <Alert className="w-fit border-0 bg-transparent p-0">
+      <Alert className="w-fit">
         <Info />
         <AlertDescription className="text-foreground">
           All reported metrics are calculated from the start date of the master
@@ -314,22 +315,24 @@ function RecentClaims() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Table className="min-w-4xl">
-          <TableHeader className="bg-muted">
+          <TableCaption className="sr-only">
+            Recent claims with employee, amount, submission date, and status
+          </TableCaption>
+          <TableHeader>
             <TableRow>
-              <TableHead className="uppercase">Claim number</TableHead>
-              <TableHead className="uppercase">Employee</TableHead>
-              <TableHead className="uppercase">Type</TableHead>
-              <TableHead className="text-right uppercase">Amount (₹)</TableHead>
-              <TableHead className="uppercase">Submitted date</TableHead>
-              <TableHead className="text-center uppercase">Status</TableHead>
-              <TableHead className="text-right uppercase">Actions</TableHead>
+              <TableHead>Claim number</TableHead>
+              <TableHead>Employee</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead className="text-right">Amount (₹)</TableHead>
+              <TableHead>Submitted date</TableHead>
+              <TableHead className="text-center">Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {visibleClaims.map((claim, index) => (
               <TableRow
                 key={`${claim.number}-${claim.status}-${index}`}
-                className="h-16"
               >
                 <TableCell className="font-medium">{claim.number}</TableCell>
                 <TableCell>{claim.employee}</TableCell>

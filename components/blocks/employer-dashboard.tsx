@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -228,24 +228,29 @@ const navigationItems = [
   { label: "Reports", href: "/dashboard#reports", icon: FileText },
 ]
 
+const QUICK_ACTION_ANIMATION_MS = 520
+
 const quickActions = [
   {
     title: "Send e-Cards",
     description: "to employees and dependents",
     image: "/employer-dashboard/send-ecards.gif",
     stillImage: "/employer-dashboard/send-ecards-still.png",
+    finalImage: "/employer-dashboard/send-ecards-final.png",
   },
   {
     title: "Bulk endorsements",
     description: "Add, modify, delete details",
     image: "/employer-dashboard/bulk-endorsements.gif",
     stillImage: "/employer-dashboard/bulk-endorsements-still.png",
+    finalImage: "/employer-dashboard/bulk-endorsements-final.png",
   },
   {
     title: "Find Hospitals",
     description: "From 1000+ hospital network",
     image: "/employer-dashboard/find-hospitals.gif",
     stillImage: "/employer-dashboard/find-hospitals-still.png",
+    finalImage: "/employer-dashboard/find-hospitals-final.png",
   },
 ]
 
@@ -499,19 +504,37 @@ function QuickActionItem({
 }: {
   action: (typeof quickActions)[number]
 }) {
-  const [isHovered, setIsHovered] = useState(false)
+  const [phase, setPhase] = useState<"idle" | "playing" | "complete">("idle")
+
+  useEffect(() => {
+    if (phase !== "playing") return
+
+    const animationTimer = window.setTimeout(
+      () => setPhase("complete"),
+      QUICK_ACTION_ANIMATION_MS
+    )
+
+    return () => window.clearTimeout(animationTimer)
+  }, [phase])
+
+  const image =
+    phase === "playing"
+      ? action.image
+      : phase === "complete"
+        ? action.finalImage
+        : action.stillImage
 
   return (
     <Item
       variant="outline"
       className="flex-1 bg-card"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setPhase("playing")}
+      onMouseLeave={() => setPhase("idle")}
     >
       <ItemMedia variant="image" className="size-16">
         <Image
-          key={isHovered ? "animated" : "still"}
-          src={isHovered ? action.image : action.stillImage}
+          key={phase}
+          src={image}
           alt=""
           width={64}
           height={64}
