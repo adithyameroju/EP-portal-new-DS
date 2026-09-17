@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-09-17T09:49:01.373Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "fix collapsed sidebar, metric charts, balance spacing, and Quick Action hover motion",
+  "targetFiles": [
+    "components/blocks/employer-dashboard.tsx",
+    "public/employer-dashboard/send-ecards-still.png",
+    "public/employer-dashboard/bulk-endorsements-still.png",
+    "public/employer-dashboard/find-hospitals-still.png"
+  ],
+  "componentsUsed": [
+    "alert",
+    "avatar",
+    "button",
+    "card",
+    "chart",
+    "input-group",
+    "item",
+    "select",
+    "sidebar",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "The designer confirmed Compass components govern all available UI while semantic layout, Next Image, and Recharts remain allowed where no Compass primitive exists",
+      "category": "component-choice"
+    },
+    {
+      "text": "Header search uses Compass InputGroup and dashboard metrics use Card, CardAction, ChartContainer, Recharts Pie, and Item",
+      "category": "component-choice"
+    },
+    {
+      "text": "Collapsed sidebar labels are fully hidden while Compass icon tooltips and the internal trigger remain available",
+      "category": "behavior"
+    },
+    {
+      "text": "CD Balance keeps one Compass spacing unit of 16px below the chart by allowing CardContent to fill the card",
+      "category": "spacing"
+    },
+    {
+      "text": "Quick Action illustrations show an extracted first frame at rest, mount the original GIF on hover, and reset to the still frame on pointer exit",
+      "category": "behavior"
+    },
+    {
+      "text": "Open Claims is 14 of 66 total, so its chart and legend use 21 percent open and 79 percent completed",
+      "category": "content"
+    },
+    {
+      "text": "Total Lives and Open Claims series use chart-1 then chart-2 in Compass sequence, with matching Item legend swatches",
+      "category": "token"
+    },
+    {
+      "text": "Claims page already uses Compass components for every available control, surface, status, table, and pagination element",
+      "category": "component-choice"
+    }
+  ],
+  "gitHead": "cfbd9177909a3c7e52a013b903438a42572a5614"
+}
