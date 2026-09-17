@@ -1,0 +1,75 @@
+{
+  "timestamp": "2026-09-17T11:00:09.059Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "correct Claims typography and build claim details with timeline sheet",
+  "targetFiles": [
+    "components/blocks/employer-claims.tsx",
+    "components/blocks/employer-claim-details.tsx",
+    "app/dashboard/claims/[claimNumber]/page.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "badge",
+    "breadcrumb",
+    "button",
+    "calendar",
+    "card",
+    "dropdown-menu",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "progress",
+    "scroll-area",
+    "select",
+    "separator",
+    "sheet",
+    "sidebar",
+    "table"
+  ],
+  "assumptions": [
+    {
+      "text": "typography: Claims metric labels and suffixes use text-sm 14px while primary metric values use text-2xl 24px",
+      "category": "uncategorized"
+    },
+    {
+      "text": "Every Recent Claims action navigates to a dynamic claim-number route and the selected row number becomes the detail-page heading",
+      "category": "behavior"
+    },
+    {
+      "text": "Employee, treatment, status, document, and timeline details use the representative values shown in Figma while only the claim number varies by route",
+      "category": "content"
+    },
+    {
+      "text": "The designer selected the detailed current-status Card with Compass Progress at 75 percent and the 2024-01-20 due date",
+      "category": "component-choice"
+    },
+    {
+      "text": "View timeline opens a Compass Sheet using SheetHeader, SheetTitle, ScrollArea, Item, and Separator",
+      "category": "component-choice"
+    },
+    {
+      "text": "The 630px Figma timeline panel maps to the nearest Compass container token, max-w-2xl at 672px; mobile retains the Sheet default three-quarter width",
+      "category": "spacing"
+    },
+    {
+      "text": "The black Figma timeline CTA maps to the Compass default primary Button instead of introducing an unsupported dark variant",
+      "category": "styling"
+    },
+    {
+      "text": "typography: The 32px Figma claim identifier maps to text-3xl 30px on desktop and the responsive text-2xl 24px mobile tier",
+      "category": "uncategorized"
+    },
+    {
+      "text": "Status and Claims breadcrumb links both return to the Claims list because no separate Status route exists",
+      "category": "behavior"
+    },
+    {
+      "text": "asset: The existing Figma-derived claims metric illustration is reused at 56px and matching Lucide icons use Compass-controlled sizes",
+      "category": "uncategorized"
+    }
+  ],
+  "gitHead": "82b5fad0a77d902311c975c90033a1b4158b360c"
+}
