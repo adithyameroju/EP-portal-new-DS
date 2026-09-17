@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-09-17T05:59:03.556Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "refactor dashboard metrics and build Figma Claims page",
+  "targetFiles": [
+    "components/blocks/employer-dashboard.tsx",
+    "components/blocks/employer-claims.tsx",
+    "app/dashboard/claims/page.tsx",
+    "public/employer-dashboard/claims-metric.svg",
+    "public/employer-dashboard/claims-report.svg",
+    "public/employer-dashboard/generate-report.svg"
+  ],
+  "componentsUsed": [
+    "alert",
+    "avatar",
+    "badge",
+    "button",
+    "calendar",
+    "card",
+    "chart",
+    "dropdown-menu",
+    "input",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "select",
+    "sidebar",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "No dedicated Compass KPI primitive exists, so the designer confirmed Card plus Chart plus Item for dashboard metrics",
+      "category": "component-choice"
+    },
+    {
+      "text": "Quick Actions use Card plus ItemGroup and Item rows with Compass Buttons",
+      "category": "component-choice"
+    },
+    {
+      "text": "Claims uses Card, Alert, InputGroup, Calendar with Popover, Select, DropdownMenu, Table, Badge, Button, and Pagination compositions",
+      "category": "component-choice"
+    },
+    {
+      "text": "The Figma black Generate Report action maps to Compass primary Button because Compass has no black action variant",
+      "category": "styling"
+    },
+    {
+      "text": "Figma status colors map to governed Badge semantics: Approved default, Rejected destructive, and Processing or Under Review outline",
+      "category": "token"
+    },
+    {
+      "text": "Figma 48px actions map to Compass large Button sizing, and the existing dashboard header and sidebar remain the shared shell",
+      "category": "spacing"
+    },
+    {
+      "text": "Search, dates, type, and sorting operate on local Figma-derived claim data; report and detail actions have no backend workflow",
+      "category": "behavior"
+    },
+    {
+      "text": "The Claims sidebar destination is /dashboard/claims",
+      "category": "behavior"
+    },
+    {
+      "text": "asset: Metric and report document icons use the exact exported Figma SVGs stored locally",
+      "category": "uncategorized"
+    }
+  ],
+  "gitHead": "d69ac35419de83488b17b72a7270352489e53667"
+}
