@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { format } from "date-fns"
 import {
-  BrainCircuit,
   CalendarDays,
   ChevronRight,
   CircleCheck,
@@ -71,25 +71,22 @@ import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
 
 const endorsementActions = [
   {
-    label: "Add new Employees",
+    label: "Add employees",
     description: "Add new employees with plan selection",
     icon: UserPlus,
+    slug: "add",
   },
   {
-    label: "Update Employee details",
+    label: "Update employees",
     description: "Update details, dependents, or plans",
     icon: UserPen,
+    slug: "update",
   },
   {
-    label: "Delete Employee details",
+    label: "Delete employees",
     description: "Remove employees from the policy",
     icon: UserMinus,
-  },
-  {
-    label: "Smart Endorsements",
-    description: "Upload your own Excel—AI maps data and submit",
-    icon: BrainCircuit,
-    isNew: true,
+    slug: "delete",
   },
 ]
 
@@ -153,32 +150,32 @@ const scheduleRows = [
 
 function EndorsementActions() {
   return (
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="grid gap-4 md:grid-cols-3">
       {endorsementActions.map((action) => (
-        <Card key={action.label} className="flex min-h-48 flex-col">
-          <CardHeader>
-            <CardTitle className="flex flex-col items-start gap-4 text-base">
-              <span className="rounded-full bg-accent p-3 text-accent-foreground">
-                <action.icon className="size-8" />
-              </span>
-              <span>
-                {action.label}
-              </span>
-            </CardTitle>
-            {action.isNew ? (
+        <Link
+          key={action.label}
+          href={`/dashboard/endorsements/${action.slug}`}
+          className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <Card className="flex h-full cursor-pointer flex-col transition-colors group-hover:bg-accent">
+            <CardHeader>
+              <CardTitle className="text-base">{action.label}</CardTitle>
               <CardAction>
-                <Badge>New</Badge>
+                <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                  <action.icon className="size-5" />
+                </span>
               </CardAction>
-            ) : null}
-            <CardDescription>{action.description}</CardDescription>
-          </CardHeader>
-          <CardFooter className="mt-auto">
-            <Button variant="link" size="sm" type="button">
-              Get started
-              <ChevronRight />
-            </Button>
-          </CardFooter>
-        </Card>
+              <CardDescription>{action.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Badge variant="outline">Quick and bulk options</Badge>
+            </CardContent>
+            <CardFooter className="mt-auto justify-between text-sm font-medium text-primary">
+              Choose a method
+              <ChevronRight className="size-4" />
+            </CardFooter>
+          </Card>
+        </Link>
       ))}
     </section>
   )

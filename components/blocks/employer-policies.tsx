@@ -40,13 +40,14 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item"
 import {
   Popover,
   PopoverContent,
@@ -75,9 +76,8 @@ type PolicyStatus = "Active" | "Renewal Due" | "Draft" | "Expired"
 
 type Policy = {
   number: string
-  product: string
-  category: "health" | "accident" | "life" | "opd"
-  entity: string
+  product: "GMC" | "GPA"
+  category: "gmc" | "gpa"
   coveredLives: number
   sumInsured: number
   startDate: Date
@@ -87,67 +87,32 @@ type Policy = {
 
 const policies: Policy[] = [
   {
-    number: "POL-001-2024",
-    product: "Group Health Insurance",
-    category: "health",
-    entity: "Entity 1",
-    coveredLives: 845,
+    number: "GMC-ENT1-2026",
+    product: "GMC",
+    category: "gmc",
+    coveredLives: 1248,
     sumInsured: 50000000,
-    startDate: new Date(2024, 0, 1),
-    renewalDate: new Date(2024, 11, 31),
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
     status: "Active",
   },
   {
-    number: "POL-002-2024",
-    product: "Group Personal Accident",
-    category: "accident",
-    entity: "Entity 1",
-    coveredLives: 845,
+    number: "GPA-ENT1-2026",
+    product: "GPA",
+    category: "gpa",
+    coveredLives: 1190,
     sumInsured: 20000000,
-    startDate: new Date(2024, 0, 1),
-    renewalDate: new Date(2024, 11, 31),
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
     status: "Active",
-  },
-  {
-    number: "POL-003-2024",
-    product: "Group Term Life",
-    category: "life",
-    entity: "Entity 2",
-    coveredLives: 320,
-    sumInsured: 35000000,
-    startDate: new Date(2024, 2, 1),
-    renewalDate: new Date(2025, 1, 28),
-    status: "Renewal Due",
-  },
-  {
-    number: "POL-004-2024",
-    product: "OPD Benefit",
-    category: "opd",
-    entity: "Entity 1",
-    coveredLives: 245,
-    sumInsured: 5000000,
-    startDate: new Date(2024, 3, 1),
-    renewalDate: new Date(2025, 2, 31),
-    status: "Draft",
-  },
-  {
-    number: "POL-005-2023",
-    product: "Group Health Insurance",
-    category: "health",
-    entity: "Entity 2",
-    coveredLives: 310,
-    sumInsured: 18000000,
-    startDate: new Date(2023, 0, 1),
-    renewalDate: new Date(2023, 11, 31),
-    status: "Expired",
   },
 ]
 
 const metrics = [
-  { title: "Active Policies", value: "4" },
-  { title: "Total Covered Lives", value: "1,248" },
-  { title: "Total Sum Insured", value: "₹6.2", suffix: "cr" },
-  { title: "Renewals Due", value: "2", suffix: "next 60 days" },
+  { title: "Active policies", value: "2" },
+  { title: "GMC covered lives", value: "1,248" },
+  { title: "GPA covered lives", value: "1,190" },
+  { title: "Total sum insured", value: "₹7", suffix: "cr" },
 ]
 
 function PolicyMetrics() {
@@ -161,7 +126,9 @@ function PolicyMetrics() {
                 {metric.title}
               </CardTitle>
               <CardAction>
-                <ShieldCheck className="size-12 rounded-full bg-accent p-2 text-accent-foreground" />
+                <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                  <ShieldCheck className="size-5" />
+                </span>
               </CardAction>
               <CardDescription className="text-2xl font-semibold tracking-tight text-foreground">
                 {metric.value}{" "}
@@ -267,8 +234,7 @@ function PolicyTable() {
       const matchesQuery =
         !normalizedQuery ||
         policy.number.toLowerCase().includes(normalizedQuery) ||
-        policy.product.toLowerCase().includes(normalizedQuery) ||
-        policy.entity.toLowerCase().includes(normalizedQuery)
+        policy.product.toLowerCase().includes(normalizedQuery)
       const matchesCategory =
         category === "all" || policy.category === category
       const matchesStatus =
@@ -327,10 +293,8 @@ function PolicyTable() {
             onValueChange={(value) => value && setCategory(value)}
             items={{
               all: "All products",
-              health: "Health",
-              accident: "Accident",
-              life: "Term life",
-              opd: "OPD",
+              gmc: "GMC",
+              gpa: "GPA",
             }}
           >
             <SelectTrigger className="w-36" aria-label="Filter policy product">
@@ -338,10 +302,8 @@ function PolicyTable() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All products</SelectItem>
-              <SelectItem value="health">Health</SelectItem>
-              <SelectItem value="accident">Accident</SelectItem>
-              <SelectItem value="life">Term life</SelectItem>
-              <SelectItem value="opd">OPD</SelectItem>
+              <SelectItem value="gmc">GMC</SelectItem>
+              <SelectItem value="gpa">GPA</SelectItem>
             </SelectContent>
           </Select>
           <Select
@@ -389,61 +351,98 @@ function PolicyTable() {
         </CardAction>
       </CardHeader>
       <CardContent className="flex min-w-0 flex-col gap-4">
-        <Table className="min-w-6xl">
-          <TableCaption className="sr-only">
-            Corporate policies with coverage, renewal date, and current status
-          </TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Policy number</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead>Entity</TableHead>
-              <TableHead className="text-right">Covered lives</TableHead>
-              <TableHead className="text-right">Sum insured (₹)</TableHead>
-              <TableHead>Start date</TableHead>
-              <TableHead>Renewal date</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {visiblePolicies.map((policy) => (
-              <TableRow key={policy.number}>
-                <TableCell className="font-medium">{policy.number}</TableCell>
-                <TableCell>{policy.product}</TableCell>
-                <TableCell>{policy.entity}</TableCell>
-                <TableCell className="text-right">
-                  {policy.coveredLives.toLocaleString("en-IN")}
-                </TableCell>
-                <TableCell className="text-right">
-                  {policy.sumInsured.toLocaleString("en-IN")}
-                </TableCell>
-                <TableCell>
-                  {format(policy.startDate, "dd MMM yyyy").toUpperCase()}
-                </TableCell>
-                <TableCell>
-                  {format(policy.renewalDate, "dd MMM yyyy").toUpperCase()}
-                </TableCell>
-                <TableCell className="text-center">
-                  <PolicyStatusBadge status={policy.status} />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    render={
-                      <Link
-                        href={`/dashboard/policies/${encodeURIComponent(policy.number)}`}
-                      />
-                    }
-                    variant="outline"
-                    size="sm"
-                  >
-                    View policy
-                  </Button>
-                </TableCell>
+        <div className="hidden md:block">
+          <Table className="table-fixed">
+            <TableCaption className="sr-only">
+              GMC and GPA policies for the currently selected entity
+            </TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-36">Policy number</TableHead>
+                <TableHead className="w-20">Product</TableHead>
+                <TableHead className="text-right">Covered lives</TableHead>
+                <TableHead className="text-right">Sum insured (₹)</TableHead>
+                <TableHead>Policy period</TableHead>
+                <TableHead className="text-center">Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {visiblePolicies.map((policy) => (
+                <TableRow key={policy.number}>
+                  <TableCell className="whitespace-normal font-medium">
+                    {policy.number}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{policy.product}</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {policy.coveredLives.toLocaleString("en-IN")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {policy.sumInsured.toLocaleString("en-IN")}
+                  </TableCell>
+                  <TableCell className="whitespace-normal">
+                    {format(policy.startDate, "dd MMM yyyy")} –{" "}
+                    {format(policy.renewalDate, "dd MMM yyyy")}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <PolicyStatusBadge status={policy.status} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      render={
+                        <Link
+                          href={`/dashboard/policies/${encodeURIComponent(policy.number)}`}
+                        />
+                      }
+                      variant="outline"
+                      size="sm"
+                    >
+                      View policy
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <ItemGroup className="md:hidden">
+          {visiblePolicies.map((policy) => (
+            <Item key={policy.number} variant="outline">
+              <ItemMedia className="rounded-full bg-accent">
+                <ShieldCheck className="size-4" />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>
+                  {policy.product} · {policy.number}
+                </ItemTitle>
+                <ItemDescription>
+                  {policy.coveredLives.toLocaleString("en-IN")} covered lives ·
+                  ₹{policy.sumInsured.toLocaleString("en-IN")}
+                </ItemDescription>
+                <ItemDescription>
+                  {format(policy.startDate, "dd MMM yyyy")} –{" "}
+                  {format(policy.renewalDate, "dd MMM yyyy")}
+                </ItemDescription>
+              </ItemContent>
+              <ItemActions className="flex-col items-end">
+                <PolicyStatusBadge status={policy.status} />
+                <Button
+                  render={
+                    <Link
+                      href={`/dashboard/policies/${encodeURIComponent(policy.number)}`}
+                    />
+                  }
+                  variant="outline"
+                  size="sm"
+                >
+                  View
+                </Button>
+              </ItemActions>
+            </Item>
+          ))}
+        </ItemGroup>
         {visiblePolicies.length === 0 ? (
           <Alert>
             <Info />
@@ -452,34 +451,6 @@ function PolicyTable() {
             </AlertDescription>
           </Alert>
         ) : null}
-        <Pagination className="justify-end">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="/dashboard/policies?page=1"
-                text=""
-                aria-label="Previous policies page"
-              />
-            </PaginationItem>
-            {[1, 2, 3, 4, 5].map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  href={`/dashboard/policies?page=${page}`}
-                  isActive={page === 1}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href="/dashboard/policies?page=2"
-                text=""
-                aria-label="Next policies page"
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
       </CardContent>
     </Card>
   )

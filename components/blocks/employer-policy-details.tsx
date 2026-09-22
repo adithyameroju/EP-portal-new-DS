@@ -3,8 +3,19 @@
 import { useState, type FormEvent, type ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { MoreVertical } from "lucide-react"
+import {
+  CircleUserRound,
+  EllipsisVertical,
+  FileText,
+  Info,
+  Pencil,
+  Send,
+  ShieldCheck,
+  UserRound,
+  UsersRound,
+} from "lucide-react"
 
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import {
   Breadcrumb,
@@ -48,15 +59,6 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
 
 const basicInformation = [
@@ -158,12 +160,7 @@ function DetailItem({
   return (
     <Item className="items-start p-0">
       <ItemMedia>
-        <Image
-          src="/employer-dashboard/profile-detail.svg"
-          alt=""
-          width={14.3333}
-          height={14.3333}
-        />
+        <CircleUserRound className="size-4" />
       </ItemMedia>
       <ItemContent>
         <ItemTitle className="text-sm font-medium text-muted-foreground">
@@ -230,12 +227,7 @@ function FamilyMembersCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
-          <Image
-            src="/employer-dashboard/policy-document.svg"
-            alt=""
-            width={22.75}
-            height={26.5}
-          />
+          <UsersRound className="size-5" />
           Family members
         </CardTitle>
       </CardHeader>
@@ -243,13 +235,8 @@ function FamilyMembersCard() {
         <ItemGroup>
           {familyMembers.map((member) => (
             <Item key={member.name} variant="muted">
-              <ItemMedia className="size-12 rounded-xl bg-accent">
-                <Image
-                  src="/employer-dashboard/policy-document-accent.svg"
-                  alt=""
-                  width={22.75}
-                  height={26.5}
-                />
+              <ItemMedia className="size-10 rounded-full bg-accent">
+                <UserRound className="size-5" />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle className="text-lg">{member.name}</ItemTitle>
@@ -283,12 +270,7 @@ function PolicyDetailsCard({ policyNumber }: { policyNumber: string }) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
-          <Image
-            src="/employer-dashboard/policy-document.svg"
-            alt=""
-            width={22.75}
-            height={26.5}
-          />
+          <ShieldCheck className="size-5" />
           Policy details
         </CardTitle>
       </CardHeader>
@@ -312,12 +294,7 @@ function DocumentsCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
-          <Image
-            src="/employer-dashboard/policy-document.svg"
-            alt=""
-            width={22.75}
-            height={26.5}
-          />
+          <FileText className="size-5" />
           Documents
         </CardTitle>
       </CardHeader>
@@ -325,13 +302,8 @@ function DocumentsCard() {
         <ItemGroup>
           {documents.map((document, index) => (
             <Item key={`${document.id}-${index}`} variant="muted">
-              <ItemMedia className="size-12 rounded-xl bg-accent">
-                <Image
-                  src="/employer-dashboard/policy-document-accent.svg"
-                  alt=""
-                  width={22.75}
-                  height={26.5}
-                />
+              <ItemMedia className="size-10 rounded-full bg-accent">
+                <FileText className="size-5" />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle className="text-lg">{document.id}</ItemTitle>
@@ -370,87 +342,44 @@ function EditEmployeeDialog() {
       <DialogTrigger
         render={
           <Button size="lg" type="button">
-            <Image
-              src="/employer-dashboard/edit-employee.svg"
-              alt=""
-              width={18.5}
-              height={21.5}
-            />
+            <Pencil />
             Edit employee details
           </Button>
         }
       />
-      <DialogContent className="max-h-dvh overflow-y-auto sm:max-w-5xl">
+      <DialogContent className="max-h-dvh overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-2xl">Edit employee details</DialogTitle>
-          <DialogDescription className="sr-only">
-            Review current employee information and submit any changes for
+          <DialogDescription>
+            Review the current employee information and submit any changes for
             endorsement approval.
           </DialogDescription>
         </DialogHeader>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-          <FieldGroup className="md:hidden">
+          <FieldGroup className="grid gap-4 md:grid-cols-2">
             {editableEmployeeFields.map((field) => (
-              <Field key={`mobile-${field.id}`}>
-                <FieldLabel htmlFor={`mobile-${field.id}`}>
-                  {field.label}
-                </FieldLabel>
+              <Field key={field.id}>
+                <FieldLabel htmlFor={field.id}>{field.label}</FieldLabel>
                 <Input
-                  id={`mobile-${field.id}`}
-                  name={`mobile-${field.id}`}
+                  id={field.id}
+                  name={field.id}
                   type={field.type}
                   defaultValue={field.currentValue}
                 />
                 <FieldDescription>
-                  Current: {field.currentValue}. {field.instruction}.
+                  {field.instruction}
                 </FieldDescription>
               </Field>
             ))}
           </FieldGroup>
-          <div className="hidden md:block">
-            <Table className="min-w-3xl">
-              <TableCaption className="sr-only">
-                Current and editable employee details with field instructions
-              </TableCaption>
-              <TableHeader className="bg-muted">
-                <TableRow>
-                  <TableHead>Field</TableHead>
-                  <TableHead>Current Value</TableHead>
-                  <TableHead>New Value</TableHead>
-                  <TableHead>Instructions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {editableEmployeeFields.map((field) => (
-                  <TableRow key={field.id}>
-                    <TableCell className="font-medium">{field.label}</TableCell>
-                    <TableCell>{field.currentValue}</TableCell>
-                    <TableCell>
-                      <Field>
-                        <FieldLabel className="sr-only" htmlFor={field.id}>
-                          New {field.label}
-                        </FieldLabel>
-                        <Input
-                          id={field.id}
-                          name={field.id}
-                          type={field.type}
-                          defaultValue={field.currentValue}
-                        />
-                      </Field>
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {field.instruction}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          <DialogFooter>
-            <p className="mr-auto text-sm italic text-muted-foreground">
+          <Alert>
+            <Info />
+            <AlertDescription>
               Changes will be submitted for endorsement approval before taking
               effect.
-            </p>
+            </AlertDescription>
+          </Alert>
+          <DialogFooter>
             <DialogClose render={<Button variant="outline" type="button" />}>
               Cancel
             </DialogClose>
@@ -512,12 +441,7 @@ export function EmployerPolicyDetails({
             </div>
             <div className="flex flex-wrap gap-4">
               <Button variant="outline" size="lg" type="button">
-                <Image
-                  src="/employer-dashboard/send-ecard.svg"
-                  alt=""
-                  width={20.1675}
-                  height={20.1683}
-                />
+                <Send />
                 Send e-card
               </Button>
               <EditEmployeeDialog />
@@ -527,7 +451,7 @@ export function EmployerPolicyDetails({
                 type="button"
                 aria-label="More employee actions"
               >
-                <MoreVertical />
+                <EllipsisVertical />
               </Button>
             </div>
           </section>

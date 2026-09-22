@@ -3,11 +3,16 @@
 import { useMemo, useState } from "react"
 import { format } from "date-fns"
 import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
   CalendarDays,
   ChevronDown,
   Download,
   FileText,
-  UsersRound,
+  ReceiptText,
+  Scale,
+  TrendingDown,
+  WalletCards,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -30,7 +35,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "@/components/ui/item"
 import {
   Pagination,
   PaginationContent,
@@ -66,7 +70,7 @@ import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
 const transactions = [
   {
     period: "March 2025",
-    deposits: "2025",
+    deposits: "₹3,000",
     deductions: "₹15,000",
     netChange: "-₹12,000",
     endBalance: "₹78,500",
@@ -74,7 +78,7 @@ const transactions = [
   },
   {
     period: "February 2025",
-    deposits: "2025",
+    deposits: "₹3,000",
     deductions: "₹15,000",
     netChange: "-₹12,000",
     endBalance: "₹78,500",
@@ -82,7 +86,7 @@ const transactions = [
   },
   {
     period: "January 2025",
-    deposits: "2025",
+    deposits: "₹3,000",
     deductions: "₹15,000",
     netChange: "-₹12,000",
     endBalance: "₹78,500",
@@ -90,7 +94,7 @@ const transactions = [
   },
   {
     period: "December 2025",
-    deposits: "2025",
+    deposits: "₹3,000",
     deductions: "₹15,000",
     netChange: "-₹12,000",
     endBalance: "₹78,500",
@@ -99,10 +103,30 @@ const transactions = [
 ]
 
 const transactionMetrics = [
-  { label: "Transactions", value: "12", tone: "text-foreground" },
-  { label: "Total Deposits", value: "₹98,500", tone: "text-primary" },
-  { label: "Total Deductions", value: "₹48,000", tone: "text-destructive" },
-  { label: "Net change", value: "+₹50,500", tone: "text-primary" },
+  {
+    label: "Transactions",
+    value: "12",
+    tone: "text-foreground",
+    icon: ReceiptText,
+  },
+  {
+    label: "Total deposits",
+    value: "₹98,500",
+    tone: "text-primary",
+    icon: ArrowDownToLine,
+  },
+  {
+    label: "Total deductions",
+    value: "₹48,000",
+    tone: "text-destructive",
+    icon: ArrowUpFromLine,
+  },
+  {
+    label: "Net change",
+    value: "+₹50,500",
+    tone: "text-primary",
+    icon: Scale,
+  },
 ]
 
 function DateFilter({
@@ -162,33 +186,66 @@ function ReportsMenu() {
 
 function BalanceSummary() {
   return (
-    <section className="grid gap-6 sm:grid-cols-2 xl:max-w-md">
+    <section className="grid gap-6 sm:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-normal">
+          <CardTitle className="text-sm font-normal text-muted-foreground">
             Current Balance
           </CardTitle>
           <CardAction>
-            <UsersRound className="size-12 rounded-full bg-accent p-2 text-accent-foreground" />
+            <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+              <WalletCards className="size-5" />
+            </span>
           </CardAction>
-          <CardDescription className="text-3xl font-medium text-foreground">
+          <CardDescription className="text-2xl font-semibold text-foreground">
             ₹78,500
           </CardDescription>
         </CardHeader>
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-normal">
+          <CardTitle className="text-sm font-normal text-muted-foreground">
             Monthly Burn Rate
           </CardTitle>
           <CardAction>
-            <UsersRound className="size-12 rounded-full bg-accent p-2 text-accent-foreground" />
+            <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+              <TrendingDown className="size-5" />
+            </span>
           </CardAction>
-          <CardDescription className="text-3xl font-medium text-foreground">
+          <CardDescription className="text-2xl font-semibold text-foreground">
             ₹9,500
           </CardDescription>
         </CardHeader>
       </Card>
+    </section>
+  )
+}
+
+function TransactionMetrics() {
+  return (
+    <section
+      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      aria-label="Transaction metrics"
+    >
+      {transactionMetrics.map((metric) => (
+        <Card key={metric.label}>
+          <CardHeader>
+            <CardTitle className="text-sm font-normal text-muted-foreground">
+              {metric.label}
+            </CardTitle>
+            <CardAction>
+              <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                <metric.icon className="size-5" />
+              </span>
+            </CardAction>
+            <CardDescription
+              className={`text-2xl font-medium ${metric.tone}`}
+            >
+              {metric.value}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      ))}
     </section>
   )
 }
@@ -249,23 +306,6 @@ function TransactionHistory() {
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <ItemGroup className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {transactionMetrics.map((metric) => (
-            <Item key={metric.label} variant="outline">
-              <ItemContent>
-                <ItemTitle className="text-sm uppercase text-muted-foreground">
-                  {metric.label}
-                </ItemTitle>
-                <ItemDescription
-                  className={`text-2xl font-medium ${metric.tone}`}
-                >
-                  {metric.value}
-                </ItemDescription>
-              </ItemContent>
-            </Item>
-          ))}
-        </ItemGroup>
-
         <Table className="min-w-4xl">
           <TableCaption className="sr-only">
             CD balance transaction history by period
@@ -362,6 +402,7 @@ export function EmployerCdBalance() {
             </div>
           </section>
           <BalanceSummary />
+          <TransactionMetrics />
           <TransactionHistory />
         </main>
       </SidebarInset>
