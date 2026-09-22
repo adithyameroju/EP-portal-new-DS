@@ -220,12 +220,27 @@ const openClaimsData = [
 ]
 
 const navigationItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Claims", href: "/dashboard/claims", icon: FileCheck2 },
-  { label: "Endorsements", href: "/dashboard#endorsements", icon: FilePenLine },
-  { label: "CD Balance", href: "/dashboard#balance", icon: WalletCards },
-  { label: "Policy Management", href: "/dashboard#policies", icon: ShieldCheck },
-  { label: "Reports", href: "/dashboard#reports", icon: FileText },
+  { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { id: "claims", label: "Claims", href: "/dashboard/claims", icon: FileCheck2 },
+  {
+    id: "endorsements",
+    label: "Endorsements",
+    href: "/dashboard/endorsements",
+    icon: FilePenLine,
+  },
+  {
+    id: "cd-balance",
+    label: "CD Balance",
+    href: "/dashboard/cd-balance",
+    icon: WalletCards,
+  },
+  {
+    id: "policies",
+    label: "Policy Management",
+    href: "/dashboard#policies",
+    icon: ShieldCheck,
+  },
+  { id: "reports", label: "Reports", href: "/dashboard#reports", icon: FileText },
 ]
 
 const QUICK_ACTION_ANIMATION_MS = 520
@@ -730,7 +745,7 @@ function ClaimsTrend() {
 export function DashboardSidebar({
   activeItem = "dashboard",
 }: {
-  activeItem?: "dashboard" | "claims"
+  activeItem?: "dashboard" | "claims" | "endorsements" | "cd-balance"
 }) {
   return (
     <Sidebar collapsible="icon" className="bg-card">
@@ -745,7 +760,7 @@ export function DashboardSidebar({
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
                     render={<Link href={item.href} />}
-                    isActive={item.label.toLowerCase() === activeItem}
+                    isActive={item.id === activeItem}
                     tooltip={item.label}
                     size="lg"
                   >
