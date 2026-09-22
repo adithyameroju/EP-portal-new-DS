@@ -87,7 +87,13 @@ function EndorsementActions() {
         {endorsementActions.map((action) => (
           <Item
             key={action.label}
-            render={<button type="button" />}
+            render={
+              <Button
+                type="button"
+                variant="outline"
+                className="whitespace-normal"
+              />
+            }
             variant="outline"
             className="relative min-h-48 flex-col items-start justify-between gap-4 bg-card p-5 text-left hover:bg-muted"
           >
