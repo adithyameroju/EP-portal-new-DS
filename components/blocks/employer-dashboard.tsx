@@ -237,7 +237,7 @@ const navigationItems = [
   {
     id: "policies",
     label: "Policy Management",
-    href: "/dashboard#policies",
+    href: "/dashboard/policies",
     icon: ShieldCheck,
   },
   { id: "reports", label: "Reports", href: "/dashboard#reports", icon: FileText },
@@ -745,7 +745,12 @@ function ClaimsTrend() {
 export function DashboardSidebar({
   activeItem = "dashboard",
 }: {
-  activeItem?: "dashboard" | "claims" | "endorsements" | "cd-balance"
+  activeItem?:
+    | "dashboard"
+    | "claims"
+    | "endorsements"
+    | "cd-balance"
+    | "policies"
 }) {
   return (
     <Sidebar collapsible="icon" className="bg-card">
