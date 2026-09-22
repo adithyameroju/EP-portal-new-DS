@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-09-22T10:17:05.058Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Add plan controls, workflow progress, and calculated CD impact",
+  "targetFiles": [
+    "components/blocks/employee-quick-flow.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "badge",
+    "breadcrumb",
+    "button",
+    "card",
+    "checkbox",
+    "field",
+    "input",
+    "item",
+    "progress",
+    "select",
+    "separator",
+    "sidebar",
+    "spinner",
+    "switch",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "The three-step indicator uses Compass Progress because this repository has no Stepper primitive.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Premium calculation uses a fixed 1.8-second loading state before advancing to Preview and submit.",
+      "category": "behavior"
+    },
+    {
+      "text": "Premium breakdown, taxes, deduction, and resulting CD balance are demonstration values matching the supplied reference.",
+      "category": "content"
+    },
+    {
+      "text": "Unchecking Same as employee reveals dependent-specific GMC Base, Secondary, Top-up, and Add-on selects.",
+      "category": "behavior"
+    },
+    {
+      "text": "GMC and GPA plan names shown in the references are represented as selectable demonstration options.",
+      "category": "content"
+    },
+    {
+      "text": "Section differentiation uses only subtle opacity variations of semantic muted, accent, secondary, and primary tokens.",
+      "category": "styling"
+    },
+    {
+      "text": "Add employee remains directly beside the employee Tabs at all responsive sizes.",
+      "category": "spacing"
+    },
+    {
+      "text": "Any form edit after calculation resets the workflow to Fill data and clears the calculated result.",
+      "category": "behavior"
+    }
+  ],
+  "gitHead": "3d49e34864f9764a3d001ec022394ca39c4e8ef3"
+}
