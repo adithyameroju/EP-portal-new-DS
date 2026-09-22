@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-09-22T05:59:59.074Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Build CD Balance and Endorsements pages from Figma",
+  "targetFiles": [
+    "components/blocks/employer-dashboard.tsx",
+    "components/blocks/employer-cd-balance.tsx",
+    "components/blocks/employer-endorsements.tsx",
+    "app/dashboard/cd-balance/page.tsx",
+    "app/dashboard/endorsements/page.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "avatar",
+    "badge",
+    "button",
+    "calendar",
+    "card",
+    "chart",
+    "dropdown-menu",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "select",
+    "sidebar",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Positive values and success states use Compass primary purple as approved because Compass has no dedicated green success token.",
+      "category": "styling"
+    },
+    {
+      "text": "Figma illustration nodes were unavailable, so action and balance artwork uses approved lucide-react icons inside Compass components.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Visible Figma transaction values are represented as static sample data.",
+      "category": "content"
+    },
+    {
+      "text": "Filters and sorting are interactive against local sample data; report, action, view-file, and download controls are presentational until backend flows are supplied.",
+      "category": "behavior"
+    },
+    {
+      "text": "Desktop card grids stack responsively on narrow screens while wide tables remain horizontally scrollable.",
+      "category": "spacing"
+    }
+  ],
+  "gitHead": "ecd81fda52d9ec70901b27b5b8b663f6e4c21519"
+}
