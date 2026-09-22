@@ -1,19 +1,24 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
+  Activity,
   Calculator,
   CircleAlert,
   CircleCheck,
   CreditCard,
   Heart,
+  Layers3,
+  Package,
   Plus,
   Shield,
   Sparkles,
   Trash2,
+  TrendingDown,
   UserRound,
   UsersRound,
+  WalletCards,
   X,
 } from "lucide-react"
 
@@ -30,7 +35,6 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -46,6 +50,7 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
+  FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
@@ -58,6 +63,11 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -65,6 +75,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { Spinner } from "@/components/ui/spinner"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import {
@@ -88,7 +99,10 @@ type EmployeeRecord = {
   gmcEnabled: boolean
   gpaEnabled: boolean
   basePlan: string
-  secondaryPlanEnabled: boolean
+  secondaryPlan: string
+  topUpPlan: string
+  addOnPlan: string
+  gpaBasePlan: string
   dependents: DependentRecord[]
 }
 
@@ -99,6 +113,10 @@ type DependentRecord = {
   dateOfBirth: string
   gender: string
   sameAsEmployee: boolean
+  basePlan: string
+  secondaryPlan: string
+  topUpPlan: string
+  addOnPlan: string
 }
 
 type RequiredEmployeeField =
@@ -141,6 +159,8 @@ const requiredEmployeeFields: RequiredEmployeeField[] = [
   "dateOfJoining",
 ]
 
+const workflowSteps = ["Fill data", "Calculate premium", "Preview & submit"]
+
 const dependentOptions = [
   { label: "Spouse", requiresSecondaryPlan: false },
   { label: "Son", requiresSecondaryPlan: false },
@@ -166,7 +186,10 @@ function createEmployee(id: number): EmployeeRecord {
     gmcEnabled: true,
     gpaEnabled: false,
     basePlan: "base-3l",
-    secondaryPlanEnabled: false,
+    secondaryPlan: "none",
+    topUpPlan: "none",
+    addOnPlan: "none",
+    gpaBasePlan: "",
     dependents: [],
   }
 }
@@ -210,6 +233,8 @@ function isEmployeeComplete(employee: EmployeeRecord) {
       employee.dateOfBirth &&
       employee.gender &&
       employee.dateOfJoining &&
+      (!employee.gmcEnabled || employee.basePlan) &&
+      (!employee.gpaEnabled || employee.gpaBasePlan) &&
       employee.dependents.every(isDependentComplete)
   )
 }
@@ -233,7 +258,7 @@ function BasicInformation({
   }
 
   return (
-    <FieldSet>
+    <FieldSet className="rounded-lg border-l-2 border-primary/20 bg-muted/40 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <FieldLegend className="flex items-center gap-2">
@@ -386,8 +411,12 @@ function InsurancePlans({
   employee: EmployeeRecord
   onChange: (patch: Partial<EmployeeRecord>) => void
 }) {
+  const plansComplete =
+    (!employee.gmcEnabled || Boolean(employee.basePlan)) &&
+    (!employee.gpaEnabled || Boolean(employee.gpaBasePlan))
+
   return (
-    <FieldSet>
+    <FieldSet className="rounded-lg border-l-2 border-primary/30 bg-accent/60 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <FieldLegend className="flex items-center gap-2">
@@ -398,7 +427,9 @@ function InsurancePlans({
             Enable the policies and select the employee&apos;s base plan.
           </FieldDescription>
         </div>
-        <Badge>Configured</Badge>
+        <Badge variant={plansComplete ? "default" : "secondary"}>
+          {plansComplete ? "Configured" : "Complete setup"}
+        </Badge>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <FieldSet className="rounded-lg border border-border p-4">
@@ -421,7 +452,7 @@ function InsurancePlans({
             />
           </Field>
           {employee.gmcEnabled ? (
-            <>
+            <FieldGroup>
               <Field>
                 <FieldLabel htmlFor={`base-plan-${employee.id}`}>
                   Base plan
@@ -452,38 +483,81 @@ function InsurancePlans({
                   </SelectContent>
                 </Select>
               </Field>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" type="button">
-                  <Plus />
-                  Top-up plan
-                </Button>
-                <Button variant="outline" size="sm" type="button">
-                  <Plus />
-                  Add-on plan
-                </Button>
-                <Button
-                  variant={
-                    employee.secondaryPlanEnabled ? "default" : "outline"
+              <Field>
+                <FieldLabel htmlFor={`secondary-plan-${employee.id}`}>
+                  Secondary plan
+                </FieldLabel>
+                <Select
+                  value={employee.secondaryPlan}
+                  onValueChange={(value) =>
+                    value && onChange({ secondaryPlan: value })
                   }
-                  size="sm"
-                  type="button"
-                  onClick={() =>
-                    onChange({
-                      secondaryPlanEnabled: !employee.secondaryPlanEnabled,
-                    })
-                  }
+                  items={{
+                    none: "None",
+                    "secondary-2l": "Secondary Plan · 2L",
+                  }}
                 >
-                  {employee.secondaryPlanEnabled ? (
-                    <CircleCheck />
-                  ) : (
-                    <Plus />
-                  )}
-                  {employee.secondaryPlanEnabled
-                    ? "Secondary plan added"
-                    : "Secondary plan"}
-                </Button>
-              </div>
-            </>
+                  <SelectTrigger
+                    id={`secondary-plan-${employee.id}`}
+                    aria-label="Select GMC secondary plan"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="secondary-2l">
+                      Secondary Plan · 2L
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor={`top-up-plan-${employee.id}`}>
+                  Top-up plan
+                </FieldLabel>
+                <Select
+                  value={employee.topUpPlan}
+                  onValueChange={(value) =>
+                    value && onChange({ topUpPlan: value })
+                  }
+                  items={{ none: "None", "top-up-5l": "Top-up · 5L" }}
+                >
+                  <SelectTrigger
+                    id={`top-up-plan-${employee.id}`}
+                    aria-label="Select GMC top-up plan"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="top-up-5l">Top-up · 5L</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor={`add-on-plan-${employee.id}`}>
+                  Add-on plan
+                </FieldLabel>
+                <Select
+                  value={employee.addOnPlan}
+                  onValueChange={(value) =>
+                    value && onChange({ addOnPlan: value })
+                  }
+                  items={{ none: "None", wellness: "Wellness add-on" }}
+                >
+                  <SelectTrigger
+                    id={`add-on-plan-${employee.id}`}
+                    aria-label="Select GMC add-on plan"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="wellness">Wellness add-on</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+            </FieldGroup>
           ) : null}
         </FieldSet>
 
@@ -506,6 +580,50 @@ function InsurancePlans({
               }
             />
           </Field>
+          {employee.gpaEnabled ? (
+            <Field>
+              <FieldLabel htmlFor={`gpa-base-plan-${employee.id}`}>
+                GPA base
+              </FieldLabel>
+              <Select
+                value={employee.gpaBasePlan}
+                onValueChange={(value) =>
+                  value && onChange({ gpaBasePlan: value })
+                }
+                items={{
+                  factor: "GPA FACTOR BASED — Individual",
+                  maxmin: "GPA MAX MIN — Individual",
+                  mileage: "Per mile flat rate — Individual",
+                  crystal: "GPA264587100CRYSTAL-Base — Individual",
+                  corp: "GPA016680100CRYD0CGPA — Individual",
+                }}
+              >
+                <SelectTrigger
+                  id={`gpa-base-plan-${employee.id}`}
+                  aria-label="Select GPA base plan"
+                >
+                  <SelectValue placeholder="Select GPA plan" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="factor">
+                    GPA FACTOR BASED — Individual
+                  </SelectItem>
+                  <SelectItem value="maxmin">
+                    GPA MAX MIN — Individual
+                  </SelectItem>
+                  <SelectItem value="mileage">
+                    Per mile flat rate — Individual
+                  </SelectItem>
+                  <SelectItem value="crystal">
+                    GPA264587100CRYSTAL-Base — Individual
+                  </SelectItem>
+                  <SelectItem value="corp">
+                    GPA016680100CRYD0CGPA — Individual
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+          ) : null}
         </FieldSet>
       </div>
     </FieldSet>
@@ -542,6 +660,10 @@ function Dependents({
           dateOfBirth: "",
           gender: "",
           sameAsEmployee: true,
+          basePlan: employee.basePlan,
+          secondaryPlan: "none",
+          topUpPlan: "none",
+          addOnPlan: "none",
         },
       ],
     })
@@ -569,7 +691,7 @@ function Dependents({
   }
 
   return (
-    <FieldSet>
+    <FieldSet className="rounded-lg border-l-2 border-primary/20 bg-secondary/60 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <FieldLegend className="flex items-center gap-2">
@@ -601,7 +723,7 @@ function Dependents({
             (dependent) => dependent.relation === option.label
           )
           const disabled =
-            option.requiresSecondaryPlan && !employee.secondaryPlanEnabled
+            option.requiresSecondaryPlan && employee.secondaryPlan === "none"
           return (
             <Button
               key={option.label}
@@ -762,13 +884,163 @@ function Dependents({
                       </FieldDescription>
                     </FieldContent>
                   </Field>
-                  <Alert>
-                    <Shield />
-                    <AlertDescription>
-                      Inherited from employee · Base Plan ·{" "}
-                      {employee.basePlan === "base-5l" ? "5L" : "3L"}
-                    </AlertDescription>
-                  </Alert>
+                  {dependent.sameAsEmployee ? (
+                    <Alert>
+                      <Shield />
+                      <AlertDescription>
+                        Inherited from employee · Base Plan ·{" "}
+                        {employee.basePlan === "base-5l" ? "5L" : "3L"}
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div className="rounded-lg bg-muted/40 p-4">
+                      <div className="mb-4 flex items-center gap-3">
+                        <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                          <Heart className="size-5" />
+                        </span>
+                        <FieldContent>
+                          <FieldTitle>GMC</FieldTitle>
+                          <FieldDescription>
+                            Configure a separate plan for this dependent.
+                          </FieldDescription>
+                        </FieldContent>
+                      </div>
+                      <FieldGroup className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        <Field>
+                          <FieldLabel
+                            htmlFor={`dependent-base-${employee.id}-${dependent.id}`}
+                          >
+                            Base
+                          </FieldLabel>
+                          <Select
+                            value={dependent.basePlan}
+                            onValueChange={(value) =>
+                              value &&
+                              updateDependent(dependent.id, {
+                                basePlan: value,
+                              })
+                            }
+                            items={{
+                              "base-3l": "3L",
+                              "base-5l": "5L",
+                            }}
+                          >
+                            <SelectTrigger
+                              id={`dependent-base-${employee.id}-${dependent.id}`}
+                              aria-label={`${dependent.relation} base plan`}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="base-3l">3L</SelectItem>
+                              <SelectItem value="base-5l">5L</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </Field>
+                        <Field>
+                          <FieldLabel
+                            htmlFor={`dependent-secondary-${employee.id}-${dependent.id}`}
+                          >
+                            Secondary
+                          </FieldLabel>
+                          <Select
+                            value={dependent.secondaryPlan}
+                            onValueChange={(value) =>
+                              value &&
+                              updateDependent(dependent.id, {
+                                secondaryPlan: value,
+                              })
+                            }
+                            items={{
+                              none: "Add secondary",
+                              "secondary-2l": "Secondary · 2L",
+                            }}
+                          >
+                            <SelectTrigger
+                              id={`dependent-secondary-${employee.id}-${dependent.id}`}
+                              aria-label={`${dependent.relation} secondary plan`}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">
+                                Add secondary
+                              </SelectItem>
+                              <SelectItem value="secondary-2l">
+                                Secondary · 2L
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </Field>
+                        <Field>
+                          <FieldLabel
+                            htmlFor={`dependent-top-up-${employee.id}-${dependent.id}`}
+                          >
+                            Top-up
+                          </FieldLabel>
+                          <Select
+                            value={dependent.topUpPlan}
+                            onValueChange={(value) =>
+                              value &&
+                              updateDependent(dependent.id, {
+                                topUpPlan: value,
+                              })
+                            }
+                            items={{
+                              none: "Add top-up",
+                              "top-up-5l": "Top-up · 5L",
+                            }}
+                          >
+                            <SelectTrigger
+                              id={`dependent-top-up-${employee.id}-${dependent.id}`}
+                              aria-label={`${dependent.relation} top-up plan`}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Add top-up</SelectItem>
+                              <SelectItem value="top-up-5l">
+                                Top-up · 5L
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </Field>
+                        <Field>
+                          <FieldLabel
+                            htmlFor={`dependent-add-on-${employee.id}-${dependent.id}`}
+                          >
+                            Add-ons
+                          </FieldLabel>
+                          <Select
+                            value={dependent.addOnPlan}
+                            onValueChange={(value) =>
+                              value &&
+                              updateDependent(dependent.id, {
+                                addOnPlan: value,
+                              })
+                            }
+                            items={{
+                              none: "Add add-ons",
+                              wellness: "Wellness add-on",
+                            }}
+                          >
+                            <SelectTrigger
+                              id={`dependent-add-on-${employee.id}-${dependent.id}`}
+                              aria-label={`${dependent.relation} add-on plan`}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Add add-ons</SelectItem>
+                              <SelectItem value="wellness">
+                                Wellness add-on
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </Field>
+                      </FieldGroup>
+                    </div>
+                  )}
                 </FieldSet>
               </FieldSet>
             )
@@ -781,11 +1053,18 @@ function Dependents({
 
 function CdImpact({
   employees,
-  estimate,
+  isCalculating,
+  hasCalculated,
 }: {
   employees: EmployeeRecord[]
-  estimate: number
+  isCalculating: boolean
+  hasCalculated: boolean
 }) {
+  const dependentCount = employees.reduce(
+    (total, employee) => total + employee.dependents.length,
+    0
+  )
+
   return (
     <Card className="lg:sticky lg:top-20">
       <CardHeader>
@@ -798,38 +1077,166 @@ function CdImpact({
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <ItemGroup>
+        {isCalculating ? (
           <Item variant="muted">
             <ItemMedia>
-              <CreditCard className="size-4" />
+              <Spinner />
             </ItemMedia>
             <ItemContent>
-              <ItemTitle>Current CD balance</ItemTitle>
-              <ItemDescription>Available balance</ItemDescription>
+              <ItemTitle>Calculating premium</ItemTitle>
+              <ItemDescription>
+                Checking plan selections, taxes, and CD balance.
+              </ItemDescription>
             </ItemContent>
-            <ItemActions className="font-semibold">₹48,50,000</ItemActions>
           </Item>
-          <Item variant="muted">
-            <ItemMedia>
-              <UsersRound className="size-4" />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>Employees</ItemTitle>
-              <ItemDescription>Included in this request</ItemDescription>
-            </ItemContent>
-            <ItemActions className="font-semibold">
-              {employees.length}
-            </ItemActions>
-          </Item>
-        </ItemGroup>
-        <Alert>
-          <Calculator />
-          <AlertDescription>
-            {estimate > 0
-              ? `Estimated premium impact: ₹${estimate.toLocaleString("en-IN")}`
-              : "Complete employee details to calculate the premium impact."}
-          </AlertDescription>
-        </Alert>
+        ) : hasCalculated ? (
+          <>
+            <Alert>
+              <WalletCards />
+              <AlertDescription>
+                CD balance after deduction:{" "}
+                <span className="font-semibold text-primary">₹47,06,630</span>
+              </AlertDescription>
+            </Alert>
+            <p className="text-sm font-semibold uppercase text-muted-foreground">
+              Estimated premium (pro-rata, incl. GST)
+            </p>
+            <ItemGroup>
+              <Item variant="muted" size="sm">
+                <ItemMedia>
+                  <UserRound className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>GMC base plan</ItemTitle>
+                  <ItemDescription>
+                    {employees.length + dependentCount} lives
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions className="font-semibold">₹84,000</ItemActions>
+              </Item>
+              <Item variant="muted" size="sm">
+                <ItemMedia>
+                  <Activity className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>GPA base</ItemTitle>
+                  <ItemDescription>{employees.length} lives</ItemDescription>
+                </ItemContent>
+                <ItemActions className="font-semibold">₹28,000</ItemActions>
+              </Item>
+              <Item variant="muted" size="sm">
+                <ItemMedia>
+                  <Layers3 className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>GMC secondary</ItemTitle>
+                  <ItemDescription>{dependentCount} lives</ItemDescription>
+                </ItemContent>
+                <ItemActions className="font-semibold">₹6,000</ItemActions>
+              </Item>
+              <Item variant="muted" size="sm">
+                <ItemMedia>
+                  <Package className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>GMC add-ons</ItemTitle>
+                  <ItemDescription>{dependentCount} lives</ItemDescription>
+                </ItemContent>
+                <ItemActions className="font-semibold">₹3,500</ItemActions>
+              </Item>
+            </ItemGroup>
+            <Separator />
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-muted-foreground">
+                  Subtotal (excl. GST)
+                </span>
+                <span className="font-semibold">₹1,21,500</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-muted-foreground">GST (18%)</span>
+                <span className="font-semibold">₹21,870</span>
+              </div>
+            </div>
+            <Separator />
+            <div className="flex items-center justify-between gap-4">
+              <span className="font-semibold">Total premium (incl. GST)</span>
+              <span className="text-2xl font-semibold text-primary">
+                ₹1,43,370
+              </span>
+            </div>
+            <ItemGroup>
+              <Item variant="outline" size="sm">
+                <ItemMedia>
+                  <CreditCard className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Current CD balance</ItemTitle>
+                </ItemContent>
+                <ItemActions className="font-semibold">₹48,50,000</ItemActions>
+              </Item>
+              <Item variant="outline" size="sm">
+                <ItemMedia>
+                  <TrendingDown className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Estimated deduction</ItemTitle>
+                </ItemContent>
+                <ItemActions className="font-semibold">−₹1,43,370</ItemActions>
+              </Item>
+              <Item variant="outline" size="sm">
+                <ItemMedia>
+                  <WalletCards className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>New balance</ItemTitle>
+                </ItemContent>
+                <ItemActions className="text-lg font-semibold">
+                  ₹47,06,630
+                </ItemActions>
+              </Item>
+            </ItemGroup>
+            <Alert>
+              <CircleCheck />
+              <AlertDescription>
+                Enough CD balance for this batch.
+              </AlertDescription>
+            </Alert>
+          </>
+        ) : (
+          <>
+            <ItemGroup>
+              <Item variant="muted">
+                <ItemMedia>
+                  <CreditCard className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Current CD balance</ItemTitle>
+                  <ItemDescription>Available balance</ItemDescription>
+                </ItemContent>
+                <ItemActions className="font-semibold">₹48,50,000</ItemActions>
+              </Item>
+              <Item variant="muted">
+                <ItemMedia>
+                  <UsersRound className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Employees</ItemTitle>
+                  <ItemDescription>Included in this request</ItemDescription>
+                </ItemContent>
+                <ItemActions className="font-semibold">
+                  {employees.length}
+                </ItemActions>
+              </Item>
+            </ItemGroup>
+            <Alert>
+              <Calculator />
+              <AlertDescription>
+                Complete employee details, then calculate premium.
+              </AlertDescription>
+            </Alert>
+          </>
+        )}
       </CardContent>
     </Card>
   )
@@ -846,6 +1253,9 @@ export function EmployeeQuickFlow({
   ])
   const [activeEmployee, setActiveEmployee] = useState("employee-1")
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({})
+  const [currentStep, setCurrentStep] = useState(1)
+  const [isCalculating, setIsCalculating] = useState(false)
+  const [hasCalculated, setHasCalculated] = useState(false)
 
   const currentIndex = Math.max(
     0,
@@ -862,15 +1272,27 @@ export function EmployeeQuickFlow({
     (total, employee) => total + employee.dependents.length,
     0
   )
-  const estimate = useMemo(
-    () =>
-      completedProfiles > 0
-        ? completedProfiles * 2500 + dependentCount * 1200
-        : 0,
-    [completedProfiles, dependentCount]
-  )
+
+  useEffect(() => {
+    if (!isCalculating) return
+
+    const timer = window.setTimeout(() => {
+      setIsCalculating(false)
+      setHasCalculated(true)
+      setCurrentStep(3)
+    }, 1800)
+
+    return () => window.clearTimeout(timer)
+  }, [isCalculating])
+
+  function resetCalculation() {
+    setIsCalculating(false)
+    setHasCalculated(false)
+    setCurrentStep(1)
+  }
 
   function updateCurrentEmployee(patch: Partial<EmployeeRecord>) {
+    resetCalculation()
     setEmployees((current) =>
       current.map((employee, index) =>
         index === currentIndex ? { ...employee, ...patch } : employee
@@ -914,6 +1336,7 @@ export function EmployeeQuickFlow({
 
   function addEmployee() {
     if (employees.length >= 5) return
+    resetCalculation()
     touchEmployee(employees[currentIndex])
     const nextId = Math.max(...employees.map((employee) => employee.id)) + 1
     setEmployees((current) => [...current, createEmployee(nextId)])
@@ -922,6 +1345,7 @@ export function EmployeeQuickFlow({
 
   function removeEmployee(employeeId: number) {
     if (employees.length === 1) return
+    resetCalculation()
     const removedIndex = employees.findIndex(
       (employee) => employee.id === employeeId
     )
@@ -942,10 +1366,16 @@ export function EmployeeQuickFlow({
   }
 
   function prefillData() {
+    resetCalculation()
     setEmployees((current) =>
       current.map((employee) => ({
         ...createDummyEmployee(employee.id),
-        secondaryPlanEnabled: employee.secondaryPlanEnabled,
+        gpaEnabled: employee.gpaEnabled,
+        gpaBasePlan:
+          employee.gpaBasePlan || (employee.gpaEnabled ? "factor" : ""),
+        secondaryPlan: employee.secondaryPlan,
+        topUpPlan: employee.topUpPlan,
+        addOnPlan: employee.addOnPlan,
         dependents: employee.dependents.map(createDummyDependent),
       }))
     )
@@ -953,6 +1383,15 @@ export function EmployeeQuickFlow({
 
   function validateAllEmployees() {
     employees.forEach(touchEmployee)
+  }
+
+  function calculatePremium() {
+    validateAllEmployees()
+    if (!allProfilesComplete || isCalculating) return
+    if (hasCalculated) return
+
+    setCurrentStep(2)
+    setIsCalculating(true)
   }
 
   return (
@@ -994,10 +1433,39 @@ export function EmployeeQuickFlow({
                 </h1>
                 <p className="text-muted-foreground">{config.description}</p>
               </div>
-              <Button variant="outline" type="button" onClick={prefillData}>
-                <Sparkles />
-                Prefill data
-              </Button>
+              <div className="flex w-full flex-col gap-3 md:max-w-xl">
+                <Progress value={(currentStep - 1) * 50}>
+                  <ProgressLabel>
+                    {workflowSteps[currentStep - 1]}
+                  </ProgressLabel>
+                  <ProgressValue>
+                    {() => `Step ${currentStep} of ${workflowSteps.length}`}
+                  </ProgressValue>
+                </Progress>
+                <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+                  {workflowSteps.map((step, index) => (
+                    <span
+                      key={step}
+                      className={
+                        index + 1 === currentStep
+                          ? "font-semibold text-primary"
+                          : undefined
+                      }
+                    >
+                      {index + 1}. {step}
+                    </span>
+                  ))}
+                </div>
+                <Button
+                  className="self-end"
+                  variant="outline"
+                  type="button"
+                  onClick={prefillData}
+                >
+                  <Sparkles />
+                  Prefill data
+                </Button>
+              </div>
             </section>
 
             {allProfilesComplete ? (
@@ -1027,7 +1495,38 @@ export function EmployeeQuickFlow({
                 <Card className="min-w-0 lg:col-span-2">
                   <CardHeader>
                     <CardTitle>Employee details</CardTitle>
-                    <CardAction>
+                    <CardDescription>
+                      Complete basic information, insurance plans, and
+                      dependents for each employee.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <TabsList className="max-w-full flex-wrap justify-start group-data-horizontal/tabs:h-auto">
+                        {employees.map((employee, index) => (
+                          <div
+                            key={employee.id}
+                            className="flex items-center rounded-md"
+                          >
+                            <TabsTrigger
+                              value={`employee-${employee.id}`}
+                              className="flex-none"
+                            >
+                              Employee {index + 1}
+                            </TabsTrigger>
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              type="button"
+                              disabled={employees.length === 1}
+                              aria-label={`Remove employee ${index + 1}`}
+                              onClick={() => removeEmployee(employee.id)}
+                            >
+                              <X />
+                            </Button>
+                          </div>
+                        ))}
+                      </TabsList>
                       <Button
                         variant="outline"
                         type="button"
@@ -1037,38 +1536,7 @@ export function EmployeeQuickFlow({
                         <Plus />
                         Add employee {Math.min(employees.length + 1, 5)}/5
                       </Button>
-                    </CardAction>
-                    <CardDescription>
-                      Complete basic information, insurance plans, and
-                      dependents for each employee.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="min-w-0">
-                    <TabsList className="max-w-full flex-wrap justify-start group-data-horizontal/tabs:h-auto">
-                      {employees.map((employee, index) => (
-                        <div
-                          key={employee.id}
-                          className="flex items-center rounded-md"
-                        >
-                          <TabsTrigger
-                            value={`employee-${employee.id}`}
-                            className="flex-none"
-                          >
-                            Employee {index + 1}
-                          </TabsTrigger>
-                          <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            type="button"
-                            disabled={employees.length === 1}
-                            aria-label={`Remove employee ${index + 1}`}
-                            onClick={() => removeEmployee(employee.id)}
-                          >
-                            <X />
-                          </Button>
-                        </div>
-                      ))}
-                    </TabsList>
+                    </div>
 
                     {employees.map((employee) => (
                       <TabsContent
@@ -1103,7 +1571,11 @@ export function EmployeeQuickFlow({
                     ))}
                   </CardContent>
                 </Card>
-                <CdImpact employees={employees} estimate={estimate} />
+                <CdImpact
+                  employees={employees}
+                  isCalculating={isCalculating}
+                  hasCalculated={hasCalculated}
+                />
               </div>
             </Tabs>
           </div>
@@ -1144,10 +1616,21 @@ export function EmployeeQuickFlow({
               size="lg"
               type="button"
               variant={config.submitVariant}
-              onClick={validateAllEmployees}
+              onClick={calculatePremium}
+              disabled={isCalculating}
             >
-              <Calculator />
-              {config.submitLabel}
+              {isCalculating ? (
+                <Spinner />
+              ) : hasCalculated ? (
+                <CircleCheck />
+              ) : (
+                <Calculator />
+              )}
+              {isCalculating
+                ? "Calculating premium"
+                : hasCalculated
+                  ? "Preview & submit"
+                  : config.submitLabel}
             </Button>
           </footer>
         </main>
