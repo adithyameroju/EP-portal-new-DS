@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-09-22T06:26:42.490Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Build Policy Management list, detail, and employee edit flow from Figma",
+  "targetFiles": [
+    "components/blocks/employer-dashboard.tsx",
+    "components/blocks/employer-policies.tsx",
+    "components/blocks/employer-policy-details.tsx",
+    "app/dashboard/policies/page.tsx",
+    "app/dashboard/policies/[policyNumber]/page.tsx",
+    "public/employer-dashboard/edit-employee.svg",
+    "public/employer-dashboard/policy-document-accent.svg",
+    "public/employer-dashboard/policy-document.svg",
+    "public/employer-dashboard/policy-employee.svg",
+    "public/employer-dashboard/profile-detail.svg",
+    "public/employer-dashboard/send-ecard.svg"
+  ],
+  "componentsUsed": [
+    "alert",
+    "avatar",
+    "badge",
+    "breadcrumb",
+    "button",
+    "calendar",
+    "card",
+    "chart",
+    "dialog",
+    "dropdown-menu",
+    "field",
+    "input",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "select",
+    "sidebar",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "The employee-centric John Doe Figma detail is placed under Policy Management with Policy Management selected, as approved.",
+      "category": "component-choice"
+    },
+    {
+      "text": "The policy list had no supplied Figma frame, so policy metrics, filters, statuses, and sample rows follow the existing Claims page structure with policy-relevant content.",
+      "category": "content"
+    },
+    {
+      "text": "Figma blue links and green success states map to Compass primary link and Badge tokens rather than hardcoded colors.",
+      "category": "styling"
+    },
+    {
+      "text": "The 974px Figma dialog maps to the nearest Compass container width sm:max-w-5xl, and its four-column table becomes stacked Field components on mobile.",
+      "category": "spacing"
+    },
+    {
+      "text": "View policy navigation and dialog interactions are functional; report, e-card, download, and endorsement submission controls remain presentational until backend flows are supplied.",
+      "category": "behavior"
+    },
+    {
+      "text": "The selected route policy number is dynamic while the remaining John Doe employee content follows the supplied Figma frame.",
+      "category": "content"
+    }
+  ],
+  "gitHead": "455770d5d7f9ab8ddc3ac42661270b92f60a2b57"
+}
