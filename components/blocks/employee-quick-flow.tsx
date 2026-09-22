@@ -18,7 +18,6 @@ import {
   TrendingDown,
   UserRound,
   UsersRound,
-  WalletCards,
   X,
 } from "lucide-react"
 
@@ -74,6 +73,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Spinner } from "@/components/ui/spinner"
 import { Separator } from "@/components/ui/separator"
@@ -225,16 +225,21 @@ function isDependentComplete(dependent: DependentRecord) {
   )
 }
 
+function isBasicInformationComplete(employee: EmployeeRecord) {
+  return requiredEmployeeFields.every((field) => Boolean(employee[field]))
+}
+
+function isInsuranceComplete(employee: EmployeeRecord) {
+  return Boolean(
+    (!employee.gmcEnabled || employee.basePlan) &&
+      (!employee.gpaEnabled || employee.gpaBasePlan)
+  )
+}
+
 function isEmployeeComplete(employee: EmployeeRecord) {
   return Boolean(
-    employee.fullName &&
-      employee.employeeId &&
-      employee.email &&
-      employee.dateOfBirth &&
-      employee.gender &&
-      employee.dateOfJoining &&
-      (!employee.gmcEnabled || employee.basePlan) &&
-      (!employee.gpaEnabled || employee.gpaBasePlan) &&
+    isBasicInformationComplete(employee) &&
+      isInsuranceComplete(employee) &&
       employee.dependents.every(isDependentComplete)
   )
 }
@@ -250,7 +255,7 @@ function BasicInformation({
   onChange: (patch: Partial<EmployeeRecord>) => void
   onTouch: (field: string) => void
 }) {
-  const complete = isEmployeeComplete(employee)
+  const complete = isBasicInformationComplete(employee)
   const attempted = requiredEmployeeFields.some((field) => touched[field])
 
   function showError(field: RequiredEmployeeField) {
@@ -258,12 +263,13 @@ function BasicInformation({
   }
 
   return (
-    <FieldSet className="rounded-lg border-l-2 border-primary/20 bg-muted/40 p-4">
+    <FieldSet className="rounded-lg border border-border bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <FieldLegend className="flex items-center gap-2">
-          <UserRound className="size-5" />
-          Basic information
+            <Badge variant="outline">1</Badge>
+            <UserRound className="size-5" />
+            Basic information
           </FieldLegend>
           <FieldDescription>
             Enter the employee information required for policy enrollment.
@@ -411,15 +417,14 @@ function InsurancePlans({
   employee: EmployeeRecord
   onChange: (patch: Partial<EmployeeRecord>) => void
 }) {
-  const plansComplete =
-    (!employee.gmcEnabled || Boolean(employee.basePlan)) &&
-    (!employee.gpaEnabled || Boolean(employee.gpaBasePlan))
+  const plansComplete = isInsuranceComplete(employee)
 
   return (
-    <FieldSet className="rounded-lg border-l-2 border-primary/30 bg-accent/60 p-4">
+    <FieldSet className="rounded-lg border border-border bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <FieldLegend className="flex items-center gap-2">
+            <Badge variant="outline">2</Badge>
             <Shield className="size-5" />
             Insurance plans
           </FieldLegend>
@@ -691,10 +696,11 @@ function Dependents({
   }
 
   return (
-    <FieldSet className="rounded-lg border-l-2 border-primary/20 bg-secondary/60 p-4">
+    <FieldSet className="rounded-lg border border-border bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <FieldLegend className="flex items-center gap-2">
+            <Badge variant="outline">3</Badge>
             <UsersRound className="size-5" />
             Dependents
           </FieldLegend>
@@ -1066,17 +1072,24 @@ function CdImpact({
   )
 
   return (
-    <Card className="lg:sticky lg:top-20">
-      <CardHeader>
+    <Card className="lg:h-full lg:min-h-0 lg:overflow-hidden">
+      <CardHeader className="lg:gap-1 lg:px-4 lg:py-3">
         <CardTitle className="flex items-center gap-2">
           <Calculator className="size-5" />
           Premium &amp; CD impact
         </CardTitle>
         <CardDescription>
-          Estimated impact for the employees in this endorsement.
+          {hasCalculated ? (
+            <>
+              New CD balance:{" "}
+              <span className="font-semibold text-primary">₹47,06,630</span>
+            </>
+          ) : (
+            "Estimated impact for the employees in this endorsement."
+          )}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-2 lg:px-4 lg:pb-3">
         {isCalculating ? (
           <Item variant="muted">
             <ItemMedia>
@@ -1091,62 +1104,69 @@ function CdImpact({
           </Item>
         ) : hasCalculated ? (
           <>
-            <Alert>
-              <WalletCards />
-              <AlertDescription>
-                CD balance after deduction:{" "}
-                <span className="font-semibold text-primary">₹47,06,630</span>
-              </AlertDescription>
-            </Alert>
-            <p className="text-sm font-semibold uppercase text-muted-foreground">
-              Estimated premium (pro-rata, incl. GST)
-            </p>
-            <ItemGroup>
-              <Item variant="muted" size="sm">
+            <ItemGroup className="grid grid-cols-2 gap-2">
+              <Item
+                variant="muted"
+                size="xs"
+                className="flex-nowrap px-2 py-1"
+              >
                 <ItemMedia>
                   <UserRound className="size-4" />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemTitle>GMC base plan</ItemTitle>
-                  <ItemDescription>
-                    {employees.length + dependentCount} lives
-                  </ItemDescription>
+                  <ItemTitle className="text-xs">
+                    GMC base ({employees.length + dependentCount})
+                  </ItemTitle>
                 </ItemContent>
                 <ItemActions className="font-semibold">₹84,000</ItemActions>
               </Item>
-              <Item variant="muted" size="sm">
+              <Item
+                variant="muted"
+                size="xs"
+                className="flex-nowrap px-2 py-1"
+              >
                 <ItemMedia>
                   <Activity className="size-4" />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemTitle>GPA base</ItemTitle>
-                  <ItemDescription>{employees.length} lives</ItemDescription>
+                  <ItemTitle className="text-xs">
+                    GPA base ({employees.length})
+                  </ItemTitle>
                 </ItemContent>
                 <ItemActions className="font-semibold">₹28,000</ItemActions>
               </Item>
-              <Item variant="muted" size="sm">
+              <Item
+                variant="muted"
+                size="xs"
+                className="flex-nowrap px-2 py-1"
+              >
                 <ItemMedia>
                   <Layers3 className="size-4" />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemTitle>GMC secondary</ItemTitle>
-                  <ItemDescription>{dependentCount} lives</ItemDescription>
+                  <ItemTitle className="text-xs">
+                    Secondary ({dependentCount})
+                  </ItemTitle>
                 </ItemContent>
                 <ItemActions className="font-semibold">₹6,000</ItemActions>
               </Item>
-              <Item variant="muted" size="sm">
+              <Item
+                variant="muted"
+                size="xs"
+                className="flex-nowrap px-2 py-1"
+              >
                 <ItemMedia>
                   <Package className="size-4" />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemTitle>GMC add-ons</ItemTitle>
-                  <ItemDescription>{dependentCount} lives</ItemDescription>
+                  <ItemTitle className="text-xs">
+                    Add-ons ({dependentCount})
+                  </ItemTitle>
                 </ItemContent>
                 <ItemActions className="font-semibold">₹3,500</ItemActions>
               </Item>
             </ItemGroup>
-            <Separator />
-            <div className="flex flex-col gap-2 text-sm">
+            <div className="flex flex-col gap-1 text-sm">
               <div className="flex items-center justify-between gap-4">
                 <span className="text-muted-foreground">
                   Subtotal (excl. GST)
@@ -1158,55 +1178,44 @@ function CdImpact({
                 <span className="font-semibold">₹21,870</span>
               </div>
             </div>
-            <Separator />
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 border-t border-border pt-2">
               <span className="font-semibold">Total premium (incl. GST)</span>
-              <span className="text-2xl font-semibold text-primary">
+              <span className="text-lg font-semibold text-primary">
                 ₹1,43,370
               </span>
             </div>
-            <ItemGroup>
-              <Item variant="outline" size="sm">
-                <ItemMedia>
+            <Item
+              variant="outline"
+              size="xs"
+              className="flex-col items-stretch gap-1 border-t border-border"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <span className="flex items-center gap-2">
                   <CreditCard className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>Current CD balance</ItemTitle>
-                </ItemContent>
-                <ItemActions className="font-semibold">₹48,50,000</ItemActions>
-              </Item>
-              <Item variant="outline" size="sm">
-                <ItemMedia>
+                  Current CD balance
+                </span>
+                <span className="font-semibold">₹48,50,000</span>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <span className="flex items-center gap-2">
                   <TrendingDown className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>Estimated deduction</ItemTitle>
-                </ItemContent>
-                <ItemActions className="font-semibold">−₹1,43,370</ItemActions>
-              </Item>
-              <Item variant="outline" size="sm">
-                <ItemMedia>
-                  <WalletCards className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>New balance</ItemTitle>
-                </ItemContent>
-                <ItemActions className="text-lg font-semibold">
-                  ₹47,06,630
-                </ItemActions>
-              </Item>
-            </ItemGroup>
-            <Alert>
-              <CircleCheck />
-              <AlertDescription>
-                Enough CD balance for this batch.
-              </AlertDescription>
-            </Alert>
+                  Estimated deduction
+                </span>
+                <span className="font-semibold">−₹1,43,370</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 border-t border-border pt-1">
+                <span className="flex items-center gap-2 font-semibold">
+                  <CircleCheck className="size-4" />
+                  New balance · Sufficient
+                </span>
+                <span className="text-lg font-semibold">₹47,06,630</span>
+              </div>
+            </Item>
           </>
         ) : (
           <>
             <ItemGroup>
-              <Item variant="muted">
+              <Item variant="muted" size="sm">
                 <ItemMedia>
                   <CreditCard className="size-4" />
                 </ItemMedia>
@@ -1216,7 +1225,7 @@ function CdImpact({
                 </ItemContent>
                 <ItemActions className="font-semibold">₹48,50,000</ItemActions>
               </Item>
-              <Item variant="muted">
+              <Item variant="muted" size="sm">
                 <ItemMedia>
                   <UsersRound className="size-4" />
                 </ItemMedia>
@@ -1263,6 +1272,18 @@ export function EmployeeQuickFlow({
       (employee) => `employee-${employee.id}` === activeEmployee
     )
   )
+  const activeEmployeeRecord = employees[currentIndex]
+  const activeBasicComplete = isBasicInformationComplete(activeEmployeeRecord)
+  const activeInsuranceComplete = isInsuranceComplete(activeEmployeeRecord)
+  const activeDependentsComplete =
+    activeEmployeeRecord.dependents.every(isDependentComplete)
+  const nextStepMessage = !activeBasicComplete
+    ? "Start with section 1: complete the required employee details."
+    : !activeInsuranceComplete
+      ? "Next, complete section 2 by selecting the required insurance plans."
+      : !activeDependentsComplete
+        ? "Finish section 3 by completing the added dependent details."
+        : "This employee is ready. Add another employee or calculate premium."
   const completedProfiles = employees.filter(isEmployeeComplete).length
   const allProfilesComplete = completedProfiles === employees.length
   const hasAttemptedValidation = Object.values(touchedFields).some(
@@ -1395,11 +1416,11 @@ export function EmployeeQuickFlow({
   }
 
   return (
-    <SidebarProvider>
-      <SidebarInset className="min-w-0 bg-muted">
+    <SidebarProvider className="lg:h-svh lg:min-h-0 lg:overflow-hidden">
+      <SidebarInset className="min-w-0 bg-muted lg:h-svh lg:min-h-0 lg:overflow-hidden">
         <DashboardHeader />
-        <main className="flex min-w-0 flex-1 flex-col">
-          <div className="flex flex-col gap-6 p-4 md:p-6">
+        <main className="flex min-w-0 flex-1 flex-col lg:min-h-0 lg:overflow-hidden">
+          <div className="flex flex-col gap-4 p-4 md:p-6 lg:min-h-0 lg:flex-1 lg:overflow-hidden">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -1428,7 +1449,7 @@ export function EmployeeQuickFlow({
 
             <section className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                <h1 className="text-3xl font-semibold tracking-tight">
                   {config.title}
                 </h1>
                 <p className="text-muted-foreground">{config.description}</p>
@@ -1468,14 +1489,7 @@ export function EmployeeQuickFlow({
               </div>
             </section>
 
-            {allProfilesComplete ? (
-              <Alert>
-                <CircleCheck />
-                <AlertDescription>
-                  All employee profiles have the required information.
-                </AlertDescription>
-              </Alert>
-            ) : hasAttemptedValidation ? (
+            {!allProfilesComplete && hasAttemptedValidation ? (
               <Alert variant="destructive">
                 <CircleAlert />
                 <AlertDescription>
@@ -1489,19 +1503,29 @@ export function EmployeeQuickFlow({
             <Tabs
               value={activeEmployee}
               onValueChange={changeActiveEmployee}
-              className="min-w-0"
+              className="min-w-0 lg:min-h-0 lg:flex-1 lg:overflow-hidden"
             >
-              <div className="grid min-w-0 gap-6 lg:grid-cols-3">
-                <Card className="min-w-0 lg:col-span-2">
-                  <CardHeader>
+              <div className="grid min-w-0 gap-6 lg:h-full lg:min-h-0 lg:grid-cols-3">
+                <Card className="min-w-0 lg:col-span-2 lg:h-full lg:min-h-0 lg:overflow-hidden">
+                  <CardHeader className="shrink-0">
                     <CardTitle>Employee details</CardTitle>
                     <CardDescription>
                       Complete basic information, insurance plans, and
                       dependents for each employee.
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
+                  <CardContent className="flex min-w-0 flex-1 flex-col gap-4 lg:min-h-0">
+                    <Alert className="shrink-0">
+                      {activeBasicComplete &&
+                      activeInsuranceComplete &&
+                      activeDependentsComplete ? (
+                        <CircleCheck />
+                      ) : (
+                        <CircleAlert />
+                      )}
+                      <AlertDescription>{nextStepMessage}</AlertDescription>
+                    </Alert>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
                       <TabsList className="max-w-full flex-wrap justify-start group-data-horizontal/tabs:h-auto">
                         {employees.map((employee, index) => (
                           <div
@@ -1542,31 +1566,32 @@ export function EmployeeQuickFlow({
                       <TabsContent
                         key={employee.id}
                         value={`employee-${employee.id}`}
+                        className="lg:min-h-0 lg:overflow-hidden"
                       >
-                        <div className="flex flex-col gap-6 pt-6">
-                          <BasicInformation
-                            employee={employee}
-                            touched={touchedFields[employee.id] ?? {}}
-                            onChange={updateCurrentEmployee}
-                            onTouch={(field) =>
-                              touchField(employee.id, field)
-                            }
-                          />
-                          <Separator />
-                          <InsurancePlans
-                            employee={employee}
-                            onChange={updateCurrentEmployee}
-                          />
-                          <Separator />
-                          <Dependents
-                            employee={employee}
-                            touched={touchedFields[employee.id] ?? {}}
-                            onChange={updateCurrentEmployee}
-                            onTouch={(field) =>
-                              touchField(employee.id, field)
-                            }
-                          />
-                        </div>
+                        <ScrollArea className="rounded-lg bg-muted/40 lg:h-full">
+                          <div className="flex flex-col gap-4 p-1 lg:pr-3">
+                            <BasicInformation
+                              employee={employee}
+                              touched={touchedFields[employee.id] ?? {}}
+                              onChange={updateCurrentEmployee}
+                              onTouch={(field) =>
+                                touchField(employee.id, field)
+                              }
+                            />
+                            <InsurancePlans
+                              employee={employee}
+                              onChange={updateCurrentEmployee}
+                            />
+                            <Dependents
+                              employee={employee}
+                              touched={touchedFields[employee.id] ?? {}}
+                              onChange={updateCurrentEmployee}
+                              onTouch={(field) =>
+                                touchField(employee.id, field)
+                              }
+                            />
+                          </div>
+                        </ScrollArea>
                       </TabsContent>
                     ))}
                   </CardContent>
@@ -1580,7 +1605,7 @@ export function EmployeeQuickFlow({
             </Tabs>
           </div>
 
-          <footer className="z-10 mt-auto flex flex-col gap-4 border-t border-border bg-card p-4 md:sticky md:bottom-0 md:flex-row md:items-center md:justify-between">
+          <footer className="z-10 mt-auto flex shrink-0 flex-col gap-4 border-t border-border bg-card p-4 md:flex-row md:items-center md:justify-between">
             <ItemGroup className="grid gap-2 sm:grid-cols-3">
               <Item variant="muted" size="sm">
                 <ItemMedia>
