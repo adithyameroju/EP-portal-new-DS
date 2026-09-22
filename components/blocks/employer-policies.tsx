@@ -296,15 +296,15 @@ function PolicyTable() {
   }, [category, fromDate, query, sort, status, toDate])
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="min-w-0">
+      <CardHeader className="min-w-0">
         <CardTitle className="col-span-2 text-xl xl:col-span-1">
           Policies
         </CardTitle>
         <CardDescription className="col-span-2 xl:col-span-1">
           View and manage all corporate insurance policies
         </CardDescription>
-        <CardAction className="col-span-2 col-start-1 row-start-3 flex flex-wrap justify-self-stretch gap-3 xl:col-span-1 xl:col-start-2 xl:row-start-1 xl:row-span-2 xl:justify-self-end">
+        <CardAction className="col-span-2 col-start-1 row-start-3 flex min-w-0 max-w-full flex-wrap justify-self-stretch gap-3 xl:justify-end">
           <InputGroup className="w-full sm:w-72">
             <InputGroupAddon>
               <Search />
@@ -388,7 +388,7 @@ function PolicyTable() {
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex min-w-0 flex-col gap-4">
         <Table className="min-w-6xl">
           <TableCaption className="sr-only">
             Corporate policies with coverage, renewal date, and current status
@@ -489,9 +489,9 @@ export function EmployerPolicies() {
   return (
     <SidebarProvider>
       <DashboardSidebar activeItem="policies" />
-      <SidebarInset className="bg-muted">
+      <SidebarInset className="min-w-0 overflow-x-hidden bg-muted">
         <DashboardHeader />
-        <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 p-4 md:p-6 lg:p-8">
+        <main className="mx-auto flex min-w-0 w-full max-w-7xl flex-col gap-8 p-4 md:p-6 lg:p-8">
           <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex flex-col gap-2">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
