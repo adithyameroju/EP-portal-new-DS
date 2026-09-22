@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-09-22T08:05:30.955Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Align endorsement actions, add schedule tabs, and contain policy overflow",
+  "targetFiles": [
+    "components/blocks/employer-endorsements.tsx",
+    "components/blocks/employer-policies.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "badge",
+    "button",
+    "calendar",
+    "card",
+    "dropdown-menu",
+    "input-group",
+    "pagination",
+    "popover",
+    "select",
+    "sidebar",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "The two attached screenshots are the source of truth for the endorsement and schedule table layouts.",
+      "category": "styling"
+    },
+    {
+      "text": "Action tiles use Card and Button footers; table views use Tabs, Table, Badge, Alert, Calendar, Popover, Select, and Pagination.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Endorsements and schedules are in-page tabs; pending and generated are nested schedule tabs backed by static demonstration data.",
+      "category": "behavior"
+    },
+    {
+      "text": "Success uses the Compass primary Badge because there is no dedicated semantic success-green token.",
+      "category": "token"
+    },
+    {
+      "text": "Wide tables scroll within their Table container while the dashboard shell remains fixed to the viewport.",
+      "category": "spacing"
+    }
+  ],
+  "gitHead": "5160eedb3e20a124147daef072d3b972a36707c4"
+}
