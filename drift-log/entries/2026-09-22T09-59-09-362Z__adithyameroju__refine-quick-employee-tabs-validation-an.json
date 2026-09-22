@@ -1,0 +1,61 @@
+{
+  "timestamp": "2026-09-22T09:59:09.362Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Refine quick employee tabs, validation, and dependent forms",
+  "targetFiles": [
+    "components/blocks/employee-quick-flow.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "badge",
+    "breadcrumb",
+    "button",
+    "card",
+    "checkbox",
+    "field",
+    "input",
+    "item",
+    "select",
+    "separator",
+    "sidebar",
+    "switch",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "At least one employee tab remains at all times; closing the active tab selects the nearest remaining employee.",
+      "category": "behavior"
+    },
+    {
+      "text": "Validation appears only after field blur, tab switching, adding another employee, or attempting the final action.",
+      "category": "behavior"
+    },
+    {
+      "text": "Parent and in-law dependent options stay disabled until the GMC secondary plan is enabled.",
+      "category": "behavior"
+    },
+    {
+      "text": "Prefill Data also fills any dependent records already added to each employee.",
+      "category": "behavior"
+    },
+    {
+      "text": "Basic information, insurance plans, and dependents are sibling FieldSet sections inside one Compass Card separated by Separator components.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Employee Tabs live inside the form Card and each tab has an adjacent Compass icon Button for removal.",
+      "category": "styling"
+    },
+    {
+      "text": "The summary footer is sticky on tablet and desktop but static on mobile to avoid obscuring form fields.",
+      "category": "spacing"
+    },
+    {
+      "text": "Incomplete touched sections use the existing destructive Badge and Alert variants; untouched sections remain neutral.",
+      "category": "token"
+    }
+  ],
+  "gitHead": "7b5545a12e4b0724028bb6234dd60add151bf277"
+}
