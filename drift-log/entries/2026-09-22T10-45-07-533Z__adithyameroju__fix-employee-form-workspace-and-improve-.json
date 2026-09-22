@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-09-22T10:45:07.533Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Fix employee form workspace and improve form guidance",
+  "targetFiles": [
+    "components/blocks/employee-quick-flow.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "badge",
+    "breadcrumb",
+    "button",
+    "card",
+    "checkbox",
+    "field",
+    "input",
+    "item",
+    "progress",
+    "scroll-area",
+    "select",
+    "separator",
+    "sidebar",
+    "spinner",
+    "switch",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "The fixed viewport workspace applies on desktop only; mobile retains safe stacked page scrolling as confirmed by the designer.",
+      "category": "behavior"
+    },
+    {
+      "text": "Compass ScrollArea is used only for the active employee form content.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Breadcrumbs, page heading, progress, employee tabs, CD impact, and footer remain stationary while the form scrolls.",
+      "category": "behavior"
+    },
+    {
+      "text": "The CD impact summary is compact enough to remain fully visible at a 1440 by 768 desktop viewport.",
+      "category": "spacing"
+    },
+    {
+      "text": "Premium line items use a two-column compact summary while retaining all supplied amounts.",
+      "category": "content"
+    },
+    {
+      "text": "Form sections use consistent card surfaces and numbered badges instead of similar tinted backgrounds.",
+      "category": "styling"
+    },
+    {
+      "text": "Basic information, insurance plans, and dependents calculate completion independently.",
+      "category": "behavior"
+    },
+    {
+      "text": "A contextual next-step alert guides the user to the first incomplete section.",
+      "category": "content"
+    }
+  ],
+  "gitHead": "be1c52e69703fdd6b5a60b0824bd362582c7bc51"
+}
