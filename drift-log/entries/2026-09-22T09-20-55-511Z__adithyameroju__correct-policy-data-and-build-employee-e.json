@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-09-22T09:20:55.511Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Correct policy data and build employee endorsement workflows",
+  "targetFiles": [
+    "components/blocks/employer-policies.tsx",
+    "components/blocks/employer-endorsements.tsx",
+    "components/blocks/employee-action-options.tsx",
+    "components/blocks/employer-cd-balance.tsx",
+    "components/blocks/employer-policy-details.tsx",
+    "components/blocks/employee-quick-flow.tsx",
+    "app/dashboard/endorsements/[action]/page.tsx",
+    "app/dashboard/endorsements/[action]/quick/page.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "badge",
+    "breadcrumb",
+    "button",
+    "calendar",
+    "card",
+    "dialog",
+    "dropdown-menu",
+    "field",
+    "input",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "select",
+    "sidebar",
+    "switch",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "The selected entity has only GMC and GPA policies; the displayed covered-life and sum-insured values are policy-level demonstration data.",
+      "category": "content"
+    },
+    {
+      "text": "Quick Add, Quick Update, and Quick Delete reuse the same three-section employee form with action-specific titles and final actions.",
+      "category": "behavior"
+    },
+    {
+      "text": "Bulk choices remain visible but disabled because the confirmed scope requested detailed implementation for all quick flows only.",
+      "category": "behavior"
+    },
+    {
+      "text": "Prefill Data fills every employee tab currently added with unique dummy employee data.",
+      "category": "behavior"
+    },
+    {
+      "text": "Prototype controls were excluded except Prefill Data, as confirmed by the designer.",
+      "category": "styling"
+    },
+    {
+      "text": "Endorsement entry points use documented interactive Compass Cards and all form controls use Compass components.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Status and completion states use existing Compass Badge variants because there are no dedicated success-state semantic tokens.",
+      "category": "token"
+    },
+    {
+      "text": "Wide layouts use responsive grids and mobile policy Items so no page or table requires horizontal scrolling.",
+      "category": "spacing"
+    }
+  ],
+  "gitHead": "5bf25e626ca478800bc05e09b7afc5ad8f574a0f"
+}
