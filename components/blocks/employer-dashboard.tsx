@@ -89,6 +89,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { PageHeading } from "./page-heading"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const balanceData = [
@@ -768,6 +769,7 @@ export function DashboardSidebar({
                     isActive={item.id === activeItem}
                     tooltip={item.label}
                     size="lg"
+                    className="font-normal data-active:font-normal"
                   >
                     <item.icon />
                     <span className="group-data-[collapsible=icon]:hidden">
@@ -787,6 +789,7 @@ export function DashboardSidebar({
               render={<Link href="/dashboard#quick-actions" />}
               tooltip="Quick Actions"
               size="lg"
+              className="font-normal data-active:font-normal"
             >
               <Bolt />
               <span className="group-data-[collapsible=icon]:hidden">
@@ -801,6 +804,8 @@ export function DashboardSidebar({
             <SidebarMenuButton
               render={<Link href="/dashboard#contact" />}
               tooltip="Contact"
+              size="lg"
+              className="font-normal data-active:font-normal"
             >
               <CircleHelp />
               <span className="group-data-[collapsible=icon]:hidden">
@@ -812,6 +817,8 @@ export function DashboardSidebar({
             <SidebarMenuButton
               render={<Link href="/dashboard#settings" />}
               tooltip="Settings"
+              size="lg"
+              className="font-normal data-active:font-normal"
             >
               <Settings />
               <span className="group-data-[collapsible=icon]:hidden">
@@ -896,15 +903,10 @@ export function EmployerDashboard() {
       <SidebarInset className="bg-muted">
         <DashboardHeader />
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:p-6 lg:p-8">
-          <section className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-              Welcome back, Purushottam
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Here are some <span className="font-semibold">quick insights</span>{" "}
-              you might be interested
-            </p>
-          </section>
+          <PageHeading
+            title="Welcome back, Purushottam"
+            description="Here are some quick insights you might be interested"
+          />
           <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <BalanceCard />
             <div className="grid gap-6">

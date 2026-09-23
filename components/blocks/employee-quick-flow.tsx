@@ -2,20 +2,16 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
-  Activity,
   Calculator,
   CircleAlert,
   CircleCheck,
-  CreditCard,
   Heart,
-  Layers3,
-  Package,
   Plus,
   Shield,
   Sparkles,
   Trash2,
-  TrendingDown,
   UserRound,
   UsersRound,
   X,
@@ -54,18 +50,12 @@ import {
 import { Input } from "@/components/ui/input"
 import {
   Item,
-  ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress"
 import {
   Select,
   SelectContent,
@@ -85,39 +75,15 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
+import { CdImpactPanel } from "./cd-impact-panel"
 import type { EmployeeAction } from "./employee-action-options"
-
-type EmployeeRecord = {
-  id: number
-  fullName: string
-  employeeId: string
-  email: string
-  dateOfBirth: string
-  gender: string
-  dateOfJoining: string
-  mobile: string
-  gmcEnabled: boolean
-  gpaEnabled: boolean
-  basePlan: string
-  secondaryPlan: string
-  topUpPlan: string
-  addOnPlan: string
-  gpaBasePlan: string
-  dependents: DependentRecord[]
-}
-
-type DependentRecord = {
-  id: number
-  relation: string
-  fullName: string
-  dateOfBirth: string
-  gender: string
-  sameAsEmployee: boolean
-  basePlan: string
-  secondaryPlan: string
-  topUpPlan: string
-  addOnPlan: string
-}
+import { PageHeading } from "./page-heading"
+import { WorkflowSteps } from "./workflow-steps"
+import {
+  saveEndorsementDraft,
+  type DependentRecord,
+  type EmployeeRecord,
+} from "@/lib/endorsement-session"
 
 type RequiredEmployeeField =
   | "fullName"
@@ -158,8 +124,6 @@ const requiredEmployeeFields: RequiredEmployeeField[] = [
   "gender",
   "dateOfJoining",
 ]
-
-const workflowSteps = ["Fill data", "Calculate premium", "Preview & submit"]
 
 const dependentOptions = [
   { label: "Spouse", requiresSecondaryPlan: false },
@@ -1057,206 +1021,13 @@ function Dependents({
   )
 }
 
-function CdImpact({
-  employees,
-  isCalculating,
-  hasCalculated,
-}: {
-  employees: EmployeeRecord[]
-  isCalculating: boolean
-  hasCalculated: boolean
-}) {
-  const dependentCount = employees.reduce(
-    (total, employee) => total + employee.dependents.length,
-    0
-  )
-
-  return (
-    <Card className="lg:h-full lg:min-h-0 lg:overflow-hidden">
-      <CardHeader className="lg:gap-1 lg:px-4 lg:py-3">
-        <CardTitle className="flex items-center gap-2">
-          <Calculator className="size-5" />
-          Premium &amp; CD impact
-        </CardTitle>
-        <CardDescription>
-          {hasCalculated ? (
-            <>
-              New CD balance:{" "}
-              <span className="font-semibold text-primary">₹47,06,630</span>
-            </>
-          ) : (
-            "Estimated impact for the employees in this endorsement."
-          )}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2 lg:px-4 lg:pb-3">
-        {isCalculating ? (
-          <Item variant="muted">
-            <ItemMedia>
-              <Spinner />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>Calculating premium</ItemTitle>
-              <ItemDescription>
-                Checking plan selections, taxes, and CD balance.
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-        ) : hasCalculated ? (
-          <>
-            <ItemGroup className="grid grid-cols-2 gap-2">
-              <Item
-                variant="muted"
-                size="xs"
-                className="flex-nowrap px-2 py-1"
-              >
-                <ItemMedia>
-                  <UserRound className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle className="text-xs">
-                    GMC base ({employees.length + dependentCount})
-                  </ItemTitle>
-                </ItemContent>
-                <ItemActions className="font-semibold">₹84,000</ItemActions>
-              </Item>
-              <Item
-                variant="muted"
-                size="xs"
-                className="flex-nowrap px-2 py-1"
-              >
-                <ItemMedia>
-                  <Activity className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle className="text-xs">
-                    GPA base ({employees.length})
-                  </ItemTitle>
-                </ItemContent>
-                <ItemActions className="font-semibold">₹28,000</ItemActions>
-              </Item>
-              <Item
-                variant="muted"
-                size="xs"
-                className="flex-nowrap px-2 py-1"
-              >
-                <ItemMedia>
-                  <Layers3 className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle className="text-xs">
-                    Secondary ({dependentCount})
-                  </ItemTitle>
-                </ItemContent>
-                <ItemActions className="font-semibold">₹6,000</ItemActions>
-              </Item>
-              <Item
-                variant="muted"
-                size="xs"
-                className="flex-nowrap px-2 py-1"
-              >
-                <ItemMedia>
-                  <Package className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle className="text-xs">
-                    Add-ons ({dependentCount})
-                  </ItemTitle>
-                </ItemContent>
-                <ItemActions className="font-semibold">₹3,500</ItemActions>
-              </Item>
-            </ItemGroup>
-            <div className="flex flex-col gap-1 text-sm">
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-muted-foreground">
-                  Subtotal (excl. GST)
-                </span>
-                <span className="font-semibold">₹1,21,500</span>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-muted-foreground">GST (18%)</span>
-                <span className="font-semibold">₹21,870</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between gap-4 border-t border-border pt-2">
-              <span className="font-semibold">Total premium (incl. GST)</span>
-              <span className="text-lg font-semibold text-primary">
-                ₹1,43,370
-              </span>
-            </div>
-            <Item
-              variant="outline"
-              size="xs"
-              className="flex-col items-stretch gap-1 border-t border-border"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <span className="flex items-center gap-2">
-                  <CreditCard className="size-4" />
-                  Current CD balance
-                </span>
-                <span className="font-semibold">₹48,50,000</span>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <span className="flex items-center gap-2">
-                  <TrendingDown className="size-4" />
-                  Estimated deduction
-                </span>
-                <span className="font-semibold">−₹1,43,370</span>
-              </div>
-              <div className="flex items-center justify-between gap-4 border-t border-border pt-1">
-                <span className="flex items-center gap-2 font-semibold">
-                  <CircleCheck className="size-4" />
-                  New balance · Sufficient
-                </span>
-                <span className="text-lg font-semibold">₹47,06,630</span>
-              </div>
-            </Item>
-          </>
-        ) : (
-          <>
-            <ItemGroup>
-              <Item variant="muted" size="sm">
-                <ItemMedia>
-                  <CreditCard className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>Current CD balance</ItemTitle>
-                  <ItemDescription>Available balance</ItemDescription>
-                </ItemContent>
-                <ItemActions className="font-semibold">₹48,50,000</ItemActions>
-              </Item>
-              <Item variant="muted" size="sm">
-                <ItemMedia>
-                  <UsersRound className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>Employees</ItemTitle>
-                  <ItemDescription>Included in this request</ItemDescription>
-                </ItemContent>
-                <ItemActions className="font-semibold">
-                  {employees.length}
-                </ItemActions>
-              </Item>
-            </ItemGroup>
-            <Alert>
-              <Calculator />
-              <AlertDescription>
-                Complete employee details, then calculate premium.
-              </AlertDescription>
-            </Alert>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
 export function EmployeeQuickFlow({
   action,
 }: {
   action: EmployeeAction
 }) {
   const config = flowConfig[action]
+  const router = useRouter()
   const [employees, setEmployees] = useState<EmployeeRecord[]>([
     createEmployee(1),
   ])
@@ -1409,7 +1180,11 @@ export function EmployeeQuickFlow({
   function calculatePremium() {
     validateAllEmployees()
     if (!allProfilesComplete || isCalculating) return
-    if (hasCalculated) return
+    if (hasCalculated) {
+      saveEndorsementDraft({ action, employees })
+      router.push(`/dashboard/endorsements/${action}/quick/preview`)
+      return
+    }
 
     setCurrentStep(2)
     setIsCalculating(true)
@@ -1431,7 +1206,7 @@ export function EmployeeQuickFlow({
                     Endorsements
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator>/</BreadcrumbSeparator>
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink
                     render={
@@ -1441,45 +1216,21 @@ export function EmployeeQuickFlow({
                     {flowConfig[action].title.replace("Quick ", "")}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator>/</BreadcrumbSeparator>
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbPage>{config.title}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
 
-            <section className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-semibold tracking-tight">
-                  {config.title}
-                </h1>
-                <p className="text-muted-foreground">{config.description}</p>
-              </div>
-              <div className="flex w-full flex-col gap-3 md:max-w-xl">
-                <Progress value={(currentStep - 1) * 50}>
-                  <ProgressLabel>
-                    {workflowSteps[currentStep - 1]}
-                  </ProgressLabel>
-                  <ProgressValue>
-                    {() => `Step ${currentStep} of ${workflowSteps.length}`}
-                  </ProgressValue>
-                </Progress>
-                <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                  {workflowSteps.map((step, index) => (
-                    <span
-                      key={step}
-                      className={
-                        index + 1 === currentStep
-                          ? "font-semibold text-primary"
-                          : undefined
-                      }
-                    >
-                      {index + 1}. {step}
-                    </span>
-                  ))}
-                </div>
+            <section className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <PageHeading
+                title={config.title}
+                description={config.description}
+              />
+              <div className="flex w-full flex-col items-end gap-3 lg:max-w-xl">
+                <WorkflowSteps currentStep={currentStep} />
                 <Button
-                  className="self-end"
                   variant="outline"
                   type="button"
                   onClick={prefillData}
@@ -1597,7 +1348,7 @@ export function EmployeeQuickFlow({
                     ))}
                   </CardContent>
                 </Card>
-                <CdImpact
+                <CdImpactPanel
                   employees={employees}
                   isCalculating={isCalculating}
                   hasCalculated={hasCalculated}
@@ -1606,9 +1357,9 @@ export function EmployeeQuickFlow({
             </Tabs>
           </div>
 
-          <footer className="z-10 mt-auto flex shrink-0 flex-col gap-4 border-t border-border bg-card p-4 md:flex-row md:items-center md:justify-between">
-            <ItemGroup className="grid gap-2 sm:grid-cols-3">
-              <Item variant="muted" size="sm">
+          <footer className="z-10 mt-auto flex shrink-0 flex-col gap-3 border-t border-border bg-card px-4 py-2 md:flex-row md:items-center md:justify-between">
+            <ItemGroup className="flex-row flex-wrap gap-2">
+              <Item variant="muted" size="xs" className="w-auto">
                 <ItemMedia>
                   <UsersRound className="size-4" />
                 </ItemMedia>
@@ -1617,18 +1368,18 @@ export function EmployeeQuickFlow({
                   <ItemDescription>{employees.length}</ItemDescription>
                 </ItemContent>
               </Item>
-              <Item variant="muted" size="sm">
+              <Item variant="muted" size="xs" className="w-auto">
                 <ItemMedia>
                   <CircleCheck className="size-4" />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemTitle>Profiles complete</ItemTitle>
+                  <ItemTitle>Complete</ItemTitle>
                   <ItemDescription>
-                    {completedProfiles} / {employees.length}
+                    {completedProfiles}/{employees.length}
                   </ItemDescription>
                 </ItemContent>
               </Item>
-              <Item variant="muted" size="sm">
+              <Item variant="muted" size="xs" className="w-auto">
                 <ItemMedia>
                   <UsersRound className="size-4" />
                 </ItemMedia>

@@ -8,6 +8,7 @@ import {
   CalendarDays,
   ChevronDown,
   Download,
+  FileText,
   Info,
   Search,
 } from "lucide-react"
@@ -72,6 +73,7 @@ import {
   DashboardHeader,
   DashboardSidebar,
 } from "@/components/blocks/employer-dashboard"
+import { PageHeading } from "@/components/blocks/page-heading"
 
 type ClaimStatus = "Rejected" | "Under Review" | "Processing" | "Approved"
 type ClaimType = "Reimbursement" | "Cashless"
@@ -355,7 +357,7 @@ function RecentClaims() {
                       />
                     }
                     variant="outline"
-                    size="sm"
+                    size="xs"
                   >
                     View details
                   </Button>
@@ -412,29 +414,19 @@ export function EmployerClaims() {
       <SidebarInset className="bg-muted">
         <DashboardHeader />
         <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 p-4 md:p-6 lg:p-8">
-          <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-                Claims
-              </h1>
-              <p className="text-sm font-medium text-muted-foreground">
-                Manage claims and track insurance claims
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              <ReportsMenu />
-              <Button type="button" size="lg">
-                <Image
-                  src="/employer-dashboard/generate-report.svg"
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="size-6"
-                />
-                Generate Report
-              </Button>
-            </div>
-          </section>
+          <PageHeading
+            title="Claims"
+            description="Manage claims and track insurance claims"
+            actions={
+              <>
+                <ReportsMenu />
+                <Button type="button" size="lg">
+                  <FileText />
+                  Generate Report
+                </Button>
+              </>
+            }
+          />
           <ClaimsMetricCards />
           <RecentClaims />
         </main>

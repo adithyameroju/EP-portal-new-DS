@@ -66,6 +66,7 @@ import {
 } from "@/components/ui/table"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
+import { PageHeading } from "./page-heading"
 
 const transactions = [
   {
@@ -386,21 +387,19 @@ export function EmployerCdBalance() {
       <SidebarInset>
         <DashboardHeader />
         <main className="flex flex-1 flex-col gap-8 bg-muted/40 p-4 md:p-8">
-          <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-medium tracking-tight">CD Balance</h1>
-              <p className="text-muted-foreground">
-                Manage your Corporate Deposit balance.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <ReportsMenu />
-              <Button size="lg">
-                <FileText />
-                Generate report
-              </Button>
-            </div>
-          </section>
+          <PageHeading
+            title="CD Balance"
+            description="Manage your Corporate Deposit balance."
+            actions={
+              <>
+                <ReportsMenu />
+                <Button type="button" size="lg">
+                  <FileText />
+                  Generate Report
+                </Button>
+              </>
+            }
+          />
           <BalanceSummary />
           <TransactionMetrics />
           <TransactionHistory />

@@ -20,15 +20,14 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
+import { PageHeading } from "./page-heading"
 
 export type EmployeeAction = "add" | "update" | "delete"
 
@@ -71,7 +70,6 @@ export function EmployeeActionOptions({
   action: EmployeeAction
 }) {
   const config = actionConfig[action] as (typeof actionConfig)[EmployeeAction]
-  const ActionIcon = config.icon
 
   return (
     <SidebarProvider>
@@ -88,72 +86,48 @@ export function EmployeeActionOptions({
                   Endorsements
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator>/</BreadcrumbSeparator>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage>{config.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
 
-          <section className="flex flex-col gap-2">
-            <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
-              <ActionIcon className="size-5" />
-            </span>
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              {config.title}
-            </h1>
-            <p className="text-muted-foreground">{config.description}</p>
-          </section>
+          <PageHeading
+            title={config.title}
+            description={config.description}
+          />
 
           <section className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>{config.quickTitle}</CardTitle>
-                <CardAction>
-                  <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                    <Zap className="size-5" />
-                  </span>
-                </CardAction>
-                <CardDescription>{config.quickDescription}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Best for small changes that need individual review.
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  render={
-                    <Link
-                      href={`/dashboard/endorsements/${action}/quick`}
-                    />
-                  }
-                >
-                  Choose {config.quickTitle.toLowerCase()}
-                </Button>
-              </CardFooter>
-            </Card>
+            <Link
+              href={`/dashboard/endorsements/${action}/quick`}
+              className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Card className="h-full transition-colors hover:bg-accent">
+                <CardHeader>
+                  <CardTitle>{config.quickTitle}</CardTitle>
+                  <CardDescription>{config.quickDescription}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="link" className="px-0" type="button">
+                    <Zap />
+                    Continue with {config.quickTitle.toLowerCase()}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
 
             <Card>
               <CardHeader>
                 <CardTitle>{config.bulkTitle}</CardTitle>
-                <CardAction>
-                  <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                    <FileSpreadsheet className="size-5" />
-                  </span>
-                </CardAction>
                 <CardDescription>{config.bulkDescription}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Best for larger changes prepared in a standard template.
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" type="button" disabled>
-                  Choose {config.bulkTitle.toLowerCase()}
+                <Button variant="link" className="px-0" type="button" disabled>
+                  <FileSpreadsheet />
+                  Continue with {config.bulkTitle.toLowerCase()}
                 </Button>
-              </CardFooter>
+              </CardContent>
             </Card>
           </section>
         </main>

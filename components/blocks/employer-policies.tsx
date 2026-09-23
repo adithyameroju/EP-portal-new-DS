@@ -71,6 +71,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
+import { PageHeading } from "./page-heading"
 
 type PolicyStatus = "Active" | "Renewal Due" | "Draft" | "Expired"
 
@@ -264,13 +265,8 @@ function PolicyTable() {
   return (
     <Card className="min-w-0">
       <CardHeader className="min-w-0">
-        <CardTitle className="col-span-2 text-xl xl:col-span-1">
-          Policies
-        </CardTitle>
-        <CardDescription className="col-span-2 xl:col-span-1">
-          View and manage all corporate insurance policies
-        </CardDescription>
-        <CardAction className="col-span-2 col-start-1 row-start-3 flex min-w-0 max-w-full flex-wrap justify-self-stretch gap-3 xl:justify-end">
+        <CardTitle className="text-xl">Policies</CardTitle>
+        <CardAction className="col-start-1 row-start-2 flex min-w-0 flex-wrap justify-self-stretch gap-3 xl:col-start-2 xl:row-start-1 xl:justify-self-end">
           <InputGroup className="w-full sm:w-72">
             <InputGroupAddon>
               <Search />
@@ -397,7 +393,7 @@ function PolicyTable() {
                         />
                       }
                       variant="outline"
-                      size="sm"
+                      size="xs"
                     >
                       View policy
                     </Button>
@@ -463,23 +459,19 @@ export function EmployerPolicies() {
       <SidebarInset className="min-w-0 overflow-x-hidden bg-muted">
         <DashboardHeader />
         <main className="mx-auto flex min-w-0 w-full max-w-7xl flex-col gap-8 p-4 md:p-6 lg:p-8">
-          <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-                Policy Management
-              </h1>
-              <p className="text-sm font-medium text-muted-foreground">
-                Manage coverage, policy status, and upcoming renewals
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              <ReportsMenu />
-              <Button type="button" size="lg">
-                <FileText />
-                Generate Report
-              </Button>
-            </div>
-          </section>
+          <PageHeading
+            title="Policy Management"
+            description="Manage coverage, policy status, and upcoming renewals"
+            actions={
+              <>
+                <ReportsMenu />
+                <Button type="button" size="lg">
+                  <FileText />
+                  Generate Report
+                </Button>
+              </>
+            }
+          />
           <PolicyMetrics />
           <PolicyTable />
         </main>

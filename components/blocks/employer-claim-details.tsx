@@ -259,7 +259,7 @@ function ClaimDocumentsCard() {
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
+                  size="icon-xs"
                   aria-label={`Download ${document} ${index + 1}`}
                 >
                   <Download />
@@ -334,12 +334,6 @@ export function EmployerClaimDetails({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink render={<Link href="/dashboard/claims" />}>
-                  Status
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink render={<Link href="/dashboard/claims" />}>
                   Claims
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -359,10 +353,10 @@ export function EmployerClaimDetails({
                 height={56}
               />
               <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+                <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
                   {claimNumber}
                 </h1>
-                <p className="text-base text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground">
                   Consultation&nbsp; • &nbsp;John Doe
                 </p>
               </div>
