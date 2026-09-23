@@ -21,7 +21,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 export const runtime = 'nodejs'        // needs child_process — not the edge runtime
-export const dynamic = 'force-dynamic' // never cache; always re-run on request
+export const dynamic = 'force-static'
 
 const SCOPE_EXTS = ['.tsx', '.ts', '.jsx', '.css']
 const SELF = ['app/compass-health/', 'app/api/compass-health/'] // never score this tool itself
@@ -132,6 +132,10 @@ function newestReport(cwd: string): Report | null {
 }
 
 export async function GET(request: NextRequest) {
+  if (process.env.GITHUB_PAGES === 'true') {
+    return NextResponse.json({ empty: true, hosted: true })
+  }
+
   // HARD REQUIREMENT: never execute in production.
   if (process.env.NODE_ENV === 'production') {
     return NextResponse.json(

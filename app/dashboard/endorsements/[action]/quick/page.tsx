@@ -5,6 +5,10 @@ import type { EmployeeAction } from "@/components/blocks/employee-action-options
 
 const employeeActions: EmployeeAction[] = ["add", "update", "delete"]
 
+export function generateStaticParams() {
+  return employeeActions.map((action) => ({ action }))
+}
+
 export default async function EmployeeQuickFlowPage({
   params,
 }: {

@@ -7,6 +7,10 @@ import {
 
 const employeeActions: EmployeeAction[] = ["add", "update", "delete"]
 
+export function generateStaticParams() {
+  return employeeActions.map((action) => ({ action }))
+}
+
 export default async function EmployeeActionPage({
   params,
 }: {
