@@ -1,0 +1,75 @@
+{
+  "timestamp": "2026-09-23T10:32:39.293Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Add notification center, invoice view, responsive tables, breadcrumbs, and schedule generation feedback",
+  "targetFiles": [
+    "components/blocks/cd-impact-panel.tsx",
+    "components/blocks/employee-action-options.tsx",
+    "components/blocks/employee-preview.tsx",
+    "components/blocks/employee-quick-flow.tsx",
+    "components/blocks/employer-cd-balance-ledger.tsx",
+    "components/blocks/employer-cd-balance.tsx",
+    "components/blocks/employer-claim-details.tsx",
+    "components/blocks/employer-claims.tsx",
+    "components/blocks/employer-dashboard.tsx",
+    "components/blocks/employer-endorsements.tsx",
+    "components/blocks/employer-policies.tsx",
+    "components/blocks/employer-policy-details.tsx",
+    "components/blocks/page-breadcrumb.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "alert-dialog",
+    "avatar",
+    "badge",
+    "breadcrumb",
+    "button",
+    "calendar",
+    "card",
+    "chart",
+    "checkbox",
+    "dialog",
+    "dropdown-menu",
+    "field",
+    "input",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "progress",
+    "scroll-area",
+    "select",
+    "separator",
+    "sheet",
+    "sidebar",
+    "spinner",
+    "switch",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Use Compass Sheet with Tabs and Item for the notification center, Dialog for invoice details, and AlertDialog for schedule confirmation.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Notification read state is session-only because no notification service is connected; schedule generation uses a seven-second demo state within the requested five-to-ten-second range.",
+      "category": "behavior"
+    },
+    {
+      "text": "Notification messages, invoice billing details, schedule counts, affected lives, and premium impact are representative demo data.",
+      "category": "content"
+    },
+    {
+      "text": "Use the user-confirmed All, Alerts, and Updates tabs, bg-muted/50 table headers, and compact Item layouts for dense tables below wide desktop.",
+      "category": "styling"
+    },
+    {
+      "text": "Map the attached breadcrumb layout to Compass gap-4, h-8 separator, and standard Button and Breadcrumb spacing.",
+      "category": "spacing"
+    }
+  ],
+  "gitHead": "f5427d3bf84af8e46067afed78e9626572fadb8b"
+}
