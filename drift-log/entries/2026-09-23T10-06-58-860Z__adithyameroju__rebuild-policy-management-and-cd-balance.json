@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-09-23T10:06:58.860Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Rebuild policy management and CD balance workflows",
+  "targetFiles": [
+    "app/dashboard/cd-balance/page.tsx",
+    "components/blocks/employer-cd-balance-ledger.tsx",
+    "components/blocks/employer-dashboard.tsx",
+    "components/blocks/employer-policies.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "avatar",
+    "badge",
+    "button",
+    "calendar",
+    "card",
+    "chart",
+    "dialog",
+    "dropdown-menu",
+    "field",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "progress",
+    "select",
+    "sidebar",
+    "spinner",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Use Compass Card, Tabs, Table, Dialog, Progress, Input, Badge, and Button primitives for the ledger and invoice flow.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Show representative individual employee policies, transactions, bank details, and invoice records because production data was not connected.",
+      "category": "content"
+    },
+    {
+      "text": "Keep the newly generated invoice highlighted and change Generating to Generated after the user-confirmed two-second delay.",
+      "category": "behavior"
+    },
+    {
+      "text": "Use medium weight only for the selected sidebar item and semantic selected-state styling for the generated invoice row.",
+      "category": "styling"
+    }
+  ],
+  "gitHead": "6d766228377cd2863b81994caf29f1a84ebad61c"
+}
