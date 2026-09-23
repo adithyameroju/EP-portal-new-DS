@@ -475,7 +475,8 @@ export function EmployerCdBalanceLedger() {
                       </div>
                     </div>
 
-                    <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
+                    <div className="hidden xl:block">
+                      <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
                       <TableCaption className="sr-only">
                         CD wallet deposits and deductions
                       </TableCaption>
@@ -484,12 +485,18 @@ export function EmployerCdBalanceLedger() {
                           <TableHead className="w-10">
                             <span className="sr-only">Expand</span>
                           </TableHead>
-                          <TableHead>Transaction ID</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead className="text-right">Amount</TableHead>
-                          <TableHead className="text-right">Balance</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
+                          <TableHead className="w-44">Transaction ID</TableHead>
+                          <TableHead className="w-72">Description</TableHead>
+                          <TableHead className="w-28 text-right">
+                            Amount
+                          </TableHead>
+                          <TableHead className="w-32 text-right">
+                            Balance
+                          </TableHead>
+                          <TableHead className="w-28">Date</TableHead>
+                          <TableHead className="w-20 text-right">
+                            Actions
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -517,7 +524,7 @@ export function EmployerCdBalanceLedger() {
                                     )
                                   }
                                 }}
-                                className="cursor-pointer"
+                                className="cursor-pointer [&>td]:py-3"
                               >
                                 <TableCell>
                                   <Button
@@ -540,18 +547,20 @@ export function EmployerCdBalanceLedger() {
                                   </Button>
                                 </TableCell>
                                 <TableCell className="font-medium">
-                                  {transaction.id}
+                                  <span className="line-clamp-2 break-all">
+                                    {transaction.id}
+                                  </span>
                                 </TableCell>
                                 <TableCell>
-                                  <span className="block font-medium">
+                                  <span className="line-clamp-1 font-medium">
                                     {transaction.title}
                                   </span>
-                                  <span className="block text-xs text-muted-foreground">
+                                  <span className="line-clamp-1 text-xs text-muted-foreground">
                                     {transaction.description}
                                   </span>
                                 </TableCell>
                                 <TableCell
-                                  className={`text-right font-medium ${
+                                  className={`whitespace-nowrap text-right font-medium ${
                                     transaction.amountType === "debit"
                                       ? "text-destructive"
                                       : "text-primary"
@@ -559,10 +568,10 @@ export function EmployerCdBalanceLedger() {
                                 >
                                   {transaction.amount}
                                 </TableCell>
-                                <TableCell className="text-right">
+                                <TableCell className="whitespace-nowrap text-right">
                                   {transaction.balance}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="whitespace-nowrap">
                                   {format(transaction.date, "dd MMM yyyy")}
                                 </TableCell>
                                 <TableCell className="text-right">
@@ -593,7 +602,77 @@ export function EmployerCdBalanceLedger() {
                           )
                         })}
                       </TableBody>
-                    </Table>
+                      </Table>
+                    </div>
+                    <ItemGroup className="xl:hidden">
+                      {transactions.map((transaction) => {
+                        const expanded = expandedId === transaction.id
+                        return (
+                          <Fragment key={transaction.id}>
+                            <Item variant="outline">
+                              <ItemContent>
+                                <ItemTitle>
+                                  {transaction.title} · {transaction.id}
+                                </ItemTitle>
+                                <ItemDescription className="line-clamp-2">
+                                  {transaction.description}
+                                </ItemDescription>
+                                <ItemDescription>
+                                  {format(transaction.date, "dd MMM yyyy")} ·
+                                  Balance {transaction.balance}
+                                </ItemDescription>
+                              </ItemContent>
+                              <ItemActions className="flex-col items-end gap-2">
+                                <span
+                                  className={`font-medium ${
+                                    transaction.amountType === "debit"
+                                      ? "text-destructive"
+                                      : "text-primary"
+                                  }`}
+                                >
+                                  {transaction.amount}
+                                </span>
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="xs"
+                                    type="button"
+                                    onClick={() =>
+                                      setExpandedId(
+                                        expanded ? null : transaction.id
+                                      )
+                                    }
+                                  >
+                                    {expanded ? <ChevronDown /> : <ChevronRight />}
+                                    Details
+                                  </Button>
+                                  <Button
+                                    variant="secondary"
+                                    size="xs"
+                                    type="button"
+                                    onClick={() =>
+                                      setDetailTransaction(transaction)
+                                    }
+                                  >
+                                    <Eye />
+                                    View
+                                  </Button>
+                                </div>
+                              </ItemActions>
+                            </Item>
+                            {expanded ? (
+                              <Item variant="muted">
+                                <ItemContent>
+                                  <TransactionDetails
+                                    transaction={transaction}
+                                  />
+                                </ItemContent>
+                              </Item>
+                            ) : null}
+                          </Fragment>
+                        )
+                      })}
+                    </ItemGroup>
 
                     <Pagination className="justify-end">
                       <PaginationContent>
@@ -631,7 +710,8 @@ export function EmployerCdBalanceLedger() {
                     <p className="text-sm text-muted-foreground">
                       Proforma invoices for CD wallet top-ups.
                     </p>
-                    <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
+                    <div className="hidden xl:block">
+                      <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
                       <TableCaption className="sr-only">
                         Generated proforma invoices
                       </TableCaption>
@@ -651,6 +731,7 @@ export function EmployerCdBalanceLedger() {
                         {invoices.map((invoice) => (
                           <TableRow
                             key={invoice.id}
+                            className="[&>td]:py-3"
                             data-state={
                               highlightedInvoice === invoice.id
                                 ? "selected"
@@ -714,7 +795,40 @@ export function EmployerCdBalanceLedger() {
                           </TableRow>
                         ))}
                       </TableBody>
-                    </Table>
+                      </Table>
+                    </div>
+                    <ItemGroup className="xl:hidden">
+                      {invoices.map((invoice) => (
+                        <Item
+                          key={invoice.id}
+                          variant={
+                            highlightedInvoice === invoice.id
+                              ? "muted"
+                              : "outline"
+                          }
+                        >
+                          <ItemContent>
+                            <ItemTitle>{invoice.id}</ItemTitle>
+                            <ItemDescription>
+                              {format(invoice.date, "dd MMM yyyy")} · Total{" "}
+                              {invoice.total}
+                            </ItemDescription>
+                          </ItemContent>
+                          <ItemActions className="flex-col items-end gap-2">
+                            <InvoiceStatusBadge status={invoice.status} />
+                            <Button
+                              variant="secondary"
+                              size="xs"
+                              type="button"
+                              onClick={() => setSelectedInvoice(invoice)}
+                            >
+                              <Eye />
+                              View
+                            </Button>
+                          </ItemActions>
+                        </Item>
+                      ))}
+                    </ItemGroup>
                   </div>
                 </TabsContent>
               </Tabs>
