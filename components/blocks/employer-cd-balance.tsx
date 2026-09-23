@@ -307,11 +307,11 @@ function TransactionHistory() {
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <Table className="min-w-4xl">
+        <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
           <TableCaption className="sr-only">
             CD balance transaction history by period
           </TableCaption>
-          <TableHeader className="bg-muted">
+          <TableHeader className="bg-muted/50">
             <TableRow>
               <TableHead>Period</TableHead>
               <TableHead className="text-right">Deposits</TableHead>

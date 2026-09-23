@@ -9,14 +9,6 @@ import {
   Zap,
 } from "lucide-react"
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -27,6 +19,7 @@ import {
 } from "@/components/ui/card"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
+import { PageBreadcrumb } from "./page-breadcrumb"
 import { PageHeading } from "./page-heading"
 
 export type EmployeeAction = "add" | "update" | "delete"
@@ -77,21 +70,17 @@ export function EmployeeActionOptions({
       <SidebarInset className="min-w-0 bg-muted">
         <DashboardHeader />
         <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 p-4 md:p-6 lg:p-8">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  render={<Link href="/dashboard/endorsements" />}
-                >
-                  Endorsements
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{config.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <PageBreadcrumb
+            backHref="/dashboard/endorsements"
+            backLabel="Endorsements"
+            items={[
+              {
+                label: "Endorsements",
+                href: "/dashboard/endorsements",
+              },
+              { label: config.title },
+            ]}
+          />
 
           <PageHeading
             title={config.title}

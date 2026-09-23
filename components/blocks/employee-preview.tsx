@@ -5,14 +5,6 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Pencil, Send } from "lucide-react"
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,6 +19,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { CdImpactPanel } from "./cd-impact-panel"
 import type { EmployeeAction } from "./employee-action-options"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
+import { PageBreadcrumb } from "./page-breadcrumb"
 import { PageHeading } from "./page-heading"
 import { WorkflowSteps } from "./workflow-steps"
 import {
@@ -82,45 +75,30 @@ export function EmployeePreview({ action }: { action: EmployeeAction }) {
         <DashboardHeader />
         <main className="flex min-w-0 flex-1 flex-col lg:min-h-0 lg:overflow-hidden">
           <div className="flex flex-col gap-4 p-4 md:p-6 lg:min-h-0 lg:flex-1 lg:overflow-hidden">
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    render={<Link href="/dashboard/endorsements" />}
-                  >
-                    Endorsements
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    render={<Link href={`/dashboard/endorsements/${action}`} />}
-                  >
-                    {action === "add"
+            <PageBreadcrumb
+              backHref={`/dashboard/endorsements/${action}/quick`}
+              backLabel={`Quick ${action}`}
+              items={[
+                {
+                  label: "Endorsements",
+                  href: "/dashboard/endorsements",
+                },
+                {
+                  label:
+                    action === "add"
                       ? "Add employees"
                       : action === "update"
                         ? "Update employees"
-                        : "Delete employees"}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    render={
-                      <Link
-                        href={`/dashboard/endorsements/${action}/quick`}
-                      />
-                    }
-                  >
-                    Quick {action}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Preview</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+                        : "Delete employees",
+                  href: `/dashboard/endorsements/${action}`,
+                },
+                {
+                  label: `Quick ${action}`,
+                  href: `/dashboard/endorsements/${action}/quick`,
+                },
+                { label: "Preview" },
+              ]}
+            />
 
             <section className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <PageHeading

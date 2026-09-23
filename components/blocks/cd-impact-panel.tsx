@@ -93,7 +93,7 @@ export function CdImpactPanel({
               </ItemActions>
             </Item>
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-muted/50">
                 <TableRow>
                   <TableHead>Cover</TableHead>
                   <TableHead>Lives</TableHead>

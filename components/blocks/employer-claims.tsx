@@ -317,11 +317,11 @@ function RecentClaims() {
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Table className="min-w-4xl">
+        <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
           <TableCaption className="sr-only">
             Recent claims with employee, amount, submission date, and status
           </TableCaption>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             <TableRow>
               <TableHead>Claim number</TableHead>
               <TableHead>Employee</TableHead>
@@ -351,6 +351,7 @@ function RecentClaims() {
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
+                    nativeButton={false}
                     render={
                       <Link
                         href={`/dashboard/claims/${encodeURIComponent(claim.number)}`}

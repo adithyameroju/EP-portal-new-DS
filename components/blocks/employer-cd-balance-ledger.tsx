@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from "react"
 import { format } from "date-fns"
+import { toast } from "sonner"
 import {
   CalendarDays,
   ChevronDown,
@@ -300,6 +301,8 @@ export function EmployerCdBalanceLedger() {
   const [highlightedInvoice, setHighlightedInvoice] = useState<string | null>(
     null
   )
+  const [selectedInvoice, setSelectedInvoice] =
+    useState<ProformaInvoice | null>(null)
   const [dateFilter, setDateFilter] = useState("all")
   const [view, setView] = useState("monthly")
 
@@ -327,6 +330,9 @@ export function EmployerCdBalanceLedger() {
     setHighlightedInvoice(invoiceId)
     setProformaOpen(false)
     setActiveTab("invoices")
+    toast("Invoice generation started", {
+      description: `${invoiceId} will be ready shortly.`,
+    })
 
     generationTimer.current = window.setTimeout(() => {
       setInvoices((current) =>
@@ -336,6 +342,9 @@ export function EmployerCdBalanceLedger() {
             : invoice
         )
       )
+      toast.success("Proforma invoice generated", {
+        description: `${invoiceId} is ready to view or download.`,
+      })
     }, 2000)
   }
 
@@ -466,11 +475,11 @@ export function EmployerCdBalanceLedger() {
                       </div>
                     </div>
 
-                    <Table className="min-w-5xl">
+                    <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
                       <TableCaption className="sr-only">
                         CD wallet deposits and deductions
                       </TableCaption>
-                      <TableHeader>
+                      <TableHeader className="bg-muted/50">
                         <TableRow>
                           <TableHead className="w-10">
                             <span className="sr-only">Expand</span>
@@ -622,11 +631,11 @@ export function EmployerCdBalanceLedger() {
                     <p className="text-sm text-muted-foreground">
                       Proforma invoices for CD wallet top-ups.
                     </p>
-                    <Table>
+                    <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
                       <TableCaption className="sr-only">
                         Generated proforma invoices
                       </TableCaption>
-                      <TableHeader>
+                      <TableHeader className="bg-muted/50">
                         <TableRow>
                           <TableHead>Invoice number</TableHead>
                           <TableHead>Date</TableHead>
@@ -669,6 +678,7 @@ export function EmployerCdBalanceLedger() {
                                   variant="secondary"
                                   size="xs"
                                   type="button"
+                                  onClick={() => setSelectedInvoice(invoice)}
                                 >
                                   <Eye />
                                   View
@@ -678,6 +688,11 @@ export function EmployerCdBalanceLedger() {
                                   size="icon-xs"
                                   type="button"
                                   aria-label={`Email ${invoice.id}`}
+                                  onClick={() =>
+                                    toast.success("Invoice sent by email", {
+                                      description: `${invoice.id} was sent to the registered finance contact.`,
+                                    })
+                                  }
                                 >
                                   <Mail />
                                 </Button>
@@ -686,6 +701,11 @@ export function EmployerCdBalanceLedger() {
                                   size="icon-xs"
                                   type="button"
                                   aria-label={`Download ${invoice.id}`}
+                                  onClick={() =>
+                                    toast.success("Invoice download started", {
+                                      description: invoice.id,
+                                    })
+                                  }
                                 >
                                   <Download />
                                 </Button>
@@ -756,6 +776,112 @@ export function EmployerCdBalanceLedger() {
               </ItemGroup>
             ) : null}
             <DialogFooter showCloseButton />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={Boolean(selectedInvoice)}
+          onOpenChange={(open) => !open && setSelectedInvoice(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Proforma invoice</DialogTitle>
+              <DialogDescription>
+                Review the invoice before sharing it with your finance team.
+              </DialogDescription>
+            </DialogHeader>
+            {selectedInvoice ? (
+              <div className="flex flex-col gap-4">
+                <ItemGroup className="grid gap-2 sm:grid-cols-2">
+                  <Item size="xs" variant="muted">
+                    <ItemContent>
+                      <ItemDescription>Invoice number</ItemDescription>
+                      <ItemTitle>{selectedInvoice.id}</ItemTitle>
+                    </ItemContent>
+                  </Item>
+                  <Item size="xs" variant="muted">
+                    <ItemContent>
+                      <ItemDescription>Invoice date</ItemDescription>
+                      <ItemTitle>
+                        {format(selectedInvoice.date, "dd MMM yyyy")}
+                      </ItemTitle>
+                    </ItemContent>
+                  </Item>
+                  <Item size="xs" variant="muted">
+                    <ItemContent>
+                      <ItemDescription>Billing entity</ItemDescription>
+                      <ItemTitle>Acme India Pvt Ltd</ItemTitle>
+                    </ItemContent>
+                  </Item>
+                  <Item size="xs" variant="muted">
+                    <ItemContent>
+                      <ItemDescription>Status</ItemDescription>
+                      <InvoiceStatusBadge status={selectedInvoice.status} />
+                    </ItemContent>
+                  </Item>
+                </ItemGroup>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm">Invoice summary</CardTitle>
+                    <CardDescription>
+                      GSTIN 29AABCR1234F1Z5
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ItemGroup>
+                      <Item size="xs">
+                        <ItemContent>
+                          <ItemTitle>CD Balance Recharge</ItemTitle>
+                        </ItemContent>
+                        <ItemActions>{selectedInvoice.amount}</ItemActions>
+                      </Item>
+                      <Item size="xs">
+                        <ItemContent>
+                          <ItemTitle>GST</ItemTitle>
+                        </ItemContent>
+                        <ItemActions>Not applicable</ItemActions>
+                      </Item>
+                      <Item size="xs" variant="muted">
+                        <ItemContent>
+                          <ItemTitle>Total payable</ItemTitle>
+                        </ItemContent>
+                        <ItemActions className="font-semibold">
+                          {selectedInvoice.total}
+                        </ItemActions>
+                      </Item>
+                    </ItemGroup>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : null}
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline" />}>
+                Close
+              </DialogClose>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  toast.success("Invoice sent by email", {
+                    description: `${selectedInvoice?.id} was sent to the registered finance contact.`,
+                  })
+                }
+              >
+                <Mail />
+                Email
+              </Button>
+              <Button
+                type="button"
+                onClick={() =>
+                  toast.success("Invoice download started", {
+                    description: selectedInvoice?.id,
+                  })
+                }
+              >
+                <Download />
+                Download
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 

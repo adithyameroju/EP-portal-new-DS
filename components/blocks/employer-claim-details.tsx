@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
 import {
   CalendarDays,
   CheckCircle2,
@@ -17,14 +16,6 @@ import {
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -62,6 +53,7 @@ import {
   DashboardHeader,
   DashboardSidebar,
 } from "@/components/blocks/employer-dashboard"
+import { PageBreadcrumb } from "@/components/blocks/page-breadcrumb"
 
 const claimInformation = [
   {
@@ -330,19 +322,14 @@ export function EmployerClaimDetails({
       <SidebarInset className="bg-muted">
         <DashboardHeader />
         <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:p-6 lg:p-8">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink render={<Link href="/dashboard/claims" />}>
-                  Claims
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{claimNumber}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <PageBreadcrumb
+            backHref="/dashboard/claims"
+            backLabel="Claims"
+            items={[
+              { label: "Claims", href: "/dashboard/claims" },
+              { label: claimNumber },
+            ]}
+          />
 
           <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">

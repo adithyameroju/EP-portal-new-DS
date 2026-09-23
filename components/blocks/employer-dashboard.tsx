@@ -4,10 +4,12 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
+  AlertTriangle,
   BarChart3,
   Bell,
   Bolt,
   ChevronRight,
+  CircleCheck,
   CircleHelp,
   FileCheck2,
   FilePenLine,
@@ -21,6 +23,7 @@ import {
   Users,
   WalletCards,
 } from "lucide-react"
+import { toast } from "sonner"
 import {
   Bar,
   BarChart,
@@ -36,6 +39,7 @@ import {
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -89,8 +93,66 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { PageHeading } from "./page-heading"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+type NotificationCategory = "alert" | "update"
+
+type DashboardNotification = {
+  id: string
+  category: NotificationCategory
+  title: string
+  description: string
+  time: string
+  href: string
+}
+
+const dashboardNotifications: DashboardNotification[] = [
+  {
+    id: "notification-1",
+    category: "alert",
+    title: "21 schedules are pending",
+    description:
+      "Generate endorsement schedules before the automatic month-end run.",
+    time: "5 min ago",
+    href: "/dashboard/endorsements",
+  },
+  {
+    id: "notification-2",
+    category: "update",
+    title: "Proforma invoice generated",
+    description:
+      "ACKO/PI/A226/5032 is ready to review and share with the finance team.",
+    time: "18 min ago",
+    href: "/dashboard/cd-balance",
+  },
+  {
+    id: "notification-3",
+    category: "alert",
+    title: "Three policies need attention",
+    description:
+      "The employee records have missing nominee or dependent information.",
+    time: "2 hrs ago",
+    href: "/dashboard/policies",
+  },
+  {
+    id: "notification-4",
+    category: "update",
+    title: "Endorsement completed",
+    description:
+      "The addition endorsement for Priya Sharma completed successfully.",
+    time: "Yesterday",
+    href: "/dashboard/endorsements",
+  },
+]
 
 const balanceData = [
   { month: "Jun 25", balance: 20 },
@@ -289,7 +351,7 @@ function VimaLogo() {
           alt=""
           width={8}
           height={8}
-          className="absolute right-0 top-0"
+          className="absolute right-0 top-0 size-2"
         />
       </div>
       <Image
@@ -835,6 +897,150 @@ export function DashboardSidebar({
   )
 }
 
+function NotificationCenter() {
+  const [readIds, setReadIds] = useState<Set<string>>(
+    () => new Set(["notification-4"])
+  )
+  const unreadCount = dashboardNotifications.filter(
+    (notification) => !readIds.has(notification.id)
+  ).length
+
+  function markAllAsRead() {
+    setReadIds(new Set(dashboardNotifications.map((notification) => notification.id)))
+    toast.success("All notifications marked as read")
+  }
+
+  function renderNotifications(category?: NotificationCategory) {
+    const notifications = category
+      ? dashboardNotifications.filter(
+          (notification) => notification.category === category
+        )
+      : dashboardNotifications
+
+    return (
+      <ItemGroup>
+        {notifications.map((notification) => {
+          const unread = !readIds.has(notification.id)
+          const NotificationIcon =
+            notification.category === "alert" ? AlertTriangle : CircleCheck
+
+          return (
+            <Item
+              key={notification.id}
+              render={
+                <Link
+                  href={notification.href}
+                  onClick={() =>
+                    setReadIds((current) =>
+                      new Set(current).add(notification.id)
+                    )
+                  }
+                />
+              }
+              variant={unread ? "muted" : "outline"}
+            >
+              <ItemMedia
+                variant="icon"
+                className={
+                  notification.category === "alert"
+                    ? "text-destructive"
+                    : "text-primary"
+                }
+              >
+                <NotificationIcon className="size-4" />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className={unread ? "font-semibold" : "font-medium"}>
+                  {notification.title}
+                </ItemTitle>
+                <ItemDescription>{notification.description}</ItemDescription>
+              </ItemContent>
+              <ItemActions className="flex-col items-end gap-2 text-xs text-muted-foreground">
+                <span>{notification.time}</span>
+                {unread ? (
+                  <>
+                    <span className="sr-only">Unread</span>
+                    <span
+                      aria-hidden="true"
+                      className="size-2 rounded-full bg-primary"
+                    />
+                  </>
+                ) : null}
+              </ItemActions>
+            </Item>
+          )
+        })}
+      </ItemGroup>
+    )
+  }
+
+  return (
+    <Sheet>
+      <SheetTrigger
+        render={
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            className="relative"
+            aria-label={`Notifications, ${unreadCount} unread`}
+          >
+            <Bell />
+            {unreadCount > 0 ? (
+              <Badge
+                variant="destructive"
+                className="absolute -right-1 -top-1 size-5 justify-center p-0 text-xs"
+              >
+                {unreadCount}
+              </Badge>
+            ) : null}
+          </Button>
+        }
+      />
+      <SheetContent aria-label="Notification center">
+        <SheetHeader>
+          <SheetTitle>Notification center</SheetTitle>
+          <SheetDescription>
+            Important alerts and recent updates across your account.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {unreadCount} unread
+            </p>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              onClick={markAllAsRead}
+              disabled={unreadCount === 0}
+            >
+              Mark all as read
+            </Button>
+          </div>
+          <Tabs defaultValue="all">
+            <TabsList variant="line" className="w-full justify-start">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="alerts">Alerts</TabsTrigger>
+              <TabsTrigger value="updates">Updates</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <div className="pt-4">{renderNotifications()}</div>
+            </TabsContent>
+            <TabsContent value="alerts">
+              <div className="pt-4">{renderNotifications("alert")}</div>
+            </TabsContent>
+            <TabsContent value="updates">
+              <div className="pt-4">{renderNotifications("update")}</div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
 export function DashboardHeader() {
   return (
     <header className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-4 border-b border-border bg-card px-4 md:px-8">
@@ -880,14 +1086,7 @@ export function DashboardHeader() {
             <SelectItem value="entity-3">Entity 3</SelectItem>
           </SelectContent>
         </Select>
-        <Button
-          type="button"
-          variant="secondary"
-          size="icon"
-          aria-label="Notifications"
-        >
-          <Bell />
-        </Button>
+        <NotificationCenter />
         <Avatar size="lg">
           <AvatarFallback>PS</AvatarFallback>
         </Avatar>

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   Calculator,
@@ -19,14 +18,6 @@ import {
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -77,6 +68,7 @@ import {
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
 import { CdImpactPanel } from "./cd-impact-panel"
 import type { EmployeeAction } from "./employee-action-options"
+import { PageBreadcrumb } from "./page-breadcrumb"
 import { PageHeading } from "./page-heading"
 import { WorkflowSteps } from "./workflow-steps"
 import {
@@ -1197,31 +1189,21 @@ export function EmployeeQuickFlow({
         <DashboardHeader />
         <main className="flex min-w-0 flex-1 flex-col lg:min-h-0 lg:overflow-hidden">
           <div className="flex flex-col gap-4 p-4 md:p-6 lg:min-h-0 lg:flex-1 lg:overflow-hidden">
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    render={<Link href="/dashboard/endorsements" />}
-                  >
-                    Endorsements
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    render={
-                      <Link href={`/dashboard/endorsements/${action}`} />
-                    }
-                  >
-                    {flowConfig[action].title.replace("Quick ", "")}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{config.title}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <PageBreadcrumb
+              backHref={`/dashboard/endorsements/${action}`}
+              backLabel={flowConfig[action].title.replace("Quick ", "")}
+              items={[
+                {
+                  label: "Endorsements",
+                  href: "/dashboard/endorsements",
+                },
+                {
+                  label: flowConfig[action].title.replace("Quick ", ""),
+                  href: `/dashboard/endorsements/${action}`,
+                },
+                { label: config.title },
+              ]}
+            />
 
             <section className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <PageHeading

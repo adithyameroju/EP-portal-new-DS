@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent, type ReactNode } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import {
   CircleUserRound,
   EllipsisVertical,
@@ -17,14 +16,6 @@ import {
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -60,6 +51,7 @@ import {
 } from "@/components/ui/item"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
+import { PageBreadcrumb } from "./page-breadcrumb"
 
 const basicInformation = [
   { label: "Employee ID", value: "EMP001" },
@@ -402,19 +394,17 @@ export function EmployerPolicyDetails({
       <SidebarInset className="bg-muted">
         <DashboardHeader />
         <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 p-4 md:p-6 lg:p-8">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink render={<Link href="/dashboard/policies" />}>
-                  Policy Management
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{policyNumber}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <PageBreadcrumb
+            backHref="/dashboard/policies"
+            backLabel="Policy Management"
+            items={[
+              {
+                label: "Policy Management",
+                href: "/dashboard/policies",
+              },
+              { label: policyNumber },
+            ]}
+          />
 
           <section className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-6">

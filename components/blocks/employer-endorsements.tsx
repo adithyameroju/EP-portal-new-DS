@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { format } from "date-fns"
@@ -69,6 +69,14 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Spinner } from "@/components/ui/spinner"
 import {
@@ -318,100 +326,154 @@ function EndorsementsTable({
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <Table className="min-w-5xl">
-        <TableCaption className="sr-only">
-          Endorsement activity, results, and schedule status
-        </TableCaption>
-        <TableHeader className="bg-muted">
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Activity</TableHead>
-            <TableHead>Entry mode</TableHead>
-            <TableHead>Done by</TableHead>
-            <TableHead>Endorsement status</TableHead>
-            <TableHead>Result</TableHead>
-            <TableHead>Actions</TableHead>
-            <TableHead>Schedule status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((endorsement) => (
-            <TableRow key={endorsement.id}>
-              <TableCell>
-                <span className="block font-medium">
-                  {format(endorsement.date, "dd MMM yyyy")}
-                </span>
-                <span className="block text-xs text-muted-foreground">
-                  {format(endorsement.date, "hh:mm a")}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span className="block font-medium">
-                  {endorsement.activity}
-                </span>
-                <span className="block text-xs text-muted-foreground">
-                  {endorsement.detail}
-                </span>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline">{endorsement.entryMode}</Badge>
-              </TableCell>
-              <TableCell>{endorsement.doneBy}</TableCell>
-              <TableCell>
-                {endorsement.status === "processing" ? (
-                  <Badge variant="secondary">
-                    <Spinner />
-                    Processing
-                  </Badge>
-                ) : (
-                  <Badge>
-                    <CircleCheck />
-                    Completed
-                  </Badge>
-                )}
-              </TableCell>
-              <TableCell className="font-medium text-primary">
-                {endorsement.result}
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1">
-                  <Button variant="secondary" size="xs" type="button">
-                    <Eye />
-                    View
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    type="button"
-                    aria-label={`Download ${endorsement.id}`}
-                  >
-                    <Download />
-                  </Button>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline">
-                  <Clock3 />
-                  Pending
-                </Badge>
-              </TableCell>
+      <div className="hidden xl:block">
+        <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
+          <TableCaption className="sr-only">
+            Endorsement activity, results, and schedule status
+          </TableCaption>
+          <TableHeader className="bg-muted/50">
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Activity</TableHead>
+              <TableHead>Entry mode</TableHead>
+              <TableHead>Done by</TableHead>
+              <TableHead>Endorsement status</TableHead>
+              <TableHead>Result</TableHead>
+              <TableHead>Actions</TableHead>
+              <TableHead>Schedule status</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {rows.map((endorsement) => (
+              <TableRow key={endorsement.id}>
+                <TableCell>
+                  <span className="block font-medium">
+                    {format(endorsement.date, "dd MMM yyyy")}
+                  </span>
+                  <span className="block text-xs text-muted-foreground">
+                    {format(endorsement.date, "hh:mm a")}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="block font-medium">
+                    {endorsement.activity}
+                  </span>
+                  <span className="block text-xs text-muted-foreground">
+                    {endorsement.detail}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">{endorsement.entryMode}</Badge>
+                </TableCell>
+                <TableCell>{endorsement.doneBy}</TableCell>
+                <TableCell>
+                  {endorsement.status === "processing" ? (
+                    <Badge variant="secondary">
+                      <Spinner />
+                      Processing
+                    </Badge>
+                  ) : (
+                    <Badge>
+                      <CircleCheck />
+                      Completed
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="font-medium text-primary">
+                  {endorsement.result}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Button variant="secondary" size="xs" type="button">
+                      <Eye />
+                      View
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      type="button"
+                      aria-label={`Download ${endorsement.id}`}
+                    >
+                      <Download />
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">
+                    <Clock3 />
+                    Pending
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <ItemGroup className="xl:hidden">
+        {rows.map((endorsement) => (
+          <Item key={endorsement.id} variant="outline">
+            <ItemContent>
+              <ItemTitle>
+                {endorsement.activity} · {endorsement.detail}
+              </ItemTitle>
+              <ItemDescription>
+                {format(endorsement.date, "dd MMM yyyy, hh:mm a")} ·{" "}
+                {endorsement.entryMode} · {endorsement.doneBy}
+              </ItemDescription>
+              <ItemDescription>
+                Result: {endorsement.result} · Schedule pending
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions className="flex-col items-end gap-2">
+              {endorsement.status === "processing" ? (
+                <Badge variant="secondary">
+                  <Spinner />
+                  Processing
+                </Badge>
+              ) : (
+                <Badge>
+                  <CircleCheck />
+                  Completed
+                </Badge>
+              )}
+              <div className="flex gap-1">
+                <Button variant="secondary" size="xs" type="button">
+                  <Eye />
+                  View
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  type="button"
+                  aria-label={`Download ${endorsement.id}`}
+                >
+                  <Download />
+                </Button>
+              </div>
+            </ItemActions>
+          </Item>
+        ))}
+      </ItemGroup>
       <TablePagination total={68 + submissions.length} pages={7} />
     </div>
   )
 }
 
-function SchedulesTable({ generated = false }: { generated?: boolean }) {
+function SchedulesTable({
+  generated = false,
+  generationStatus = "idle",
+}: {
+  generated?: boolean
+  generationStatus?: "idle" | "generating" | "generated"
+}) {
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <Table className="min-w-4xl">
+      <div className="hidden xl:block">
+        <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
         <TableCaption className="sr-only">
           Endorsement schedules with affected lives and premium impact
         </TableCaption>
-        <TableHeader className="bg-muted">
+        <TableHeader className="bg-muted/50">
           <TableRow>
             <TableHead>Date completed</TableHead>
             <TableHead>Endorsement type</TableHead>
@@ -422,6 +484,50 @@ function SchedulesTable({ generated = false }: { generated?: boolean }) {
           </TableRow>
         </TableHeader>
         <TableBody>
+          {generated && generationStatus !== "idle" ? (
+            <TableRow data-state="selected">
+              <TableCell>
+                <span className="block font-medium">
+                  {format(new Date(), "dd MMM yyyy")}
+                </span>
+                <span className="block text-xs text-muted-foreground">
+                  {format(new Date(), "hh:mm a")}
+                </span>
+              </TableCell>
+              <TableCell>Mixed endorsements</TableCell>
+              <TableCell>34 lives</TableCell>
+              <TableCell className="text-right">
+                <span className="block font-semibold">−₹3,42,600</span>
+                <span className="block text-xs text-muted-foreground">
+                  Estimated premium debit
+                </span>
+              </TableCell>
+              <TableCell>
+                <Badge>
+                  <CircleCheck />
+                  Success
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant={
+                    generationStatus === "generating"
+                      ? "secondary"
+                      : "default"
+                  }
+                >
+                  {generationStatus === "generating" ? (
+                    <Spinner />
+                  ) : (
+                    <CircleCheck />
+                  )}
+                  {generationStatus === "generating"
+                    ? "Generating"
+                    : "Generated"}
+                </Badge>
+              </TableCell>
+            </TableRow>
+          ) : null}
           {scheduleRows.map((schedule) => (
             <TableRow key={schedule.id}>
               <TableCell>
@@ -455,7 +561,66 @@ function SchedulesTable({ generated = false }: { generated?: boolean }) {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+        </Table>
+      </div>
+      <ItemGroup className="xl:hidden">
+        {generated && generationStatus !== "idle" ? (
+          <Item variant="muted">
+            <ItemContent>
+              <ItemTitle>Mixed endorsements · 34 lives</ItemTitle>
+              <ItemDescription>
+                {format(new Date(), "dd MMM yyyy, hh:mm a")} · Estimated
+                premium debit −₹3,42,600
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions className="flex-col items-end gap-2">
+              <Badge>
+                <CircleCheck />
+                Success
+              </Badge>
+              <Badge
+                variant={
+                  generationStatus === "generating"
+                    ? "secondary"
+                    : "default"
+                }
+              >
+                {generationStatus === "generating" ? (
+                  <Spinner />
+                ) : (
+                  <CircleCheck />
+                )}
+                {generationStatus === "generating"
+                  ? "Generating"
+                  : "Generated"}
+              </Badge>
+            </ItemActions>
+          </Item>
+        ) : null}
+        {scheduleRows.map((schedule) => (
+          <Item key={schedule.id} variant="outline">
+            <ItemContent>
+              <ItemTitle>
+                {schedule.type} · {schedule.lives}
+              </ItemTitle>
+              <ItemDescription>
+                {format(schedule.completedAt, "dd MMM yyyy, hh:mm a")} ·{" "}
+                {schedule.premium} {schedule.premiumType.toLowerCase()}
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions className="flex-col items-end gap-2">
+              <Badge>
+                <CircleCheck />
+                Success
+              </Badge>
+              <Badge variant={generated ? "secondary" : "outline"}>
+                {generated ? <CircleCheck /> : <Clock3 />}
+                {generated ? "Generated" : "Pending"}
+              </Badge>
+            </ItemActions>
+          </Item>
+        ))}
+      </ItemGroup>
       <TablePagination total={21} pages={3} />
     </div>
   )
@@ -474,12 +639,49 @@ function EndorsementHistory({
   const [scheduleType, setScheduleType] = useState("all")
   const [query, setQuery] = useState("")
   const [confirmGenerate, setConfirmGenerate] = useState(false)
+  const [historyTab, setHistoryTab] = useState("endorsements")
+  const [scheduleTab, setScheduleTab] = useState("pending")
+  const [generationStatus, setGenerationStatus] = useState<
+    "idle" | "generating" | "generated"
+  >("idle")
+  const generationTimer = useRef<number | undefined>(undefined)
   const pendingSchedules = 21
+
+  useEffect(() => {
+    return () => {
+      if (generationTimer.current) {
+        window.clearTimeout(generationTimer.current)
+      }
+    }
+  }, [])
+
+  function generateSchedules() {
+    setConfirmGenerate(false)
+    setHistoryTab("schedules")
+    setScheduleTab("generated")
+    setGenerationStatus("generating")
+    toast("Schedule generation started", {
+      description:
+        "21 schedules are being generated. You can track progress in this row.",
+    })
+
+    generationTimer.current = window.setTimeout(() => {
+      setGenerationStatus("generated")
+      toast.success("21 schedules generated successfully", {
+        description:
+          "The schedules are ready and the premium impact is reflected in the CD balance.",
+      })
+    }, 7000)
+  }
 
   return (
     <Card className="min-w-0">
       <CardContent className="min-w-0">
-        <Tabs defaultValue="endorsements" className="min-w-0">
+        <Tabs
+          value={historyTab}
+          onValueChange={setHistoryTab}
+          className="min-w-0"
+        >
           <div className="border-b">
             <TabsList variant="line">
               <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
@@ -546,7 +748,7 @@ function EndorsementHistory({
           </TabsContent>
           <TabsContent value="schedules">
             <div className="pt-4">
-              <Tabs defaultValue="pending">
+              <Tabs value={scheduleTab} onValueChange={setScheduleTab}>
                 <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                   <TabsList>
                     <TabsTrigger value="pending">
@@ -595,6 +797,7 @@ function EndorsementHistory({
                     <Button
                       type="button"
                       onClick={() => setConfirmGenerate(true)}
+                      disabled={generationStatus === "generating"}
                     >
                       <ListPlus />
                       Generate schedule ({pendingSchedules})
@@ -616,7 +819,10 @@ function EndorsementHistory({
                 </TabsContent>
                 <TabsContent value="generated">
                   <div className="pt-2">
-                    <SchedulesTable generated />
+                    <SchedulesTable
+                      generated
+                      generationStatus={generationStatus}
+                    />
                   </div>
                 </TabsContent>
               </Tabs>
@@ -635,14 +841,41 @@ function EndorsementHistory({
                 CD balance after generation.
               </AlertDialogDescription>
             </AlertDialogHeader>
+            <ItemGroup>
+              <Item size="xs" variant="muted">
+                <ItemContent>
+                  <ItemDescription>Pending schedules</ItemDescription>
+                  <ItemTitle>{pendingSchedules} endorsements</ItemTitle>
+                </ItemContent>
+                <ItemActions>12 additions · 9 modifications</ItemActions>
+              </Item>
+              <Item size="xs">
+                <ItemContent>
+                  <ItemDescription>Affected lives</ItemDescription>
+                  <ItemTitle>34 lives</ItemTitle>
+                </ItemContent>
+                <ItemActions>Employees and dependents</ItemActions>
+              </Item>
+              <Item size="xs">
+                <ItemContent>
+                  <ItemDescription>Estimated premium impact</ItemDescription>
+                  <ItemTitle>−₹3,42,600</ItemTitle>
+                </ItemContent>
+                <ItemActions>Premium debit</ItemActions>
+              </Item>
+              <Item size="xs">
+                <ItemContent>
+                  <ItemDescription>Estimated CD balance</ItemDescription>
+                  <ItemTitle>₹45,07,400</ItemTitle>
+                </ItemContent>
+                <ItemActions>After generation</ItemActions>
+              </Item>
+            </ItemGroup>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 type="button"
-                onClick={() => {
-                  setConfirmGenerate(false)
-                  toast.success(`${pendingSchedules} schedules generated`)
-                }}
+                onClick={generateSchedules}
               >
                 Generate schedules
               </AlertDialogAction>

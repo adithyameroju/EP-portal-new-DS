@@ -469,12 +469,12 @@ function PolicyTable() {
         </CardAction>
       </CardHeader>
       <CardContent className="flex min-w-0 flex-col gap-4">
-        <div className="hidden md:block">
-          <Table className="min-w-6xl table-fixed">
+        <div className="hidden xl:block">
+          <Table className="table-fixed [&_td]:whitespace-normal [&_th]:whitespace-normal">
             <TableCaption className="sr-only">
               GMC and GPA policies for the currently selected entity
             </TableCaption>
-            <TableHeader>
+            <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-40">Employee</TableHead>
                 <TableHead className="w-36">Policy number</TableHead>
@@ -530,7 +530,7 @@ function PolicyTable() {
             </TableBody>
           </Table>
         </div>
-        <ItemGroup className="md:hidden">
+        <ItemGroup className="xl:hidden">
           {visiblePolicies.map((policy) => (
             <Item key={policy.number} variant="outline">
               <ItemMedia className="rounded-full bg-accent">
