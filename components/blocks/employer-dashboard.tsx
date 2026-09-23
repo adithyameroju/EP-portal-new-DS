@@ -769,7 +769,7 @@ export function DashboardSidebar({
                     isActive={item.id === activeItem}
                     tooltip={item.label}
                     size="lg"
-                    className="font-normal data-active:font-normal"
+                    className="font-normal data-active:font-medium"
                   >
                     <item.icon />
                     <span className="group-data-[collapsible=icon]:hidden">
@@ -789,7 +789,7 @@ export function DashboardSidebar({
               render={<Link href="/dashboard#quick-actions" />}
               tooltip="Quick Actions"
               size="lg"
-              className="font-normal data-active:font-normal"
+              className="font-normal data-active:font-medium"
             >
               <Bolt />
               <span className="group-data-[collapsible=icon]:hidden">
@@ -805,7 +805,7 @@ export function DashboardSidebar({
               render={<Link href="/dashboard#contact" />}
               tooltip="Contact"
               size="lg"
-              className="font-normal data-active:font-normal"
+              className="font-normal data-active:font-medium"
             >
               <CircleHelp />
               <span className="group-data-[collapsible=icon]:hidden">
@@ -818,7 +818,7 @@ export function DashboardSidebar({
               render={<Link href="/dashboard#settings" />}
               tooltip="Settings"
               size="lg"
-              className="font-normal data-active:font-normal"
+              className="font-normal data-active:font-medium"
             >
               <Settings />
               <span className="group-data-[collapsible=icon]:hidden">

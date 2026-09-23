@@ -1,5 +1,5 @@
-import { EmployerCdBalance } from "@/components/blocks/employer-cd-balance"
+import { EmployerCdBalanceLedger } from "@/components/blocks/employer-cd-balance-ledger"
 
 export default function CdBalancePage() {
-  return <EmployerCdBalance />
+  return <EmployerCdBalanceLedger />
 }

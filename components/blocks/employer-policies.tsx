@@ -49,6 +49,14 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -77,6 +85,7 @@ type PolicyStatus = "Active" | "Renewal Due" | "Draft" | "Expired"
 
 type Policy = {
   number: string
+  employee: string
   product: "GMC" | "GPA"
   category: "gmc" | "gpa"
   coveredLives: number
@@ -88,21 +97,133 @@ type Policy = {
 
 const policies: Policy[] = [
   {
-    number: "GMC-ENT1-2026",
+    number: "GMC-EMP-1024",
+    employee: "Rahul Sharma",
     product: "GMC",
     category: "gmc",
-    coveredLives: 1248,
-    sumInsured: 50000000,
+    coveredLives: 4,
+    sumInsured: 500000,
     startDate: new Date(2026, 6, 1),
     renewalDate: new Date(2027, 5, 30),
     status: "Active",
   },
   {
-    number: "GPA-ENT1-2026",
+    number: "GPA-EMP-1024",
+    employee: "Rahul Sharma",
     product: "GPA",
     category: "gpa",
-    coveredLives: 1190,
-    sumInsured: 20000000,
+    coveredLives: 1,
+    sumInsured: 1000000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GMC-EMP-1025",
+    employee: "Priya Menon",
+    product: "GMC",
+    category: "gmc",
+    coveredLives: 3,
+    sumInsured: 500000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GPA-EMP-1025",
+    employee: "Priya Menon",
+    product: "GPA",
+    category: "gpa",
+    coveredLives: 1,
+    sumInsured: 1000000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GMC-EMP-1026",
+    employee: "Amit Verma",
+    product: "GMC",
+    category: "gmc",
+    coveredLives: 5,
+    sumInsured: 500000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GPA-EMP-1026",
+    employee: "Amit Verma",
+    product: "GPA",
+    category: "gpa",
+    coveredLives: 1,
+    sumInsured: 1000000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Renewal Due",
+  },
+  {
+    number: "GMC-EMP-1027",
+    employee: "Sneha Iyer",
+    product: "GMC",
+    category: "gmc",
+    coveredLives: 2,
+    sumInsured: 300000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GMC-EMP-1028",
+    employee: "Vikram Singh",
+    product: "GMC",
+    category: "gmc",
+    coveredLives: 4,
+    sumInsured: 500000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GPA-EMP-1028",
+    employee: "Vikram Singh",
+    product: "GPA",
+    category: "gpa",
+    coveredLives: 1,
+    sumInsured: 1000000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GMC-EMP-1029",
+    employee: "Neha Kulkarni",
+    product: "GMC",
+    category: "gmc",
+    coveredLives: 3,
+    sumInsured: 500000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Draft",
+  },
+  {
+    number: "GMC-EMP-1030",
+    employee: "Arjun Nair",
+    product: "GMC",
+    category: "gmc",
+    coveredLives: 2,
+    sumInsured: 300000,
+    startDate: new Date(2026, 6, 1),
+    renewalDate: new Date(2027, 5, 30),
+    status: "Active",
+  },
+  {
+    number: "GPA-EMP-1030",
+    employee: "Arjun Nair",
+    product: "GPA",
+    category: "gpa",
+    coveredLives: 1,
+    sumInsured: 1000000,
     startDate: new Date(2026, 6, 1),
     renewalDate: new Date(2027, 5, 30),
     status: "Active",
@@ -110,10 +231,10 @@ const policies: Policy[] = [
 ]
 
 const metrics = [
-  { title: "Active policies", value: "2" },
-  { title: "GMC covered lives", value: "1,248" },
-  { title: "GPA covered lives", value: "1,190" },
-  { title: "Total sum insured", value: "₹7", suffix: "cr" },
+  { title: "Individual policies", value: "2,438" },
+  { title: "Employees covered", value: "1,920" },
+  { title: "Dependents covered", value: "3,712" },
+  { title: "Total sum insured", value: "₹124", suffix: "cr" },
 ]
 
 function PolicyMetrics() {
@@ -235,7 +356,8 @@ function PolicyTable() {
       const matchesQuery =
         !normalizedQuery ||
         policy.number.toLowerCase().includes(normalizedQuery) ||
-        policy.product.toLowerCase().includes(normalizedQuery)
+        policy.product.toLowerCase().includes(normalizedQuery) ||
+        policy.employee.toLowerCase().includes(normalizedQuery)
       const matchesCategory =
         category === "all" || policy.category === category
       const matchesStatus =
@@ -274,7 +396,7 @@ function PolicyTable() {
             <InputGroupInput
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search policy number or product"
+              placeholder="Search employee, policy or product"
               aria-label="Search policies"
             />
           </InputGroup>
@@ -348,24 +470,28 @@ function PolicyTable() {
       </CardHeader>
       <CardContent className="flex min-w-0 flex-col gap-4">
         <div className="hidden md:block">
-          <Table className="table-fixed">
+          <Table className="min-w-6xl table-fixed">
             <TableCaption className="sr-only">
               GMC and GPA policies for the currently selected entity
             </TableCaption>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-40">Employee</TableHead>
                 <TableHead className="w-36">Policy number</TableHead>
                 <TableHead className="w-20">Product</TableHead>
-                <TableHead className="text-right">Covered lives</TableHead>
-                <TableHead className="text-right">Sum insured (₹)</TableHead>
-                <TableHead>Policy period</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-28 text-right">Covered lives</TableHead>
+                <TableHead className="w-32 text-right">Sum insured (₹)</TableHead>
+                <TableHead className="w-56">Policy period</TableHead>
+                <TableHead className="w-28 text-center">Status</TableHead>
+                <TableHead className="w-28 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {visiblePolicies.map((policy) => (
                 <TableRow key={policy.number}>
+                  <TableCell className="font-medium">
+                    {policy.employee}
+                  </TableCell>
                   <TableCell className="whitespace-normal font-medium">
                     {policy.number}
                   </TableCell>
@@ -378,7 +504,7 @@ function PolicyTable() {
                   <TableCell className="text-right">
                     {policy.sumInsured.toLocaleString("en-IN")}
                   </TableCell>
-                  <TableCell className="whitespace-normal">
+                  <TableCell className="whitespace-nowrap">
                     {format(policy.startDate, "dd MMM yyyy")} –{" "}
                     {format(policy.renewalDate, "dd MMM yyyy")}
                   </TableCell>
@@ -387,6 +513,7 @@ function PolicyTable() {
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
+                      nativeButton={false}
                       render={
                         <Link
                           href={`/dashboard/policies/${encodeURIComponent(policy.number)}`}
@@ -411,11 +538,11 @@ function PolicyTable() {
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>
-                  {policy.product} · {policy.number}
+                  {policy.employee} · {policy.product}
                 </ItemTitle>
                 <ItemDescription>
-                  {policy.coveredLives.toLocaleString("en-IN")} covered lives ·
-                  ₹{policy.sumInsured.toLocaleString("en-IN")}
+                  {policy.number} · {policy.coveredLives} covered lives · ₹
+                  {policy.sumInsured.toLocaleString("en-IN")}
                 </ItemDescription>
                 <ItemDescription>
                   {format(policy.startDate, "dd MMM yyyy")} –{" "}
@@ -425,6 +552,7 @@ function PolicyTable() {
               <ItemActions className="flex-col items-end">
                 <PolicyStatusBadge status={policy.status} />
                 <Button
+                  nativeButton={false}
                   render={
                     <Link
                       href={`/dashboard/policies/${encodeURIComponent(policy.number)}`}
@@ -447,6 +575,34 @@ function PolicyTable() {
             </AlertDescription>
           </Alert>
         ) : null}
+        <Pagination className="justify-end">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="/dashboard/policies?page=1"
+                text=""
+                aria-label="Previous policy page"
+              />
+            </PaginationItem>
+            {[1, 2, 3, 4, 5].map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  href={`/dashboard/policies?page=${page}`}
+                  isActive={page === 1}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="/dashboard/policies?page=2"
+                text=""
+                aria-label="Next policy page"
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </CardContent>
     </Card>
   )
