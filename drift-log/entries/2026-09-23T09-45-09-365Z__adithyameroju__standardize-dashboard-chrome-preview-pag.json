@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-09-23T09:45:09.365Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Standardize dashboard chrome, preview page, and processing endorsement status",
+  "targetFiles": [
+    "app/layout.tsx",
+    "app/dashboard/endorsements/page.tsx",
+    "app/dashboard/endorsements/[action]/quick/preview/page.tsx",
+    "components/blocks/page-heading.tsx",
+    "components/blocks/workflow-steps.tsx",
+    "components/blocks/cd-impact-panel.tsx",
+    "components/blocks/employee-preview.tsx",
+    "components/blocks/employee-quick-flow.tsx",
+    "components/blocks/employee-action-options.tsx",
+    "components/blocks/employer-endorsements.tsx",
+    "components/blocks/employer-policies.tsx",
+    "components/blocks/employer-claims.tsx",
+    "components/blocks/employer-cd-balance.tsx",
+    "components/blocks/employer-dashboard.tsx",
+    "components/blocks/employer-claim-details.tsx",
+    "components/blocks/employer-policy-details.tsx",
+    "lib/endorsement-session.ts"
+  ],
+  "componentsUsed": [
+    "alert",
+    "alert-dialog",
+    "avatar",
+    "badge",
+    "breadcrumb",
+    "button",
+    "calendar",
+    "card",
+    "chart",
+    "checkbox",
+    "dialog",
+    "dropdown-menu",
+    "field",
+    "input",
+    "input-group",
+    "item",
+    "pagination",
+    "popover",
+    "progress",
+    "scroll-area",
+    "select",
+    "separator",
+    "sheet",
+    "sidebar",
+    "sonner",
+    "spinner",
+    "switch",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Page headings reuse the Claims title classes: text-3xl font-semibold tracking-tight md:text-4xl with a text-sm font-medium muted description.",
+      "category": "styling"
+    },
+    {
+      "text": "Breadcrumb separators use the Compass default chevron instead of a slash character.",
+      "category": "component-choice"
+    },
+    {
+      "text": "There is no Stepper primitive, so numbered Item chips represent Fill data, Calculate premium, and Preview and submit.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Endorsement processing status is stored in localStorage so it appears whenever an endorsement is submitted, including after refresh, and flips to Completed after 10 seconds.",
+      "category": "behavior"
+    },
+    {
+      "text": "Generate schedule uses AlertDialog for an explicit confirmation with the pending schedule count.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Table and Generate Report CTAs use Button size xs or lg so icons follow the Button spec instead of custom 24px assets.",
+      "category": "spacing"
+    },
+    {
+      "text": "Preview and submit saves the current employee draft locally and opens a dedicated preview route with Edit and Submit endorsement actions.",
+      "category": "behavior"
+    }
+  ],
+  "gitHead": "622c815fb317ee56288fb6c08c8c76dce7cf1419"
+}
