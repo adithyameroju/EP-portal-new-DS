@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fdashboard\u002Fclaims\u002F[claimNumber]","\u002Fdashboard\u002Fendorsements\u002F[action]","\u002Fdashboard\u002Fendorsements\u002F[action]\u002Fquick","\u002Fdashboard\u002Fendorsements\u002F[action]\u002Fquick\u002Fpreview","\u002Fdashboard\u002Fpolicies\u002F[policyNumber]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
