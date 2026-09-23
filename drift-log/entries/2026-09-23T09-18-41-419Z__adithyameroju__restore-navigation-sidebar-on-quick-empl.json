@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-09-23T09:18:41.419Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Restore navigation sidebar on quick employee flow",
+  "targetFiles": [
+    "components/blocks/employee-quick-flow.tsx"
+  ],
+  "componentsUsed": [
+    "alert",
+    "badge",
+    "breadcrumb",
+    "button",
+    "card",
+    "checkbox",
+    "field",
+    "input",
+    "item",
+    "progress",
+    "scroll-area",
+    "select",
+    "separator",
+    "sidebar",
+    "spinner",
+    "switch",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "The quick employee flow reuses the shared DashboardSidebar composition used by every other dashboard page.",
+      "category": "component-choice"
+    },
+    {
+      "text": "Endorsements remains the active navigation item throughout add, update, and delete employee quick flows.",
+      "category": "behavior"
+    },
+    {
+      "text": "The existing expanded and icon-collapsed sidebar behavior is preserved.",
+      "category": "behavior"
+    },
+    {
+      "text": "The restored sidebar sits beside the fixed desktop workspace without changing form-only scrolling.",
+      "category": "spacing"
+    }
+  ],
+  "gitHead": "fa86043f2da7850e1a83cfe985801fc3fcfdff5c"
+}
