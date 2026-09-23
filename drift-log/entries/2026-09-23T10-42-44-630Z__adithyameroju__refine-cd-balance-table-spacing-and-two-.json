@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-09-23T10:42:44.630Z",
+  "designer": "adithyameroju",
+  "tool": "cursor",
+  "compassVersion": "0.1.0",
+  "source": "Refine CD balance table spacing and two-line transaction summaries",
+  "targetFiles": [
+    "components/blocks/employer-cd-balance-ledger.tsx"
+  ],
+  "componentsUsed": [
+    "badge",
+    "button",
+    "card",
+    "dialog",
+    "field",
+    "input-group",
+    "item",
+    "pagination",
+    "progress",
+    "select",
+    "sidebar",
+    "spinner",
+    "table",
+    "tabs"
+  ],
+  "assumptions": [
+    {
+      "text": "Use py-3 rows and fixed Compass width utilities to give transaction descriptions more room on wide screens.",
+      "category": "spacing"
+    },
+    {
+      "text": "Limit the transaction title and supporting description to one line each, for a combined maximum of two lines.",
+      "category": "styling"
+    },
+    {
+      "text": "Switch transactions and invoices to Compass Item layouts below xl so the CD view never needs horizontal table scrolling.",
+      "category": "component-choice"
+    }
+  ],
+  "gitHead": "9cb0a849616f5aa071ed9206dc000edd56404f9a"
+}
