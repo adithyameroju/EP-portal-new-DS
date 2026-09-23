@@ -84,7 +84,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { DashboardHeader } from "./employer-dashboard"
+import { DashboardHeader, DashboardSidebar } from "./employer-dashboard"
 import type { EmployeeAction } from "./employee-action-options"
 
 type EmployeeRecord = {
@@ -1417,6 +1417,7 @@ export function EmployeeQuickFlow({
 
   return (
     <SidebarProvider className="lg:h-svh lg:min-h-0 lg:overflow-hidden">
+      <DashboardSidebar activeItem="endorsements" />
       <SidebarInset className="min-w-0 bg-muted lg:h-svh lg:min-h-0 lg:overflow-hidden">
         <DashboardHeader />
         <main className="flex min-w-0 flex-1 flex-col lg:min-h-0 lg:overflow-hidden">
